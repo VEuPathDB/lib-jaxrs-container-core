@@ -13,6 +13,13 @@ val versionJackson = "2.11.0"
 val versionJersey  = "2.30.1"
 val versionJunit   = "5.6.2"
 
+// Additional settings
+val moduleName = "epvm.lib.container.jaxrs.core"
+val patchArgs  = listOf(
+  "--patch-module",
+  "${moduleName}=${tasks.compileJava.get().destinationDirectory.asFile.get().path}"
+)
+
 repositories {
   jcenter()
 }
@@ -33,14 +40,14 @@ dependencies {
   runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:${versionLog4j}")
 
   // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.+")
+  runtimeOnly("org.apache.commons:commons-dbcp2:2.7.0")
 
   //
   // Project Dependencies
   //
 
   // JavaX
-  implementation("jakarta.ws.rs:jakarta.ws.rs-api:2.+")
+  implementation("jakarta.ws.rs:jakarta.ws.rs-api:2.1.6")
 
   // Jersey
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${versionJersey}")
@@ -54,8 +61,8 @@ dependencies {
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versionJackson}")
 
   // CLI
-  implementation("info.picocli:picocli:4.+")
-  annotationProcessor("info.picocli:picocli-codegen:4.+")
+  implementation("info.picocli:picocli:4.2.0")
+  annotationProcessor("info.picocli:picocli-codegen:4.2.0")
 
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:${versionLog4j}")
@@ -87,6 +94,21 @@ plugins.withType<JavaPlugin>().configureEach {
     modularity.inferModulePath.set(true)
   }
 }
+
+tasks.compileJava {
+  options.compilerArgs.addAll(listOf(
+    "--module-path", classpath.asPath
+  ))
+  classpath = files()
+}
+tasks.compileTestJava {
+  options.compilerArgs.addAll(patchArgs)
+  options.compilerArgs.addAll(listOf(
+    "--module-path", classpath.asPath
+  ))
+  classpath = files()
+}
+tasks.test { jvmArgs(patchArgs) }
 
 val test by tasks.getting(Test::class) {
   // Use junit platform for unit tests
