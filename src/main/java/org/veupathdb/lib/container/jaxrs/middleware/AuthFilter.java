@@ -4,13 +4,6 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.accountdb.AccountManager;
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.gusdb.fgputil.web.LoginCookieFactory;
-import org.veupathdb.lib.container.jaxrs.Globals;
-import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
-import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
-import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
-import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
-import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -19,7 +12,6 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import java.lang.annotation.ElementType;
@@ -27,10 +19,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.veupathdb.lib.container.jaxrs.Globals;
+import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
+import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
+import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.synchronizedMap;
