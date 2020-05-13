@@ -7,6 +7,7 @@ import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
@@ -18,6 +19,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import java.lang.annotation.ElementType;
@@ -25,6 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,6 +108,8 @@ public class AuthFilter implements ContainerRequestFilter {
       req.abortWith(build401());
       return;
     }
+
+    req.setSecurityContext(new WdkSecurityContext(profile));
 
     req.setProperty(Globals.REQUEST_USER, profile);
     log.debug("Request authenticated");
