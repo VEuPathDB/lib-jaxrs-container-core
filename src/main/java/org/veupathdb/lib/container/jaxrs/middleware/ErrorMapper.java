@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.middleware;
 
 import javax.ws.rs.*;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -12,6 +13,7 @@ import java.util.Map;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
 
+@PreMatching
 public class ErrorMapper implements ExceptionMapper<Throwable> {
   private interface Mapper {
     ErrorResponse toError(Throwable t);

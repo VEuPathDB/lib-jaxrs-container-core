@@ -2,16 +2,17 @@ package org.veupathdb.lib.container.jaxrs.server;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import javax.ws.rs.ApplicationPath;
+
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.middleware.*;
 import org.veupathdb.lib.container.jaxrs.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.controller.MetricsService;
+import org.veupathdb.lib.container.jaxrs.middleware.*;
 import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
-
-import javax.ws.rs.ApplicationPath;
 
 /**
  * Container Meta Resources
