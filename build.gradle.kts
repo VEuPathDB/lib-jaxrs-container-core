@@ -116,23 +116,23 @@ tasks.compileTestJava {
 
 tasks.test {
   doFirst {
-    Files.move(Paths.get("src/main/java/module-info.java"),
-      Paths.get("src/main/java/module-info._"))
+    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"),
+      Paths.get(projectDir.absolutePath, "src/main/java/module-info._"))
   }
   doLast {
-    Files.move(Paths.get("src/main/java/module-info._"),
-      Paths.get("src/main/java/module-info.java"))
+    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info._"),
+      Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"))
   }
 }
 
 tasks.javadoc {
   doFirst {
-    Files.move(Paths.get("src/main/java/module-info.java"),
-      Paths.get("src/main/java/module-info._"))
+    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"),
+      Paths.get(projectDir.absolutePath, "src/main/java/module-info._"))
   }
   doLast {
-    Files.move(Paths.get("src/main/java/module-info._"),
-      Paths.get("src/main/java/module-info.java"))
+    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info._"),
+      Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"))
   }
 }
 
