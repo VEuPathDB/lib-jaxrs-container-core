@@ -109,7 +109,8 @@ plugins.withType<JavaPlugin>().configureEach {
 tasks.compileJava {
   doFirst {
     exec {
-      commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh")
+      commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh",
+        rootProject.projectDir.absolutePath)
     }
   }
 
