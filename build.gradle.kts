@@ -169,8 +169,8 @@ publishing {
 }
 
 bintray {
-  user = project.findProperty("bintray.user") as String
-  key  = project.findProperty("bintray.pass") as String
+  user = project.findProperty("bintray.user") as String? ?: ""
+  key  = project.findProperty("bintray.pass") as String? ?: ""
   publish = true
   setPublications("gpr")
   pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
