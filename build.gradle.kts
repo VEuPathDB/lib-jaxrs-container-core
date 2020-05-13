@@ -92,6 +92,10 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versionJunit}")
 }
 
+task<Exec>("build-fgputil") {
+  commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh")
+}
+
 tasks.jar {
   manifest {
     attributes["Implementation-Title"]   = project.name
