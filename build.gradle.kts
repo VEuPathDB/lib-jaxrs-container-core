@@ -28,6 +28,7 @@ val patchArgs  = listOf(
 
 repositories {
   jcenter()
+  mavenCentral()
 }
 
 java {
