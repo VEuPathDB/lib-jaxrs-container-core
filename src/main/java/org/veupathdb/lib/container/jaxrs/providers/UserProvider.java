@@ -20,7 +20,7 @@ public class UserProvider implements ContextResolver<Optional<UserProfile>> {
 //  private static final byte TIMEOUT_HOURS = 2;
 //  private static final byte INTERVAL_MINS = 10;
 
-  private static UserProvider instance;
+//  private static UserProvider instance;
 
 //  private Map<String, >
 
@@ -37,9 +37,9 @@ public class UserProvider implements ContextResolver<Optional<UserProfile>> {
       .map(WdkSecurityContext::getUserProfile);
   }
 
-  public static UserProvider getInstance() {
-    if (instance == null)
-      instance = new UserProvider();
-    return instance;
-  }
+//  public static UserProvider getInstance() {
+//    if (instance == null)
+//      instance = new UserProvider();
+//    return instance;
+//  }
 }

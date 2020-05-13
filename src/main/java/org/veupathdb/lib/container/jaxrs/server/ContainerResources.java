@@ -29,6 +29,7 @@ abstract public class ContainerResources extends ResourceConfig {
     PrometheusFilter.class,
     RequestIdFilter.class,
     RequestLogger.class,
+    UserProvider.class,
   };
 
   private boolean useExMap = true;
@@ -39,8 +40,7 @@ abstract public class ContainerResources extends ResourceConfig {
       new AuthFilter(opts, DbManager.accountDatabase()),
       new ApiDocService(),
       new HealthController(DependencyProvider.getInstance()),
-      new MetricsService(),
-      UserProvider.getInstance());
+      new MetricsService());
 
     if (useExMap)
       register(ErrorMapper.class);
