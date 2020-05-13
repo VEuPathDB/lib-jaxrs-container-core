@@ -1,14 +1,16 @@
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import com.jfrog.bintray.gradle.BintrayExtension
+import java.nio.file.Files
+import java.nio.file.Paths
 
 plugins {
   java
   `maven-publish`
+  id("com.jfrog.bintray") version "1.8.5"
 }
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "1.0.0"
+version = "1.0.1"
 
 // Versions
 val versionLog4j   = "2.13.2"
@@ -23,8 +25,14 @@ val patchArgs  = listOf(
   "${moduleName}=${tasks.compileJava.get().destinationDirectory.asFile.get().path}"
 )
 
+
 repositories {
   jcenter()
+}
+
+java {
+  withSourcesJar()
+  withJavadocJar()
 }
 
 dependencies {
@@ -109,11 +117,22 @@ tasks.compileTestJava {
 tasks.test {
   doFirst {
     Files.move(Paths.get("src/main/java/module-info.java"),
-      Paths.get("src/main/java/module-info._"));
+      Paths.get("src/main/java/module-info._"))
   }
   doLast {
     Files.move(Paths.get("src/main/java/module-info._"),
-      Paths.get("src/main/java/module-info.java"));
+      Paths.get("src/main/java/module-info.java"))
+  }
+}
+
+tasks.javadoc {
+  doFirst {
+    Files.move(Paths.get("src/main/java/module-info.java"),
+      Paths.get("src/main/java/module-info._"))
+  }
+  doLast {
+    Files.move(Paths.get("src/main/java/module-info._"),
+      Paths.get("src/main/java/module-info.java"))
   }
 }
 
@@ -123,16 +142,6 @@ val test by tasks.getting(Test::class) {
 }
 
 publishing {
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url  = uri("https://maven.pkg.github.com/VEuPathDB/lib-jaxrs-container-core")
-      credentials {
-        username = ((project.findProperty("ghp.user")) ?: System.getenv("GITHUB_PACKAGES_USER")) as String?
-        password = ((project.findProperty("ghp.pass")) ?: System.getenv("GITHUB_PACKAGES_PASS")) as String?
-      }
-    }
-  }
   publications {
     create<MavenPublication>("gpr") {
       from(components["java"])
@@ -157,4 +166,17 @@ publishing {
       }
     }
   }
+}
+
+bintray {
+  user = project.findProperty("bintray.user") as String
+  key  = project.findProperty("bintray.pass") as String
+  publish = true
+  setPublications("gpr")
+  pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
+    repo = "maven"
+    name = "lib-jaxrs-container-core"
+    userOrg = "veupathdb"
+    setVersion(rootProject.version)
+  })
 }
