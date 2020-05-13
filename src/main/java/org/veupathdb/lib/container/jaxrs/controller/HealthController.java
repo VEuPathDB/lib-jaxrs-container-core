@@ -2,6 +2,7 @@ package org.veupathdb.lib.container.jaxrs.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import java.lang.management.ManagementFactory;
 

@@ -15,7 +15,7 @@ import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
  * Context Resolver for UserProfiles in authenticated requests.
  */
 @Provider
-public class UserProvider implements ContextResolver<Optional<UserProfile>> {
+public class UserProvider implements ContextResolver<UserProfile> {
 
 //  private static final byte TIMEOUT_HOURS = 2;
 //  private static final byte INTERVAL_MINS = 10;
@@ -27,14 +27,15 @@ public class UserProvider implements ContextResolver<Optional<UserProfile>> {
   @Context
   private SecurityContext ctx;
 
-  private UserProvider() {}
+//  private UserProvider() {}
 
   @Override
-  public Optional<UserProfile> getContext(Class<?> type) {
+  public UserProfile getContext(Class<?> type) {
     return Optional.ofNullable(ctx)
       .filter(WdkSecurityContext.class::isInstance)
       .map(WdkSecurityContext.class::cast)
-      .map(WdkSecurityContext::getUserProfile);
+      .map(WdkSecurityContext::getUserProfile)
+      .orElse(null);
   }
 
 //  public static UserProvider getInstance() {
