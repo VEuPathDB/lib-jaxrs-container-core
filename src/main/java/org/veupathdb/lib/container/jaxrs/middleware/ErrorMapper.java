@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
+
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @PreMatching
 public class ErrorMapper implements ExceptionMapper<Throwable> {
@@ -34,7 +37,13 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   public Response toResponse(Throwable err) {
     var code = err instanceof WebApplicationException
       ? ((WebApplicationException) err).getResponse().getStatus()
-      : Status.INTERNAL_SERVER_ERROR.getStatusCode();
+      : INTERNAL_SERVER_ERROR.getStatusCode();
+
+    if (code == INTERNAL_SERVER_ERROR.getStatusCode()) {
+      LogProvider.logger(ErrorMapper.class).warn(err);
+    } else {
+      LogProvider.logger(ErrorMapper.class).debug(err);
+    }
 
     return Response.status(code)
       .entity(mappers.getOrDefault(err.getClass(), ServerError::new).toError(err))
