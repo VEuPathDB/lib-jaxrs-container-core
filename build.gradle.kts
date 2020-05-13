@@ -92,10 +92,6 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versionJunit}")
 }
 
-task<Exec>("build-fgputil") {
-  commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh")
-}
-
 tasks.jar {
   manifest {
     attributes["Implementation-Title"]   = project.name
@@ -110,12 +106,17 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 tasks.compileJava {
+  doFirst {
+    exec {
+      commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh")
+    }
+  }
+
   options.compilerArgs.addAll(listOf(
     "--module-path", classpath.asPath
   ))
+
   classpath = files()
-}
-tasks.compileTestJava {
 }
 
 tasks.test {
