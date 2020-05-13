@@ -2,23 +2,43 @@ package org.veupathdb.lib.container.jaxrs.providers;
 
 import org.gusdb.fgputil.accountdb.UserProfile;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
+import java.util.Optional;
+
+import org.veupathdb.lib.container.jaxrs.Globals;
 
 /**
  * Context Resolver for UserProfiles in authenticated requests.
  */
-public class UserProvider implements ContextResolver<UserProfile> {
+public class UserProvider implements ContextResolver<UserProvider> {
 
-  @Context
-  private Provider<ContainerRequestContext> req;
+//  private static final byte TIMEOUT_HOURS = 2;
+//  private static final byte INTERVAL_MINS = 10;
+
+  private static UserProvider instance;
+
+  @Inject
+  private Provider<ContainerRequestContext> ctx;
+
+  private UserProvider() {}
+
+  public Optional<UserProfile> getUser() {
+    return Optional.ofNullable((UserProfile) ctx.get()
+      .getProperty(Globals.REQUEST_USER));
+  }
 
   @Override
-  public UserProfile getContext(Class<?> type) {
-    return (UserProfile) req.get().getProperty(RequestKeys.REQUEST_ID);
+  public UserProvider getContext(Class<?> type) {
+    return instance;
+  }
+
+  public static UserProvider getInstance() {
+    if (instance == null)
+      instance = new UserProvider();
+    return instance;
   }
 }
