@@ -43,8 +43,8 @@ dependencies {
 
   // FgpUtil jars
   implementation(files(
-    "vendor/fgputil-util-1.0.0.jar",
-    "vendor/fgputil-accountdb-1.0.0.jar"
+    "${projectDir.absolutePath}vendor/fgputil-util-1.0.0.jar",
+    "${projectDir.absolutePath}vendor/fgputil-accountdb-1.0.0.jar"
   ))
 
   // Compatibility bridge to support the long dead log4j-1.X
