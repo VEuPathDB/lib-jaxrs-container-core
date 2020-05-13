@@ -1,3 +1,6 @@
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 plugins {
   java
   `maven-publish`
@@ -14,7 +17,7 @@ val versionJersey  = "2.30.1"
 val versionJunit   = "5.6.2"
 
 // Additional settings
-val moduleName = "epvm.lib.container.jaxrs.core"
+val moduleName = "epvb.lib.container.jaxrs.core"
 val patchArgs  = listOf(
   "--patch-module",
   "${moduleName}=${tasks.compileJava.get().destinationDirectory.asFile.get().path}"
@@ -74,8 +77,7 @@ dependencies {
   implementation("io.prometheus:simpleclient_common:0.9.0")
 
   // Utils
-  implementation("com.devskiller.friendly-id:friendly-id:1.+")
-
+  implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:${versionJunit}")
   testImplementation("org.mockito:mockito-core:2.+")
@@ -102,13 +104,18 @@ tasks.compileJava {
   classpath = files()
 }
 tasks.compileTestJava {
-  options.compilerArgs.addAll(patchArgs)
-  options.compilerArgs.addAll(listOf(
-    "--module-path", classpath.asPath
-  ))
-  classpath = files()
 }
-tasks.test { jvmArgs(patchArgs) }
+
+tasks.test {
+  doFirst {
+    Files.move(Paths.get("src/main/java/module-info.java"),
+      Paths.get("src/main/java/module-info._"));
+  }
+  doLast {
+    Files.move(Paths.get("src/main/java/module-info._"),
+      Paths.get("src/main/java/module-info.java"));
+  }
+}
 
 val test by tasks.getting(Test::class) {
   // Use junit platform for unit tests

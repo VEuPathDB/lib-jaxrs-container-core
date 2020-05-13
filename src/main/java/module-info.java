@@ -1,4 +1,4 @@
-module epvm.lib.container.jaxrs.core {
+module epvb.lib.container.jaxrs.core {
   requires transitive com.fasterxml.jackson.annotation;
   requires transitive java.ws.rs;
   requires transitive org.apache.logging.log4j;
@@ -18,6 +18,7 @@ module epvm.lib.container.jaxrs.core {
   requires jersey.container.grizzly2.http;
   requires fgputil.accountdb;
   requires fgputil.util;
+  requires java.sql;
 
   exports org.veupathdb.lib.container.jaxrs.config;
   exports org.veupathdb.lib.container.jaxrs.health;

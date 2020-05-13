@@ -2,7 +2,6 @@ package org.veupathdb.lib.container.jaxrs.health;
 
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
-import org.veupathdb.service.lib.container.jaxrs.generated.model.DependencyStatus.OnlineType;
 
 import java.sql.SQLException;
 
@@ -34,18 +33,19 @@ public class DatabaseDependency extends ExternalDependency {
     LOG.info("Checking dependency health for database {}", name);
 
     if (!pinger.isReachable(url, port))
-      return new TestResult(false, OnlineType.UNKNOWN);
+      return new TestResult(this, false, Status.UNKNOWN);
 
     try (
       var con  = ds.getDataSource().getConnection();
       var stmt = con.createStatement()
     ) {
       stmt.execute(testQuery);
-      return new TestResult(true, OnlineType.YES);
+      return new TestResult(this, true, Status.ONLINE);
     } catch (SQLException e) {
       LOG.warn("Health check failed for database {}", name);
-      LOG.debug(e);
-      return new TestResult(true, OnlineType.UNKNOWN);
+      LOG.debug(e)
+      ;
+      return new TestResult(this, true, Status.UNKNOWN);
     }
   }
 

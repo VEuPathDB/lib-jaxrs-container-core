@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +70,7 @@ class DbManagerTest {
 
     opts.user = "foo";
     opts.pass = "bar";
+    opts.platform = SupportedPlatform.ORACLE;
 
     when(test.makeJdbcUrl(SupportedPlatform.ORACLE, opts))
       .thenReturn("oracle");
@@ -78,9 +80,9 @@ class DbManagerTest {
 
     var out = test.initDbConfig(opts);
 
-    assertEquals(out.getConnectionUrl(), "oracle");
-    assertEquals(out.getLogin(), "foo");
-    assertEquals(out.getPassword(), "bar");
+    assertEquals("oracle", out.getConnectionUrl());
+    assertEquals("foo", out.getLogin());
+    assertEquals("bar", out.getPassword());
 
     opts.platform = SupportedPlatform.POSTGRESQL;
 
@@ -93,7 +95,7 @@ class DbManagerTest {
   void makeJdbcUrl() {
     var opts = new DbOptions();
     var test = mock(DbManager.class);
-    when(test.makeJdbcUrl(any(SupportedPlatform.class), opts))
+    when(test.makeJdbcUrl(any(SupportedPlatform.class), same(opts)))
       .thenCallRealMethod();
     when(test.makeOracleJdbcUrl(opts)).thenReturn("foo");
     when(test.makePostgresJdbcUrl(opts)).thenReturn("bar");

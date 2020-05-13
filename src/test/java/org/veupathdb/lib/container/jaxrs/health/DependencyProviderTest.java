@@ -27,17 +27,19 @@ class DependencyProviderTest {
   @Test
   @SuppressWarnings("unchecked")
   void register() throws Exception {
-    var dep = new DatabaseDependency("foo", "", 123, null);
-    test.register(dep);
+    var dep1 = new DatabaseDependency("foo", "", 123, null);
+    var dep2 = new DatabaseDependency("foo", "", 123, null);
+
+    test.register(dep1);
 
     var f = test.getClass().getDeclaredField("dependencies");
     f.setAccessible(true);
 
     var foo = (Map<String, Dependency>) f.get(test);
 
-    assertSame(foo.get("foo"), dep);
+    assertSame(foo.get("foo"), dep1);
 
-    assertThrows(RuntimeException.class, () -> test.register(dep));
+    assertThrows(RuntimeException.class, () -> test.register(dep2));
   }
 
   @Test

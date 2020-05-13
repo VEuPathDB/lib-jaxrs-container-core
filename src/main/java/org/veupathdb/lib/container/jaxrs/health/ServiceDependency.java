@@ -2,7 +2,6 @@ package org.veupathdb.lib.container.jaxrs.health;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.veupathdb.service.lib.container.jaxrs.generated.model.DependencyStatus.OnlineType;
 
 /**
  * Service Dependency
@@ -38,7 +37,7 @@ abstract public class ServiceDependency extends ExternalDependency {
     log.info("Checking dependency health for external service {}", name);
 
     if (!pinger.isReachable(url, port))
-      return new TestResult(false, OnlineType.UNKNOWN);
+      return new TestResult(this, false, Status.UNKNOWN);
 
     return serviceTest();
   }
