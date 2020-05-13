@@ -10,7 +10,7 @@ plugins {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "1.0.1"
+version = "1.0.2"
 
 // Versions
 val versionLog4j   = "2.13.2"
