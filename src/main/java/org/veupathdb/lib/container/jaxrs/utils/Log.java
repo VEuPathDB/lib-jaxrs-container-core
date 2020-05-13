@@ -21,7 +21,7 @@ public class Log {
    */
   public static void initialize() {
     try {
-      java.util.logging.LogManager.getLogManager().reset();
+//      java.util.logging.LogManager.getLogManager().reset();
 
       Configurator.initialize(
         new YamlConfiguration((LoggerContext) LogManager.getContext(),
