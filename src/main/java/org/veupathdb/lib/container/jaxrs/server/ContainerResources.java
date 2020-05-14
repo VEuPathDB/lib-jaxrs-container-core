@@ -49,8 +49,6 @@ abstract public class ContainerResources extends ResourceConfig {
         register(o);
   }
 
-
-
   /**
    * Disables the built in exception mapper.
    *
