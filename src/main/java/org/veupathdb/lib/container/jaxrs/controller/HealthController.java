@@ -2,6 +2,8 @@ package org.veupathdb.lib.container.jaxrs.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import java.lang.management.ManagementFactory;
 
@@ -16,6 +18,7 @@ import org.veupathdb.lib.container.jaxrs.view.health.ServiceInfo;
 public class HealthController {
 
   @GET
+  @Produces(MediaType.APPLICATION_JSON)
   public ServiceHealth getHealth() {
     var out = new ServiceHealth()
       .setStatus(ServerStatus.HEALTHY)
