@@ -1,46 +1,18 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
+import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.accountdb.UserProfile;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.core.Request;
 
 import java.util.Optional;
 
-import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
+import org.veupathdb.lib.container.jaxrs.Globals;
 
-/**
- * Context Resolver for UserProfiles in authenticated requests.
- */
-@Provider
-public class UserProvider implements ContextResolver<UserProfile> {
-
-//  private static final byte TIMEOUT_HOURS = 2;
-//  private static final byte INTERVAL_MINS = 10;
-
-//  private static UserProvider instance;
-
-//  private Map<String, >
-
-  @Context
-  private SecurityContext ctx;
-
-//  private UserProvider() {}
-
-  @Override
-  public UserProfile getContext(Class<?> type) {
-    return Optional.ofNullable(ctx)
-      .filter(WdkSecurityContext.class::isInstance)
-      .map(WdkSecurityContext.class::cast)
-      .map(WdkSecurityContext::getUserProfile)
-      .orElse(null);
+public class UserProvider {
+  public static Optional<UserProfile> lookupUser(Request req) {
+    return Optional.ofNullable((ContainerRequest)req)
+      .map(r -> r.getProperty(Globals.REQUEST_USER))
+      .map(UserProfile.class::cast);
   }
-
-//  public static UserProvider getInstance() {
-//    if (instance == null)
-//      instance = new UserProvider();
-//    return instance;
-//  }
 }

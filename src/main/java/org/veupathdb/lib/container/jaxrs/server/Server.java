@@ -4,6 +4,10 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 
+import javax.ws.rs.core.UriBuilder;
+
+import java.util.Optional;
+
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.Dependency;
 import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
@@ -11,12 +15,8 @@ import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.OptionsProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RuntimeProvider;
 import org.veupathdb.lib.container.jaxrs.utils.Cli;
-import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 import org.veupathdb.lib.container.jaxrs.utils.Log;
-
-import javax.ws.rs.core.UriBuilder;
-
-import java.io.IOException;
+import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
 @SuppressWarnings("unused")
 abstract public class Server {
@@ -125,7 +125,7 @@ abstract public class Server {
    *
    * @param cliArgs commandline arguments
    */
-  protected final Server start(String[] cliArgs) throws IOException {
+  protected final void start(String[] cliArgs) {
     logger.info("Starting server");
     OptionsProvider.setProvider(this::newOptions);
 
@@ -150,16 +150,19 @@ abstract public class Server {
       .getServerPort()
       .orElse(DEFAULT_PORT);
 
-    grizzly = GrizzlyHttpServerFactory.createHttpServer(
-      UriBuilder.fromUri("//0.0.0.0").port(port).build(),
-      newResourceConfig(options));
-
     RuntimeProvider.runtime().addShutdownHook(new Thread(this::shutdown));
 
-    grizzly.start();
-    logger.info("Server started.  Listening on port {}.", port);
+    try {
+      grizzly = GrizzlyHttpServerFactory.createHttpServer(
+        UriBuilder.fromUri("//0.0.0.0").port(port).build(),
+        newResourceConfig(options));
+      grizzly.start();
+    } catch (Throwable e) {
+      logger.fatal("Could not start server.", e);
+      RuntimeProvider.runtime().exit(1);
+    }
 
-    return this;
+    logger.info("Server started.  Listening on port {}.", port);
   }
 
   protected final HttpServer getGrizzlyServer() {
@@ -169,7 +172,7 @@ abstract public class Server {
   private void shutdown() {
     logger.info("Server shutting down.");
     onShutdown();
-    grizzly.shutdownNow();
+    Optional.ofNullable(grizzly).ifPresent(HttpServer::shutdownNow);
     DependencyProvider.getInstance().shutDown();
   }
 

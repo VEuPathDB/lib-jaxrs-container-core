@@ -2,6 +2,7 @@ package org.veupathdb.lib.container.jaxrs.middleware;
 
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.accountdb.AccountManager;
+import org.gusdb.fgputil.accountdb.UserPropertyName;
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 
@@ -26,12 +27,10 @@ import java.util.Map;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.context.WdkSecurityContext;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 
@@ -64,9 +63,16 @@ public class AuthFilter implements ContainerRequestFilter {
   @Context
   private ResourceInfo resource;
 
-  public AuthFilter(Options opts, DatabaseInstance acctDb) {
+  public AuthFilter(
+    Options opts,
+    DatabaseInstance acctDb
+  ) {
     this.opts = opts;
-    this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA, emptyList());
+    this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA, Arrays.asList(
+      new UserPropertyName("firstName", "first_name", true),
+      new UserPropertyName("middleName", "middle_name", true),
+      new UserPropertyName("lastName", "last_name", true),
+      new UserPropertyName("organization", "organization", true)));
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())
@@ -108,10 +114,8 @@ public class AuthFilter implements ContainerRequestFilter {
       return;
     }
 
-    req.setSecurityContext(new WdkSecurityContext(profile));
-
-    req.setProperty(Globals.REQUEST_USER, profile);
     log.debug("Request authenticated");
+    req.setProperty(Globals.REQUEST_USER, profile);
   }
 
   /**

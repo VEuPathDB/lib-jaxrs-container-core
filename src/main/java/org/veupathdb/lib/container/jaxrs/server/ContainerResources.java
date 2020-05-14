@@ -10,8 +10,6 @@ import org.veupathdb.lib.container.jaxrs.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.controller.MetricsService;
 import org.veupathdb.lib.container.jaxrs.middleware.*;
-import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
-import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
 /**
@@ -29,18 +27,17 @@ abstract public class ContainerResources extends ResourceConfig {
     PrometheusFilter.class,
     RequestIdFilter.class,
     RequestLogger.class,
-    UserProvider.class,
+
+    ApiDocService.class,
+    HealthController.class,
+    MetricsService.class,
   };
 
   private boolean useExMap = true;
 
   public ContainerResources(Options opts) {
     registerClasses(DEFAULT_CLASSES);
-    registerInstances(
-      new AuthFilter(opts, DbManager.accountDatabase()),
-      new ApiDocService(),
-      new HealthController(DependencyProvider.getInstance()),
-      new MetricsService());
+    registerInstances(new AuthFilter(opts, DbManager.accountDatabase()));
 
     if (useExMap)
       register(ErrorMapper.class);
@@ -52,13 +49,15 @@ abstract public class ContainerResources extends ResourceConfig {
         register(o);
   }
 
+
+
   /**
    * Disables the built in exception mapper.
    *
    * Call this if you are providing your own exception mapper implementation.
    */
   protected void disableExceptionMapper() {
-
+    useExMap = false;
   }
 
   /**

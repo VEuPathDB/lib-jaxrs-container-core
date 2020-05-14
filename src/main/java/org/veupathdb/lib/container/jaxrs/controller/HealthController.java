@@ -2,7 +2,6 @@ package org.veupathdb.lib.container.jaxrs.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 
 import java.lang.management.ManagementFactory;
 
@@ -15,11 +14,6 @@ import org.veupathdb.lib.container.jaxrs.view.health.ServiceInfo;
 
 @Path("/health")
 public class HealthController {
-  private final DependencyProvider depMan;
-
-  public HealthController(DependencyProvider depMan) {
-    this.depMan = depMan;
-  }
 
   @GET
   public ServiceHealth getHealth() {
@@ -29,7 +23,7 @@ public class HealthController {
         .setThreads(Threads.currentThreadCount())
         .setUptime(ManagementFactory.getRuntimeMXBean().getUptime()));
 
-    var results = depMan.testDependencies();
+    var results = DependencyProvider.getInstance().testDependencies();
 
     results.stream()
       .filter(t -> t.status() != Status.ONLINE)

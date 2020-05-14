@@ -20,6 +20,7 @@ module epvb.lib.container.jaxrs.core {
   requires fgputil.util;
   requires java.sql;
   requires jakarta.inject;
+  requires hk2.api;
 
   exports org.veupathdb.lib.container.jaxrs.config;
   exports org.veupathdb.lib.container.jaxrs.health;

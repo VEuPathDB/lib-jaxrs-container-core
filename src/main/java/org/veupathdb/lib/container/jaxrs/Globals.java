@@ -8,5 +8,6 @@ public final class Globals {
 
   public static final String
     CONTEXT_ID = "context-id",
-    REQUEST_USER = "user-profile";
+    REQUEST_USER = "user-profile",
+    X_CONTEXT_ID = "X-Context-Id";
 }
