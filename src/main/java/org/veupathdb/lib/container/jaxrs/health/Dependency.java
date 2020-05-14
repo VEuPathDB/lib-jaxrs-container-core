@@ -3,8 +3,8 @@ package org.veupathdb.lib.container.jaxrs.health;
 /**
  * Service Dependency
  * <p>
- * A wrapper for external resources providing methods needed for performing
- * health checks.
+ * A wrapper for anything the server depends on to be considered in a "healthy"
+ * state.
  */
 public interface Dependency extends AutoCloseable {
 

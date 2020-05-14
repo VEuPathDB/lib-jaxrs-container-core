@@ -117,7 +117,7 @@ public class DbManager {
     appDb = new DatabaseInstance(initDbConfig(dbOpts));
 
     DependencyProvider.getInstance()
-      .register(new DatabaseDependency("account-db", dbOpts.host, dbOpts.port,
+      .register(new DatabaseDependency("app-db", dbOpts.host, dbOpts.port,
         appDb));
 
     return appDb;
@@ -133,7 +133,7 @@ public class DbManager {
     userDb = new DatabaseInstance(initDbConfig(dbOpts));
 
     DependencyProvider.getInstance()
-      .register(new DatabaseDependency("account-db", dbOpts.host, dbOpts.port,
+      .register(new DatabaseDependency("user-db", dbOpts.host, dbOpts.port,
         userDb));
 
     return userDb;
