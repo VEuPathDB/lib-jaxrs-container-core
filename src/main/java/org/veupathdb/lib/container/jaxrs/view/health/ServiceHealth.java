@@ -27,8 +27,8 @@ public class ServiceHealth {
   }
 
   @JsonGetter
-  public ServerStatus getStatus() {
-    return status;
+  public String getStatus() {
+    return status.toString();
   }
 
   public ServiceHealth setStatus(ServerStatus status) {
