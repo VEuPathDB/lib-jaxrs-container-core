@@ -15,8 +15,12 @@ echo "Building FgpUtil"
 mvn clean install 2>&1 || exit 1
 
 mkdir -p "${dir}/vendor"
-cp Util/target/fgputil-util-1.0.0.jar "${1}/vendor/fgputil-util-1.0.0.jar"
-cp AccountDB/target/fgputil-accountdb-1.0.0.jar "${1}/vendor/fgputil-accountdb-1.0.0.jar"
+
+cp -t "${dir}/vendor" \
+  AccountDB/target/fgputil-accountdb-1.0.0.jar \
+  Core/target/fgputil-core-1.0.0.jar \
+  Db/target/fgputil-db-1.0.0.jar \
+  Web/target/fgputil-web-1.0.0.jar
 
 cd "${dir}"
 rm -rf FgpUtil

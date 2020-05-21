@@ -17,7 +17,9 @@ module epvb.lib.container.jaxrs.core {
   requires grizzly.http.server;
   requires jersey.container.grizzly2.http;
   requires fgputil.accountdb;
-  requires fgputil.util;
+  requires fgputil.core;
+  requires fgputil.db;
+  requires fgputil.web;
   requires java.sql;
   requires jakarta.inject;
   requires hk2.api;

@@ -4,8 +4,10 @@
 
 dir=$1
 
-readonly LIBS="${dir}/vendor/fgputil-accountdb-1.0.0.jar
-  ${dir}/vendor/fgputil-util-1.0.0.jar"
+readonly LIBS="vendor/fgputil-accountdb-1.0.0.jar
+  vendor/fgputil-core-1.0.0.jar
+  vendor/fgputil-db-1.0.0.jar
+  vendor/fgputil-web-1.0.0.jar"
 
 echo "${C_BLUE}Checking for FgpUtil libraries${C_NONE}"
 
