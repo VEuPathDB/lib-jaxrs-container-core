@@ -24,7 +24,7 @@ class ServiceDependencyTest {
   @Test
   void getUrl() {
     var test = new ServiceDependency("", "foo", 0) {
-      @Override TestResult serviceTest() { return  null; }
+      @Override protected TestResult serviceTest() { return  null; }
     };
 
     assertEquals("foo", test.getUrl());
@@ -33,7 +33,7 @@ class ServiceDependencyTest {
   @Test
   void getPort() {
     var test = new ServiceDependency("", "", 666) {
-      @Override TestResult serviceTest() { return  null; }
+      @Override protected TestResult serviceTest() { return  null; }
     };
 
     assertEquals(666, test.getPort());
@@ -42,7 +42,7 @@ class ServiceDependencyTest {
   @Test
   void close() {
     var test = new ServiceDependency("", "foo", 321) {
-      @Override TestResult serviceTest() { return null; }
+      @Override protected TestResult serviceTest() { return null; }
     };
     test.close(); // Empty method, nothing to test.
   }
@@ -55,7 +55,7 @@ class ServiceDependencyTest {
       when(pinger.isReachable("foo", 321)).thenReturn(false);
 
       var test = new ServiceDependency("", "foo", 321) {
-        @Override TestResult serviceTest() { return null; }
+        @Override protected TestResult serviceTest() { return null; }
       };
       test.setPinger(pinger);
 
@@ -72,7 +72,7 @@ class ServiceDependencyTest {
       var value = new TestResult(null, true, Status.UNKNOWN);
 
       var test = new ServiceDependency("", "foo", 321) {
-        @Override TestResult serviceTest() { return value; }
+        @Override protected TestResult serviceTest() { return value; }
       };
 
       test.setPinger(pinger);
