@@ -146,6 +146,9 @@ abstract public class Server {
       DbManager.initUserDatabase(options);
     }
 
+    for (var dep : dependencies())
+      DependencyProvider.getInstance().register(dep);
+
     final var port = OptionsProvider.getOptions()
       .getServerPort()
       .orElse(DEFAULT_PORT);
