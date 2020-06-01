@@ -1,37 +1,48 @@
 package org.veupathdb.lib.container.jaxrs.middleware;
 
+import javax.annotation.Priority;
 import javax.ws.rs.*;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.glassfish.jersey.server.ContainerRequest;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
+@Provider
 @PreMatching
+@Priority(1)
 public class ErrorMapper implements ExceptionMapper<Throwable> {
+
   private interface Mapper {
     ErrorResponse toError(Throwable t);
   }
 
   private final Map<Class<? extends Throwable>, Mapper> mappers = new HashMap<>() {{
-    put(BadRequestException.class, BadRequestError::new);
-    put(NotAuthorizedException.class, UnauthorizedError::new);
-    put(ForbiddenException.class, ForbiddenError::new);
-    put(NotFoundException.class, NotFoundError::new);
-    put(NotAllowedException.class, BadMethodError::new);
-    put(NotSupportedException.class, BadContentTypeError::new);
+    put(BadRequestException.class,          BadRequestError::new);
+    put(NotAuthorizedException.class,       UnauthorizedError::new);
+    put(ForbiddenException.class,           ForbiddenError::new);
+    put(NotFoundException.class,            NotFoundError::new);
+    put(NotAllowedException.class,          BadMethodError::new);
+    put(NotSupportedException.class,        BadContentTypeError::new);
     put(UnprocessableEntityException.class, InvalidInputError::new);
-    put(InternalServerErrorException.class, ServerError::new);
+    put(InternalServerErrorException.class, ErrorMapper.this::serverError);
   }};
+
+  @Context
+  Request req;
 
   @Override
   public Response toResponse(Throwable err) {
@@ -46,8 +57,16 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
     }
 
     return Response.status(code)
-      .entity(mappers.getOrDefault(err.getClass(), ServerError::new).toError(err))
+      .entity(mappers.getOrDefault(err.getClass(), this::serverError)
+        .toError(err))
       .type(MediaType.APPLICATION_JSON_TYPE)
       .build();
+  }
+
+  private ErrorResponse serverError(Throwable error) {
+    return new ServerError(
+      (String) ((ContainerRequest) req).getProperty(RequestKeys.REQUEST_ID),
+      error
+    );
   }
 }

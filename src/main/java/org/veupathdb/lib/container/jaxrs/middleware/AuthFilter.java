@@ -41,7 +41,7 @@ import static java.util.Objects.isNull;
  * @see Authenticated
  */
 @Provider
-@Priority(3)
+@Priority(4)
 public class AuthFilter implements ContainerRequestFilter {
 
   private static final String MESSAGE = "Users must be logged in to access this"
@@ -68,11 +68,12 @@ public class AuthFilter implements ContainerRequestFilter {
     DatabaseInstance acctDb
   ) {
     this.opts = opts;
-    this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA, Arrays.asList(
-      new UserPropertyName("firstName", "first_name", true),
-      new UserPropertyName("middleName", "middle_name", true),
-      new UserPropertyName("lastName", "last_name", true),
-      new UserPropertyName("organization", "organization", true)));
+    this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA,
+      Arrays.asList(
+        new UserPropertyName("firstName",    "first_name",   true),
+        new UserPropertyName("middleName",   "middle_name",  true),
+        new UserPropertyName("lastName",     "last_name",    true),
+        new UserPropertyName("organization", "organization", true)));
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())

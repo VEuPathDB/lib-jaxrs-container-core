@@ -81,6 +81,15 @@ abstract public class Server {
   protected void onShutdown() {
   }
 
+  /**
+   * Hook point for performing tasks after the CLI/Environment configuration has
+   * been parsed.
+   *
+   * This method will be called before the server is started and before any of
+   * the built in DB connections are established.
+   */
+  protected void postCliParse(Options opts) {}
+
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
     ┃    Service Settings                                                  ┃
@@ -130,6 +139,7 @@ abstract public class Server {
     OptionsProvider.setProvider(this::newOptions);
 
     var options = Cli.parseCLI(cliArgs, OptionsProvider.getOptions());
+    postCliParse(options);
 
     if (useAcctDb) {
       logger.info("Account DB Enabled");

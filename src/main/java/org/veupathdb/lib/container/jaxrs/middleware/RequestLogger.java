@@ -15,7 +15,7 @@ import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import static java.lang.String.format;
 
 @Provider
-@Priority(2)
+@Priority(3)
 @PreMatching
 public class RequestLogger implements ContainerRequestFilter, ContainerResponseFilter {
   private static final String
