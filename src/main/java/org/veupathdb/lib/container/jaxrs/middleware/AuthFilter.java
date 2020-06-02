@@ -21,10 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
@@ -92,10 +89,7 @@ public class AuthFilter implements ContainerRequestFilter {
 
     log.debug("Authenticating request");
 
-    final var rawAuth = Optional.ofNullable(req.getCookies()
-      .get(RequestKeys.AUTH_HEADER))
-      .map(Cookie::getValue)
-      .orElse(null);
+    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
 
     if (isNull(rawAuth) || rawAuth.isEmpty()) {
       log.debug("Authentication failed: no auth cookie.");
