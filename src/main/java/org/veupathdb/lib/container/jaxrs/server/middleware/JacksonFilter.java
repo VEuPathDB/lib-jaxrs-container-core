@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
@@ -17,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 
 @Provider
 @Priority(5)
@@ -71,8 +75,22 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
   ) throws IOException, WebApplicationException {
     try {
       return JSON.readValue(entityStream, type);
-    } catch (JsonParseException | JsonMappingException e) {
+    } catch (JsonParseException e) {
       throw new BadRequestException(e.getMessage());
+    } catch (JsonMappingException e) {
+      throw new UnprocessableEntityException(new HashMap <String, List <String> >(){{
+        put(e.getPathReference(), new ArrayList <>()
+        {{
+          add(e.getMessage()
+            .split(" at")[0]
+            .replaceAll(
+              " \\(class [^)]\\)",
+              ""
+            ));
+        }});
+      }});
     }
   }
+
+
 }

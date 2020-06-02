@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class ErrorResponse {
   private final ErrorStatus status;
@@ -16,6 +17,7 @@ public class ErrorResponse {
   }
 
   @JsonGetter
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   public String getMessage() {
     return message;
   }
