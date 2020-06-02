@@ -72,7 +72,7 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
     try {
       return JSON.readValue(entityStream, type);
     } catch (JsonParseException | JsonMappingException e) {
-      throw new BadRequestException(e);
+      throw new BadRequestException(e.getMessage());
     }
   }
 }
