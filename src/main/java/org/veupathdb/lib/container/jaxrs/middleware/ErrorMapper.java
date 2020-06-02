@@ -2,6 +2,7 @@ package org.veupathdb.lib.container.jaxrs.middleware;
 
 import javax.annotation.Priority;
 import javax.ws.rs.*;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -42,7 +43,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   }};
 
   @Context
-  Request req;
+  ContainerRequestContext ctx;
 
   @Override
   public Response toResponse(Throwable err) {
@@ -65,7 +66,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
 
   private ErrorResponse serverError(Throwable error) {
     return new ServerError(
-      (String) ((ContainerRequest) req).getProperty(RequestKeys.REQUEST_ID),
+      (String) ctx.getProperty(RequestKeys.REQUEST_ID),
       error
     );
   }
