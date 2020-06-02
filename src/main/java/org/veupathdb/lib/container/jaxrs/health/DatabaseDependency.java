@@ -18,7 +18,6 @@ public class DatabaseDependency extends ExternalDependency
   private final String url;
   private final int port;
   private final DatabaseInstance ds;
-  private final Logger log;
 
   private String testQuery = "SELECT 1 FROM dual";
 
@@ -32,11 +31,13 @@ public class DatabaseDependency extends ExternalDependency
     this.ds = ds;
     this.url = url;
     this.port = port;
-    this.log = LogProvider.logger(getClass());
   }
 
   @Override
   public TestResult test() {
+    // Get log here to include request context.
+    var log = LogProvider.logger(getClass());
+
     log.info("Checking dependency health for database {}", name);
 
     if (!pinger.isReachable(url, port))
