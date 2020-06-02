@@ -28,4 +28,5 @@ module epvb.lib.container.jaxrs.core {
   exports org.veupathdb.lib.container.jaxrs.health;
   exports org.veupathdb.lib.container.jaxrs.providers;
   exports org.veupathdb.lib.container.jaxrs.server;
+  exports org.veupathdb.lib.container.jaxrs.server.annotations;
 }
