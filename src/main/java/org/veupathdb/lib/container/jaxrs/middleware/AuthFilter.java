@@ -11,6 +11,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
@@ -23,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
@@ -90,7 +92,10 @@ public class AuthFilter implements ContainerRequestFilter {
 
     log.debug("Authenticating request");
 
-    final var rawAuth = req.getCookies().get(RequestKeys.AUTH_HEADER).getValue();
+    final var rawAuth = Optional.ofNullable(req.getCookies()
+      .get(RequestKeys.AUTH_HEADER))
+      .map(Cookie::getValue)
+      .orElse(null);
 
     if (isNull(rawAuth) || rawAuth.isEmpty()) {
       log.debug("Authentication failed: no auth cookie.");
