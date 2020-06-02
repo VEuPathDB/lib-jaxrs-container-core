@@ -79,12 +79,12 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
       throw new BadRequestException(e.getMessage());
     } catch (JsonMappingException e) {
       throw new UnprocessableEntityException(new HashMap <String, List <String> >(){{
-        put(e.getPathReference(), new ArrayList <>()
+        put(e.getPath().get(0).getFieldName(), new ArrayList <>()
         {{
           add(e.getMessage()
             .split(" at")[0]
             .replaceAll(
-              " \\(class [^)]\\)",
+              " \\(class [^)]+\\)",
               ""
             ));
         }});
