@@ -1,6 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.server;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.ws.rs.ApplicationPath;
@@ -23,7 +22,7 @@ import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 @ApplicationPath("/")
 abstract public class ContainerResources extends ResourceConfig {
   private static final Class<?>[] DEFAULT_CLASSES = {
-    JacksonFeature.class,
+    JacksonFilter.class,
     PrometheusFilter.class,
     RequestIdFilter.class,
     RequestLogger.class,

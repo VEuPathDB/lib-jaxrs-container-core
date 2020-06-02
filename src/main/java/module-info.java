@@ -8,7 +8,6 @@ module epvb.lib.container.jaxrs.core {
   requires java.logging;
 
   requires jersey.server;
-  requires jersey.media.json.jackson;
   requires simpleclient;
   requires simpleclient.common;
   requires info.picocli;
@@ -23,6 +22,7 @@ module epvb.lib.container.jaxrs.core {
   requires java.sql;
   requires jakarta.inject;
   requires hk2.api;
+  requires com.fasterxml.jackson.databind;
 
   exports org.veupathdb.lib.container.jaxrs.config;
   exports org.veupathdb.lib.container.jaxrs.health;
