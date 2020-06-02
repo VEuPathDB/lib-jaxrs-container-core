@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.middleware;
+package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import com.devskiller.friendly_id.FriendlyId;
 import io.prometheus.client.Counter;

@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.controller;
+package org.veupathdb.lib.container.jaxrs.server.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

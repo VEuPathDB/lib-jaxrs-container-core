@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.middleware;
+package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;

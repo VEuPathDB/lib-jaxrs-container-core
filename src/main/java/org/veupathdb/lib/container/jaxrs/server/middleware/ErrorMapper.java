@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.middleware;
+package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import javax.annotation.Priority;
 import javax.ws.rs.*;
@@ -6,7 +6,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -14,7 +13,6 @@ import javax.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.jersey.server.ContainerRequest;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;

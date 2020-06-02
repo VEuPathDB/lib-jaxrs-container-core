@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.middleware;
+package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.annotation.Priority;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -13,6 +14,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Provider
@@ -66,6 +69,10 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
     final MultivaluedMap < String, String > httpHeaders,
     final InputStream entityStream
   ) throws IOException, WebApplicationException {
-    return JSON.readValue(entityStream, type);
+    try {
+      return JSON.readValue(entityStream, type);
+    } catch (JsonParseException | JsonMappingException e) {
+      throw new BadRequestException(e);
+    }
   }
 }

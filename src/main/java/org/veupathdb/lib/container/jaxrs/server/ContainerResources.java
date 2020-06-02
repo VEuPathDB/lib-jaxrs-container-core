@@ -5,10 +5,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import javax.ws.rs.ApplicationPath;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.controller.ApiDocService;
-import org.veupathdb.lib.container.jaxrs.controller.HealthController;
-import org.veupathdb.lib.container.jaxrs.controller.MetricsService;
-import org.veupathdb.lib.container.jaxrs.middleware.*;
+import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;
+import org.veupathdb.lib.container.jaxrs.server.controller.HealthController;
+import org.veupathdb.lib.container.jaxrs.server.controller.MetricsService;
+import org.veupathdb.lib.container.jaxrs.server.middleware.*;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
 /**
