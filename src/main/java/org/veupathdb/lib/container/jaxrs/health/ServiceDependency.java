@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
  */
 abstract public class ServiceDependency extends ExternalDependency {
 
-  private final Logger log = LogManager.getLogger(getClass());
+  private final Logger log;
 
   private final String url;
   private final int port;
@@ -22,6 +22,7 @@ abstract public class ServiceDependency extends ExternalDependency {
     super(name);
     this.url = url;
     this.port = port;
+    this.log = LogManager.getLogger(getClass());
   }
 
   public String getUrl() {

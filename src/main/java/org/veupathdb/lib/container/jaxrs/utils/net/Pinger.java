@@ -20,7 +20,7 @@ public class Pinger {
       return true;
     } catch (IOException e) {
       log.info("Ping failed for {}:{}", addr, port);
-      log.debug(e);
+      log.debug("Ping Exception:", e);
       return false;
     }
   }
