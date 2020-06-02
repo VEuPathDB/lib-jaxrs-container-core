@@ -12,7 +12,7 @@ apply(from = "dependencies.gradle.kts")
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "1.1.4"
+version = "1.1.5"
 
 // Additional settings
 val moduleName = "epvb.lib.container.jaxrs.core"
