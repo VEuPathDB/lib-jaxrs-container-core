@@ -13,14 +13,14 @@ public class UnprocessableEntityException extends ClientErrorException
 {
   public static final int UNPROCESSABLE_ENTITY = 422;
 
-  private final List < String >                 general;
+  private final List < String > general;
 
   private final Map < String, List < String > > byKey;
 
   public UnprocessableEntityException(String message) {
     super(UNPROCESSABLE_ENTITY);
     general = new ArrayList <>();
-    byKey   = new HashMap <>();
+    byKey = new HashMap <>();
 
     general.add(message);
   }
@@ -28,7 +28,7 @@ public class UnprocessableEntityException extends ClientErrorException
   public UnprocessableEntityException(Throwable cause) {
     super(UNPROCESSABLE_ENTITY, cause);
     general = new ArrayList <>();
-    byKey   = new HashMap <>();
+    byKey = new HashMap <>();
 
     general.add(cause.getMessage());
   }
@@ -36,7 +36,7 @@ public class UnprocessableEntityException extends ClientErrorException
   public UnprocessableEntityException(String message, Throwable cause) {
     super(UNPROCESSABLE_ENTITY, cause);
     general = new ArrayList <>();
-    byKey   = new HashMap <>();
+    byKey = new HashMap <>();
 
     general.add(message);
   }
@@ -44,7 +44,16 @@ public class UnprocessableEntityException extends ClientErrorException
   public UnprocessableEntityException(Map < String, List < String > > byKey) {
     super(UNPROCESSABLE_ENTITY);
     this.general = new ArrayList <>();
-    this.byKey   = byKey;
+    this.byKey = byKey;
+  }
+
+  public UnprocessableEntityException(
+    final List < String > general,
+    final Map < String, List < String > > byKey
+  ) {
+    super(UNPROCESSABLE_ENTITY);
+    this.general = general;
+    this.byKey = byKey;
   }
 
   public List < String > getGeneral() {
