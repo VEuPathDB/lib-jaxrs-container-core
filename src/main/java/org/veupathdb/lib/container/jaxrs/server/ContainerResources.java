@@ -34,9 +34,11 @@ abstract public class ContainerResources extends ResourceConfig {
     ErrorMapper.class,
   };
 
+  private final Options opts;
+
   public ContainerResources(Options opts) {
+    this.opts = opts;
     registerClasses(DEFAULT_CLASSES);
-    registerInstances(new AuthFilter(opts, DbManager.accountDatabase()));
 
     for (var o : resources())
       if (o instanceof Class)
@@ -50,6 +52,24 @@ abstract public class ContainerResources extends ResourceConfig {
    */
   public void enableCors() {
     register(CorsFilter.class);
+  }
+
+  /**
+   * Enable authentication checks for annotated resources.
+   */
+  public void enableAuth() {
+    registerInstances(new AuthFilter(opts, DbManager.accountDatabase()));
+  }
+
+  /**
+   * Enable dummy authentication.
+   *
+   * WARNING:
+   *  * Do not use this with the regular auth filter
+   *  * this is for test/dev purposes only
+   */
+  public void enableDummyAuth() {
+    register(DummyAuthFilter.class);
   }
 
   /**
