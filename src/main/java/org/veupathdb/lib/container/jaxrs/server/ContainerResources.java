@@ -5,6 +5,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import javax.ws.rs.ApplicationPath;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.providers.CorsFilter;
 import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.server.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.server.controller.MetricsService;
@@ -30,16 +31,12 @@ abstract public class ContainerResources extends ResourceConfig {
     ApiDocService.class,
     HealthController.class,
     MetricsService.class,
+    ErrorMapper.class,
   };
-
-  private boolean useExMap = true;
 
   public ContainerResources(Options opts) {
     registerClasses(DEFAULT_CLASSES);
     registerInstances(new AuthFilter(opts, DbManager.accountDatabase()));
-
-    if (useExMap)
-      register(ErrorMapper.class);
 
     for (var o : resources())
       if (o instanceof Class)
@@ -49,12 +46,10 @@ abstract public class ContainerResources extends ResourceConfig {
   }
 
   /**
-   * Disables the built in exception mapper.
-   *
-   * Call this if you are providing your own exception mapper implementation.
+   * Enable cross origin request allowance headers.
    */
-  protected void disableExceptionMapper() {
-    useExMap = false;
+  public void enableCors() {
+    register(CorsFilter.class);
   }
 
   /**
