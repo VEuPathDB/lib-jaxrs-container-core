@@ -1,4 +1,4 @@
-package org.veupathdb.lib.container.jaxrs.providers;
+package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -8,7 +8,7 @@ public class CorsFilter implements ContainerResponseFilter
 {
   private static final String[][] headers = {
     {"Access-Control-Allow-Origin", "*"},
-    {"Access-Control-Allow-Headers", "origin, content-type, accept, authorization"},
+    {"Access-Control-Allow-Headers", "origin, content-type, accept, authorization, Auth_Key"},
     {"Access-Control-Allow-Credentials", "true"},
     {"Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD"},
   };
