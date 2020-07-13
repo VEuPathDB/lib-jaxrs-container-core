@@ -17,15 +17,19 @@ import org.veupathdb.lib.container.jaxrs.providers.RuntimeProvider;
 import org.veupathdb.lib.container.jaxrs.utils.Cli;
 import org.veupathdb.lib.container.jaxrs.utils.Log;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
+import org.veupathdb.lib.container.jaxrs.utils.ldap.OracleLDAPConfig;
 
 @SuppressWarnings("unused")
-abstract public class Server {
-  private static final String ERR_MULTI_SERVER = "Cannot create more than one instance of Server", ERR_NO_SERVER = "Called Server.getInstance() before a server was created.";
+abstract public class Server
+{
+  private static final String
+    ERR_MULTI_SERVER = "Cannot create more than one instance of Server",
+    ERR_NO_SERVER    = "Called Server.getInstance() before a server was created.";
 
   private static final int DEFAULT_PORT = 8080;
 
   private static Server instance;
-  private final Logger logger;
+  private final  Logger logger;
 
   private ContainerResources resources;
 
@@ -84,11 +88,12 @@ abstract public class Server {
   /**
    * Hook point for performing tasks after the CLI/Environment configuration has
    * been parsed.
-   *
+   * <p>
    * This method will be called before the server is started and before any of
    * the built in DB connections are established.
    */
-  protected void postCliParse(Options opts) {}
+  protected void postCliParse(Options opts) {
+  }
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
@@ -141,6 +146,12 @@ abstract public class Server {
     var options = Cli.parseCLI(cliArgs, OptionsProvider.getOptions());
     postCliParse(options);
 
+    // Initialize LDAP configuration.
+    //
+    // This must come before the DB initializations as they may depend on this
+    // config.
+    OracleLDAPConfig.initialize(options);
+
     if (useAcctDb) {
       logger.info("Account DB Enabled");
       DbManager.initAccountDatabase(options);
@@ -168,7 +179,8 @@ abstract public class Server {
     try {
       grizzly = GrizzlyHttpServerFactory.createHttpServer(
         UriBuilder.fromUri("//0.0.0.0").port(port).build(),
-        newResourceConfig(options));
+        newResourceConfig(options)
+      );
       grizzly.start();
     } catch (Throwable e) {
       logger.fatal("Could not start server.", e);

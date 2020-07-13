@@ -1,0 +1,559 @@
+= Java Containerized Webservice Core
+:toc:
+
+Core functionality for containerized web services based on RAML & JaxRS.
+
+== Usage
+
+TODO
+
+== Internal Configuration
+
+=== The Web Server
+
+Creating a web server base for a new web service is done by creating a
+entrypoint or "main" class that extends the type
+`org.veupathdb.lib.container.jaxrs.Server`.
+
+The extending class, as a bare minimum, should instantiate a new instance of
+your extending class and call the inherited method `start(String[] cliArgs)`.
+
+.Main.java
+[source, java]
+----
+public class Main extends Server {
+  public static void main(String[] args) {
+    var server = new Main();
+    server.start(args);
+  }
+}
+----
+
+==== Enable Site Data access
+
+If your service requires access to one or more of the VEuPathDB standard site
+databases they must be enabled in your Main class (extending `Server`) _before_
+calling `server.start`.
+
+If any of the standard databases are enabled, the corresponding CLI args for
+that database config become required.
+
+.Main.java
+[source, java]
+----
+public class Main extends Server {
+  public static void main(String[] args) {
+    var server = new Main();
+
+    // Enable Account Database
+    server.enableAccountDB();
+
+    // Enable Application Database
+    server.enableApplicationDB();
+
+    // Enable User Database
+    server.enableUserDB();
+
+    server.start(args);
+  }
+}
+----
+
+
+==== Extending the CLI Options
+
+NOTE: CLI args/environment vars are processed using https://picocli.info/[PicoCLI]
+
+If additional CLI flags are required for your service, the type
+`org.veupathdb.lib.container.jaxrs.config.Options` may be extended to include
+additional properties.
+
+Registering your new extended `Options` class can be done by overriding the
+`Server`{apos}s `newOptions` method to return your extended type.
+
+.Main.java
+[source, java]
+----
+public class Main extends Server {
+  public static void main(String[] args) {
+    var server = new Main();
+    server.start(args);
+  }
+
+  @Override
+  protected Options newOptions() {
+    return new MyOptions();
+  }
+}
+----
+
+
+=== Endpoints/Resources
+
+==== Registering Endpoints
+
+TODO
+
+==== Enable Authentication
+
+TODO
+
+==== Enable CORS Headers
+
+TODO
+
+== External Configuration
+
+Projects based on this library may start with the following base options which
+may be configured via CLI arguments or environment variables.
+
+=== Authentication Salt
+
+Required if the service uses request authentication via the WDK user session.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --auth-secret
+| ENV | $AUTH_SECRET_KEY
+|===
+
+The value must be the MD5 hash of the salt file used by WDK sites.
+
+=== Server Port
+
+Used to configure the port the web server to listens to.
+
+Defaults to port `80` if unset.
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --server-port
+| ENV | $SERVER_PORT
+|===
+
+=== LDAP Server
+
+Defines the LDAP server(s) that are used to look up Oracle connection details.
+
+Required if the web service connects to Oracle database(s) using a TNS Name
+rather than individual connection details.
+
+Individual values must be formatted as `<host.addr>:<port>`, for example
+`ldap.mysite.org:123`.
+
+Multiple servers may be specified using a comma to separate them:
+`ldap1.mysite.org:123,ldap2.mysite.org:123`
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --ldap-server
+| ENV | $LDAP_SERVER
+|===
+
+=== Oracle Base Distinguished Name
+
+The base context in which Oracle database TNS Names will be resolved.
+
+Required if the web service connects to Oracle database(s) using a TNS Name
+rather than individual connection details.
+
+.Example DN
+----
+cn=OracleContext,cn=MyTnsName,dc=Some,dc=Domain,dc=Component
+----
+
+Type:: `string`
+
+Provided using::
+[cols=">1h,1m"]
+|===
+| CLI | --oracle-base-dn
+| ENV | $ORACLE_BASE_DN
+|===
+
+=== Application DB TNS Name
+
+Sets the TNS Name to use when connecting to an application DB instance.
+
+Using this value forces the platform type `ORACLE`.
+
+If this value is used, the following raw connection info CLI args/env vars will
+be ignored:
+
+* <<Application DB Host,`--app-db-host|$APP_DB_HOST`>>
+* <<Application DB Port,`--app-db-port|$APP_DB_PORT`>>
+* <<Application DB Username,`--app-db-user|$APP_DB_USER`>>
+* <<Application DB Password,`--app-db-pass|$APP_DB_PASS`>>
+* <<Application DB Platform,`--app-db-platform|$APP_DB_PLATFORM`>>
+
+Additionally, if this value is used, the following CLI args/env vars will be
+required:
+
+* <<LDAP Server,`--ldap-server|$LDAP_SERVER`>>
+* <<Oracle Base Distinguished Name,`--oracle-base-dn|$ORACLE_BASE_DN`>>
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --ldap-server
+| ENV | $LDAP_SERVER
+|===
+
+=== Application DB Host
+
+Sets the host name for the application DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-host
+| ENV | $APP_DB_HOST
+|===
+
+=== Application DB Port
+
+Sets the host port for the application DB that this web service will connect to.
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-port
+| ENV | $APP_DB_PORT
+|===
+
+=== Application DB Username
+
+Sets the connection username for the application DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-user
+| ENV | $APP_DB_USER
+|===
+
+=== Application DB Password
+
+Sets the connection password for the application DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-pass
+| ENV | $APP_DB_PASS
+|===
+
+=== Application DB Connection Pool Size
+
+Sets the connection pool size for the application DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-pool-size
+| ENV | $APP_DB_POOL_SIZE
+|===
+
+=== Application DB Platform
+
+Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
+application database.
+
+Defaults to `ORACLE`
+
+Type:: `enum`
+Values::
+* `ORACLE`
+* `POSTGRESQL`
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-platform
+| ENV | $APP_DB_PLATFORM
+|===
+
+=== Account DB TNS Name
+
+Sets the TNS Name to use when connecting to an account DB instance.
+
+Using this value forces the platform type `ORACLE`.
+
+If this value is used, the following raw connection info CLI args/env vars will
+be ignored:
+
+* <<Account DB Host,`--acct-db-host|$ACCT_DB_HOST`>>
+* <<Account DB Port,`--acct-db-port|$ACCT_DB_PORT`>>
+* <<Account DB Username,`--acct-db-user|$ACCT_DB_USER`>>
+* <<Account DB Password,`--acct-db-pass|$ACCT_DB_PASS`>>
+* <<Account DB Platform,`--acct-db-platform|$ACCT_DB_PLATFORM`>>
+
+Additionally, if this value is used, the following CLI args/env vars will be
+required:
+
+* <<LDAP Server,`--ldap-server|$LDAP_SERVER`>>
+* <<Oracle Base Distinguished Name,`--oracle-base-dn|$ORACLE_BASE_DN`>>
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --ldap-server
+| ENV | $LDAP_SERVER
+|===
+
+=== Account DB Host
+
+Sets the host name for the account DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-host
+| ENV | $ACCT_DB_HOST
+|===
+
+=== Account DB Port
+
+Sets the host port for the account DB that this web service will connect to.
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-port
+| ENV | $ACCT_DB_PORT
+|===
+
+=== Account DB Username
+
+Sets the connection username for the account DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-user
+| ENV | $ACCT_DB_USER
+|===
+
+=== Account DB Password
+
+Sets the connection password for the account DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-pass
+| ENV | $ACCT_DB_PASS
+|===
+
+=== Account DB Connection Pool Size
+
+Sets the connection pool size for the account DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-pool-size
+| ENV | $ACCT_DB_POOL_SIZE
+|===
+
+=== Account DB Platform
+
+Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
+account database.
+
+Defaults to `ORACLE`
+
+Type:: `enum`
+Values::
+* `ORACLE`
+* `POSTGRESQL`
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-platform
+| ENV | $ACCT_DB_PLATFORM
+|===
+
+=== User DB TNS Name
+
+Sets the TNS Name to use when connecting to an user DB instance.
+
+Using this value forces the platform type `ORACLE`.
+
+If this value is used, the following raw connection info CLI args/env vars will
+be ignored:
+
+* <<User DB Host,`--user-db-host|$USER_DB_HOST`>>
+* <<User DB Port,`--user-db-port|$USER_DB_PORT`>>
+* <<User DB Username,`--user-db-user|$USER_DB_USER`>>
+* <<User DB Password,`--user-db-pass|$USER_DB_PASS`>>
+* <<User DB Platform,`--user-db-platform|$USER_DB_PLATFORM`>>
+
+Additionally, if this value is used, the following CLI args/env vars will be
+required:
+
+* <<LDAP Server,`--ldap-server|$LDAP_SERVER`>>
+* <<Oracle Base Distinguished Name,`--oracle-base-dn|$ORACLE_BASE_DN`>>
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --ldap-server
+| ENV | $LDAP_SERVER
+|===
+
+=== User DB Host
+
+Sets the host name for the user DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-host
+| ENV | $USER_DB_HOST
+|===
+
+=== User DB Port
+
+Sets the host port for the user DB that this web service will connect to.
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-port
+| ENV | $USER_DB_PORT
+|===
+
+=== User DB Username
+
+Sets the connection username for the user DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-user
+| ENV | $USER_DB_USER
+|===
+
+=== User DB Password
+
+Sets the connection password for the user DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-pass
+| ENV | $USER_DB_PASS
+|===
+
+=== User DB Connection Pool Size
+
+Sets the connection pool size for the user DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-pool-size
+| ENV | $USER_DB_POOL_SIZE
+|===
+
+=== User DB Platform
+
+Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
+user database.
+
+Defaults to `ORACLE`
+
+Type:: `enum`
+Values::
+* `ORACLE`
+* `POSTGRESQL`
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-platform
+| ENV | $USER_DB_PLATFORM
+|===

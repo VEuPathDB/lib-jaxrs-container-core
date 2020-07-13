@@ -23,6 +23,7 @@ module epvb.lib.container.jaxrs.core {
   requires jakarta.inject;
   requires hk2.api;
   requires com.fasterxml.jackson.databind;
+  requires unboundid.ldapsdk;
 
   exports org.veupathdb.lib.container.jaxrs.config;
   exports org.veupathdb.lib.container.jaxrs.health;

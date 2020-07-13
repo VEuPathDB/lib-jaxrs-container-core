@@ -81,8 +81,15 @@ dependencies {
   implementation("io.prometheus:simpleclient:0.9.0")
   implementation("io.prometheus:simpleclient_common:0.9.0")
 
+  //
   // Utils
+  //
+
+  // Unique, human readable id genderation
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
+
+  // LDAP utils
+  implementation("com.unboundid:unboundid-ldapsdk:5.1.0")
 
   //
   // Testing Stuff

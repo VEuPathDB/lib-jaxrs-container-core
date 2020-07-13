@@ -9,7 +9,8 @@ import java.util.Optional;
  * CLI Options.
  */
 @SuppressWarnings("unused")
-public class Options {
+public class Options
+{
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
@@ -21,15 +22,44 @@ public class Options {
     ┃    General Config                                  ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  @Option(names = "--auth-secret", defaultValue = "${env:AUTH_SECRET_KEY}", description = "env: AUTH_SECRET_KEY", arity = "1")
+  @Option(
+    names = "--auth-secret",
+    defaultValue = "${env:AUTH_SECRET_KEY}",
+    description = "env: AUTH_SECRET_KEY",
+    arity = "1")
   private String authSecretKey;
 
-  @Option(names = "--server-port", defaultValue = "${env:SERVER_PORT}", description = "env: SERVER_PORT", arity = "1")
+  @Option(
+    names = "--server-port",
+    defaultValue = "${env:SERVER_PORT}",
+    description = "env: SERVER_PORT",
+    arity = "1")
   private Integer serverPort;
+
+  @Option(
+    names = "--ldap-server",
+    defaultValue = "${env:LDAP_SERVER}",
+    description = "env: LDAP_SERVER\nFormatted as <ldap.host.name>:<port>",
+    arity = "1..*")
+  private String ldapServers;
+
+  @Option(
+    names = "--oracle-base-dn",
+    defaultValue = "${env:ORACLE_BASE_DN}",
+    description = "env: ORACLE_BASE_DN",
+    arity = "1")
+  private String oracleBaseDn;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Application DB Config                           ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--app-db-ora",
+    defaultValue = "${env:APP_DB_TNS_NAME}",
+    description = "env: APP_DB_TNS_NAME",
+    arity = "1")
+  private String appDbTsName;
 
   @Option(
     names = "--app-db-host",
@@ -84,6 +114,13 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
+    names = "--acct-db-ora",
+    defaultValue = "${env:ACCT_DB_TNS_NAME}",
+    description = "env: ACCT_DB_TNS_NAME",
+    arity = "1")
+  private String acctDbTsName;
+
+  @Option(
     names = "--acct-db-host",
     defaultValue = "${env:ACCT_DB_HOST}",
     description = "env: ACCT_DB_HOST",
@@ -134,6 +171,13 @@ public class Options {
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    User DB Config                                  ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--user-db-ora",
+    defaultValue = "${env:USER_DB_TNS_NAME}",
+    description = "env: USER_DB_TNS_NAME",
+    arity = "1")
+  private String userDbTsName;
 
   @Option(
     names = "--user-db-host",
@@ -190,95 +234,37 @@ public class Options {
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  public Optional<String> getAuthSecretKey() {
+  public Optional < String > getAuthSecretKey() {
     return Optional.ofNullable(authSecretKey);
   }
 
-  public Optional<Integer> getServerPort() {
+  public Optional < Integer > getServerPort() {
     return Optional.ofNullable(serverPort);
   }
 
-  public Optional<String> getAppDbHost() {
-    return Optional.ofNullable(appDbHost);
+  public DbOptions getAppDbOpts() {
+    return new DbOptionsImpl(appDbTsName, appDbHost, appDbPort, appDbName,
+      appDbUser, appDbPass, appDbPlatform, appDbPoolSize, "app-db"
+    );
   }
 
-  public Optional<Integer> getAppDbPort() {
-    return Optional.ofNullable(appDbPort);
+  public DbOptions getAcctDbOpts() {
+    return new DbOptionsImpl(acctDbTsName, acctDbHost, acctDbPort, acctDbName,
+      acctDbUser, acctDbPass, acctDbPlatform, acctDbPoolSize, "acct-db"
+    );
   }
 
-  public Optional<String> getAppDbUser() {
-    return Optional.ofNullable(appDbUser);
+  public DbOptions getUserDbOpts() {
+    return new DbOptionsImpl(userDbTsName, userDbHost, userDbPort, userDbName,
+      userDbUser, userDbPass, userDbPlatform, userDbPoolSize, "user-db"
+    );
   }
 
-  public Optional<String> getAppDbName() {
-    return Optional.ofNullable(appDbName);
+  public Optional < String > getLdapServers() {
+    return Optional.ofNullable(ldapServers);
   }
 
-  public Optional<String> getAppDbPass() {
-    return Optional.ofNullable(appDbPass);
-  }
-
-  public Optional<Integer> getAppDbPoolSize() {
-    return Optional.ofNullable(appDbPoolSize);
-  }
-
-  public Optional<SupportedPlatform> getAppDbPlatform() {
-    return Optional.ofNullable(appDbPlatform);
-  }
-
-  public Optional<String> getAcctDbHost() {
-    return Optional.ofNullable(acctDbHost);
-  }
-
-  public Optional<Integer> getAcctDbPort() {
-    return Optional.ofNullable(acctDbPort);
-  }
-
-  public Optional<String> getAcctDbUser() {
-    return Optional.ofNullable(acctDbUser);
-  }
-
-  public Optional<String> getAcctDbName() {
-    return Optional.ofNullable(acctDbName);
-  }
-
-  public Optional<String> getAcctDbPass() {
-    return Optional.ofNullable(acctDbPass);
-  }
-
-  public Optional<Integer> getAcctDbPoolSize() {
-    return Optional.ofNullable(acctDbPoolSize);
-  }
-
-  public Optional<SupportedPlatform> getAcctDbPlatform() {
-    return Optional.ofNullable(acctDbPlatform);
-  }
-
-  public Optional<String> getUserDbHost() {
-    return Optional.ofNullable(userDbHost);
-  }
-
-  public Optional<Integer> getUserDbPort() {
-    return Optional.ofNullable(userDbPort);
-  }
-
-  public Optional<String> getUserDbUser() {
-    return Optional.ofNullable(userDbUser);
-  }
-
-  public Optional<String> getUserDbName() {
-    return Optional.ofNullable(userDbName);
-  }
-
-  public Optional<String> getUserDbPass() {
-    return Optional.ofNullable(userDbPass);
-  }
-
-  public Optional<Integer> getUserDbPoolSize() {
-    return Optional.ofNullable(userDbPoolSize);
-  }
-
-  public Optional<SupportedPlatform> getUserDbPlatform() {
-    return Optional.ofNullable(userDbPlatform);
+  public Optional < String > getOracleBaseDn() {
+    return Optional.ofNullable(oracleBaseDn);
   }
 }
