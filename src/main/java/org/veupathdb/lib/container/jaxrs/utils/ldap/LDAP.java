@@ -3,14 +3,16 @@ package org.veupathdb.lib.container.jaxrs.utils.ldap;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPSearchException;
 import com.unboundid.ldap.sdk.SearchScope;
+import org.apache.logging.log4j.Logger;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 public class LDAP
 {
   public static final String
-    ORA_FILTER      = "objectclass=*",
-    ORA_ATTR        = "orclNetDescString",
+    ORA_FILTER = "objectclass=*",
+    ORA_ATTR = "orclNetDescString",
     ORA_CTX_PATTERN = "%s,%s,%s",
-    ORA_CONTEXT     = "cn=OracleContext";
+    ORA_CONTEXT = "cn=OracleContext";
 
   /**
    * Error Messages
@@ -22,17 +24,20 @@ public class LDAP
     ERR_LOOKUP_MULTI   = "Multiple LDAP entries match tnsName %s",
     ERR_NO_ATTRIBUTE   = "LDAP entry is missing required attribute " + ORA_ATTR;
 
+  private final Logger log = LogProvider.logger(LDAP.class);
+
   private LDAPConnection connection;
 
   public String requireOracleDetails(final String tsName) {
+    log.trace("LDAP#requireOracleDetails({})", tsName);
+
     try (final var con = getConnection()) {
-      final var res = con.search(
-        String.format(ORA_CTX_PATTERN, tsName, ORA_CONTEXT,
-          OracleLDAPConfig.getInstance().baseDn()
-        ),
-        SearchScope.BASE,
-        ORA_FILTER
+      final var query = String.format(ORA_CTX_PATTERN, tsName, ORA_CONTEXT,
+        OracleLDAPConfig.getInstance().baseDn()
       );
+
+      log.debug("Running LDAP query for \"{}\"", query);
+      final var res = con.search(query, SearchScope.BASE, ORA_FILTER);
 
       if (res.getEntryCount() == 0)
         throw new RuntimeException(String.format(ERR_LOOKUP_NONE, tsName));
@@ -52,14 +57,17 @@ public class LDAP
   }
 
   private LDAPConnection getConnection() {
+    log.trace("LDAP#getConnection()");
     if (connection == null) {
       final var conf = OracleLDAPConfig.getInstance();
 
       for (int i = 0; i < conf.hosts().length; i++) {
+        log.debug("Attempting to connect to LDAP host #" + (i + 1));
         var split = conf.hosts()[i].split(":");
 
         try {
           connection = new LDAPConnection(split[0], Integer.parseInt(split[1]));
+          log.debug("Connected to LDAP host #" + (i + 1));
           break;
         } catch (Exception e) {
           // Do nothing.

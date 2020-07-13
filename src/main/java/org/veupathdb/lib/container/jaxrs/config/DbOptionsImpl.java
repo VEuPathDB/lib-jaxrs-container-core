@@ -6,8 +6,8 @@ import org.gusdb.fgputil.db.platform.SupportedPlatform;
 
 public class DbOptionsImpl implements DbOptions
 {
-  private final String            tsName;
-  private final String            host;
+  private final String tnsName;
+  private final String host;
   private final Integer           port;
   private final String            name;
   private final String            user;
@@ -17,7 +17,7 @@ public class DbOptionsImpl implements DbOptions
   private final String            displayName;
 
   public DbOptionsImpl(
-    String tsName,
+    String tnsName,
     String host,
     Integer port,
     String name,
@@ -27,7 +27,7 @@ public class DbOptionsImpl implements DbOptions
     Integer poolSize,
     String displayName
   ) {
-    this.tsName = tsName;
+    this.tnsName = tnsName;
     this.host = host;
     this.port = port;
     this.name = name;
@@ -40,7 +40,7 @@ public class DbOptionsImpl implements DbOptions
 
   @Override
   public Optional < String > tnsName() {
-    return Optional.ofNullable(tsName);
+    return Optional.ofNullable(tnsName);
   }
 
   @Override

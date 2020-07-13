@@ -6,6 +6,7 @@ import org.gusdb.fgputil.db.platform.SupportedPlatform;
 import org.gusdb.fgputil.db.pool.ConnectionPoolConfig;
 import org.gusdb.fgputil.db.pool.SimpleDbConfig;
 import org.veupathdb.lib.container.jaxrs.config.DbOptions;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.Patterns;
 import org.veupathdb.lib.container.jaxrs.utils.ldap.LDAP;
 import org.veupathdb.lib.container.jaxrs.utils.ldap.OracleLDAPConfig;
@@ -79,9 +80,16 @@ public class OracleConnectionDetails extends RawConnectionDetails
   }
 
   public static OracleConnectionDetails fromOptions(final DbOptions opts) {
-    return opts.tnsName().isPresent()
-      ? fromLdap(opts)
-      : fromRaw(opts);
+    final var log = LogProvider.logger(OracleConnectionDetails.class);
+    final var opt = opts.tnsName();
+
+    if (opt.isPresent()) {
+      log.debug("TNS name provided, using LDAP");
+      return fromLdap(opts);
+    }
+
+    log.debug("TNS name not provided, using raw connection info.");
+    return fromRaw(opts);
   }
 
   private String toLdapJdbcString() {
