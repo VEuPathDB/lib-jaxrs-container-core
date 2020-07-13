@@ -11,7 +11,7 @@ public class LDAP
   public static final String
     ORA_FILTER = "objectclass=*",
     ORA_ATTR = "orclNetDescString",
-    ORA_CTX_PATTERN = "%s,%s,%s",
+    ORA_CTX_PATTERN = "cn=%s,%s,%s",
     ORA_CONTEXT = "cn=OracleContext";
 
   /**
