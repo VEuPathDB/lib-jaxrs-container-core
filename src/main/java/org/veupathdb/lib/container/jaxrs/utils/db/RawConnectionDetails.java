@@ -5,11 +5,9 @@ import org.veupathdb.lib.container.jaxrs.config.DbOptions;
 abstract class RawConnectionDetails implements ConnectionDetails
 {
   private static final String
-    ERR_MISSING_ARGS = """
-Invalid DB connection config for %1$s.
-
-See the project readme for information about how to configure/run this service.
-""";
+    ERR_MISSING_ARGS = "Invalid DB connection config for %1$s.\n\n"
+      + "See the project readme for information about how to configure/run this"
+      + " service.";
 
   private String host;
   private int    port;
