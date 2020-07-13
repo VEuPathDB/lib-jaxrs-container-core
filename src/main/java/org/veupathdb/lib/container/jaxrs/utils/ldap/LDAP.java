@@ -18,8 +18,8 @@ public class LDAP
   private static final String
     ERR_CONNECT_FAILED = "Failed to connect to the configured LDAP server.",
     ERR_LOOKUP_FAILED  = "Failed to search for LDAP entry",
-    ERR_LOOKUP_NONE    = "Failed to locate LDAP entry for tsName %s",
-    ERR_LOOKUP_MULTI   = "Multiple LDAP entries match tsName %s",
+    ERR_LOOKUP_NONE    = "Failed to locate LDAP entry for tnsName %s",
+    ERR_LOOKUP_MULTI   = "Multiple LDAP entries match tnsName %s",
     ERR_NO_ATTRIBUTE   = "LDAP entry is missing required attribute " + ORA_ATTR;
 
   private LDAPConnection connection;

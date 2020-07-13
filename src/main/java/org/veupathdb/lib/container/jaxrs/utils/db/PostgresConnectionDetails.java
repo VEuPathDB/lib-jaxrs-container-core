@@ -42,11 +42,11 @@ public class PostgresConnectionDetails extends RawConnectionDetails
 
   public static PostgresConnectionDetails fromOptions(final DbOptions opts) {
     return new PostgresConnectionDetails(
-      opts.host().orElseThrow(),
+      opts.host().orElseThrow(missingPropErr(opts)),
       opts.port().orElse(DEFAULT_PORT),
-      opts.name().orElseThrow(),
-      opts.user().orElseThrow(),
-      opts.pass().orElseThrow(),
+      opts.name().orElseThrow(missingPropErr(opts)),
+      opts.user().orElseThrow(missingPropErr(opts)),
+      opts.pass().orElseThrow(missingPropErr(opts)),
       opts.poolSize().orElse(DbManager.DEFAULT_POOL_SIZE)
     );
   }

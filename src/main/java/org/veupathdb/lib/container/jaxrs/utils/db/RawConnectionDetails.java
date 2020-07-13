@@ -1,5 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
+import java.util.function.Supplier;
+
 import org.veupathdb.lib.container.jaxrs.config.DbOptions;
 
 abstract class RawConnectionDetails implements ConnectionDetails
@@ -94,8 +96,8 @@ abstract class RawConnectionDetails implements ConnectionDetails
     return this;
   }
 
-  protected static RuntimeException missingPropErr(final DbOptions opts) {
-    return new RuntimeException(String.format(ERR_MISSING_ARGS,
+  protected static Supplier <RuntimeException> missingPropErr(final DbOptions opts) {
+    return () -> new RuntimeException(String.format(ERR_MISSING_ARGS,
       opts.displayName()));
   }
 }

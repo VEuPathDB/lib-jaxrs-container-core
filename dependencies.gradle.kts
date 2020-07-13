@@ -96,7 +96,6 @@ dependencies {
   //
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter-api:${junit}")
+  testImplementation("org.junit.jupiter:junit-jupiter:${junit}")
   testImplementation("org.mockito:mockito-core:2.+")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junit}")
 }
