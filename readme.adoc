@@ -177,6 +177,7 @@ cn=OracleContext,cn=MyTnsName,dc=Some,dc=Domain,dc=Component
 Type:: `string`
 
 Provided using::
++
 [cols=">1h,1m"]
 |===
 | CLI | --oracle-base-dn
@@ -210,8 +211,8 @@ Provided using::
 +
 [cols=">1h,1m"]
 |===
-| CLI | --ldap-server
-| ENV | $LDAP_SERVER
+| CLI | --app-db-ora
+| ENV | $APP_DB_TNS_NAME
 |===
 
 === Application DB Host
@@ -335,8 +336,8 @@ Provided using::
 +
 [cols=">1h,1m"]
 |===
-| CLI | --ldap-server
-| ENV | $LDAP_SERVER
+| CLI | --acct-db-ora
+| ENV | $ACCT_DB_TNS_NAME
 |===
 
 === Account DB Host
@@ -460,8 +461,8 @@ Provided using::
 +
 [cols=">1h,1m"]
 |===
-| CLI | --ldap-server
-| ENV | $LDAP_SERVER
+| CLI | --user-db-ora
+| ENV | $USER_DB_TNS_NAME
 |===
 
 === User DB Host
