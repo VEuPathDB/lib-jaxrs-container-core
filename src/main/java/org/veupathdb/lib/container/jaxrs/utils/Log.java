@@ -7,9 +7,12 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.yaml.YamlConfiguration;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.veupathdb.lib.container.jaxrs.Globals;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Log {
   /**
@@ -21,7 +24,6 @@ public class Log {
    */
   public static void initialize() {
     try {
-//      java.util.logging.LogManager.getLogManager().reset();
 
       Configurator.initialize(
         new YamlConfiguration((LoggerContext) LogManager.getContext(),

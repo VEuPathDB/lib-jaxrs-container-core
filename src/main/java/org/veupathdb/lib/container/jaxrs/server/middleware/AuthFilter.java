@@ -41,7 +41,8 @@ import static java.util.Objects.isNull;
  */
 @Provider
 @Priority(4)
-public class AuthFilter implements ContainerRequestFilter {
+public class AuthFilter implements ContainerRequestFilter
+{
 
   private static final String MESSAGE = "Users must be logged in to access this"
     + " resource.";
@@ -53,7 +54,7 @@ public class AuthFilter implements ContainerRequestFilter {
    * authentication.  This is to prevent repeatedly reflectively searching
    * the types for the {@link Authenticated} annotation.
    */
-  private final Map<String, Boolean> CACHE = synchronizedMap(new HashMap<>());
+  private final Map < String, Boolean > CACHE = synchronizedMap(new HashMap <>());
 
   private final Options opts;
 
@@ -69,10 +70,12 @@ public class AuthFilter implements ContainerRequestFilter {
     this.opts = opts;
     this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA,
       Arrays.asList(
-        new UserPropertyName("firstName",    "first_name",   true),
-        new UserPropertyName("middleName",   "middle_name",  true),
-        new UserPropertyName("lastName",     "last_name",    true),
-        new UserPropertyName("organization", "organization", true)));
+        new UserPropertyName("firstName", "first_name", true),
+        new UserPropertyName("middleName", "middle_name", true),
+        new UserPropertyName("lastName", "last_name", true),
+        new UserPropertyName("organization", "organization", true)
+      )
+    );
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())
@@ -86,36 +89,40 @@ public class AuthFilter implements ContainerRequestFilter {
 
     if (!isAuthRequired(resource))
       return;
+    try {
 
-    log.debug("Authenticating request");
+      log.debug("Authenticating request");
 
-    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+      final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
 
-    if (isNull(rawAuth) || rawAuth.isEmpty()) {
-      log.debug("Authentication failed: no auth header.");
-      req.abortWith(build401());
-      return;
+      if (isNull(rawAuth) || rawAuth.isEmpty()) {
+        log.debug("Authentication failed: no auth header.");
+        req.abortWith(build401());
+        return;
+      }
+
+      final var auth = LoginCookieFactory.
+        parseCookieValue(rawAuth);
+
+      if (!new LoginCookieFactory(
+        opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
+        log.debug("Authentication failed: bad header");
+        req.abortWith(build401());
+        return;
+      }
+
+      final var profile = acctMan.getUserProfile(auth.getUsername());
+      if (isNull(profile)) {
+        log.debug("Authentication failed: no such user");
+        req.abortWith(build401());
+        return;
+      }
+
+      log.debug("Request authenticated");
+      req.setProperty(Globals.REQUEST_USER, profile);
+    } catch (Exception e) {
+      log.error("Error occurred in authentication: ", e);
     }
-
-    final var auth = LoginCookieFactory.
-      parseCookieValue(rawAuth);
-
-    if (!new LoginCookieFactory(
-      opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
-      log.debug("Authentication failed: bad header");
-      req.abortWith(build401());
-      return;
-    }
-
-    final var profile = acctMan.getUserProfile(auth.getUsername());
-    if (isNull(profile)) {
-      log.debug("Authentication failed: no such user");
-      req.abortWith(build401());
-      return;
-    }
-
-    log.debug("Request authenticated");
-    req.setProperty(Globals.REQUEST_USER, profile);
   }
 
   /**
@@ -188,7 +195,7 @@ public class AuthFilter implements ContainerRequestFilter {
    *
    * @return whether or not the class has the auth annotation.
    */
-  boolean classHasAuth(Class<?> type) {
+  boolean classHasAuth(Class < ? > type) {
     log.trace("AuthFilter#classHasAuth");
     return Arrays.stream(type.getDeclaredAnnotations())
       .anyMatch(Authenticated.class::isInstance);
