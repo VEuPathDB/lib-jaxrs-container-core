@@ -32,9 +32,13 @@ public class OracleConnectionDetails extends RawConnectionDetails
 
   private OracleConnectionDetails(
     final String tsName,
+    final String user,
+    final String pass,
     final int poolSize
   ) {
     this.tsName = tsName;
+    pass(pass);
+    user(user);
 
     final var rawValue = new LDAP().requireOracleDetails(tsName);
 
@@ -110,6 +114,8 @@ public class OracleConnectionDetails extends RawConnectionDetails
   private static OracleConnectionDetails fromLdap(final DbOptions opts) {
     return new OracleConnectionDetails(
       opts.tnsName().orElseThrow(),
+      opts.user().orElseThrow(missingPropErr(opts)),
+      opts.pass().orElseThrow(missingPropErr(opts)),
       opts.poolSize().orElse(DbManager.DEFAULT_POOL_SIZE)
     );
   }

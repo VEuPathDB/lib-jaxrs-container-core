@@ -89,8 +89,8 @@ public class AuthFilter implements ContainerRequestFilter
 
     if (!isAuthRequired(resource))
       return;
-    try {
 
+    try {
       log.debug("Authenticating request");
 
       final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
@@ -101,8 +101,7 @@ public class AuthFilter implements ContainerRequestFilter
         return;
       }
 
-      final var auth = LoginCookieFactory.
-        parseCookieValue(rawAuth);
+      final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
 
       if (!new LoginCookieFactory(
         opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
@@ -120,7 +119,7 @@ public class AuthFilter implements ContainerRequestFilter
 
       log.debug("Request authenticated");
       req.setProperty(Globals.REQUEST_USER, profile);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       log.error("Error occurred in authentication: ", e);
     }
   }

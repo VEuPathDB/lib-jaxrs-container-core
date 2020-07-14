@@ -4,6 +4,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+
 /**
  * CORS Header Filter
  * <p>
@@ -47,6 +49,7 @@ public class CorsFilter implements ContainerResponseFilter
     final ContainerRequestContext req,
     final ContainerResponseContext res
   ) {
+    LogProvider.logger(CorsFilter.class).trace("CorsFilter#filter(req, res)");
     var head = res.getHeaders();
     for (var pair : CORS_HEADERS)
       head.add(pair[0], pair[1]);

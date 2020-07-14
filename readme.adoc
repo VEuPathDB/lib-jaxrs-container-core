@@ -197,8 +197,6 @@ be ignored:
 
 * <<Application DB Host,`--app-db-host|$APP_DB_HOST`>>
 * <<Application DB Port,`--app-db-port|$APP_DB_PORT`>>
-* <<Application DB Username,`--app-db-user|$APP_DB_USER`>>
-* <<Application DB Password,`--app-db-pass|$APP_DB_PASS`>>
 * <<Application DB Platform,`--app-db-platform|$APP_DB_PLATFORM`>>
 
 Additionally, if this value is used, the following CLI args/env vars will be
@@ -322,8 +320,6 @@ be ignored:
 
 * <<Account DB Host,`--acct-db-host|$ACCT_DB_HOST`>>
 * <<Account DB Port,`--acct-db-port|$ACCT_DB_PORT`>>
-* <<Account DB Username,`--acct-db-user|$ACCT_DB_USER`>>
-* <<Account DB Password,`--acct-db-pass|$ACCT_DB_PASS`>>
 * <<Account DB Platform,`--acct-db-platform|$ACCT_DB_PLATFORM`>>
 
 Additionally, if this value is used, the following CLI args/env vars will be
@@ -447,8 +443,6 @@ be ignored:
 
 * <<User DB Host,`--user-db-host|$USER_DB_HOST`>>
 * <<User DB Port,`--user-db-port|$USER_DB_PORT`>>
-* <<User DB Username,`--user-db-user|$USER_DB_USER`>>
-* <<User DB Password,`--user-db-pass|$USER_DB_PASS`>>
 * <<User DB Platform,`--user-db-platform|$USER_DB_PLATFORM`>>
 
 Additionally, if this value is used, the following CLI args/env vars will be
