@@ -73,6 +73,9 @@ abstract public class Server
 
   /**
    * Extension point for registering external dependencies.
+   *
+   * @return An array of dependencies to register with the
+   * {@link DependencyProvider}.
    */
   protected Dependency[] dependencies() {
     return new Dependency[0];
@@ -102,8 +105,10 @@ abstract public class Server
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   /**
-   * Enable access to the account database.  If this is set, the ACCT_DB_* cli
+   * Enables access to the account database.  If this is set, the ACCT_DB_* cli
    * options or environment variables must be set.
+   *
+   * @return Updated server instance.
    */
   protected final Server enableAccountDB() {
     useAcctDb = true;
@@ -111,8 +116,10 @@ abstract public class Server
   }
 
   /**
-   * Enable access to the application database.  If this is set, the ACCT_DB_*
+   * Enables access to the application database.  If this is set, the ACCT_DB_*
    * cli options or environment variables must be set.
+   *
+   * @return Updated server instance.
    */
   protected final Server enableApplicationDB() {
     useAppDb = true;
@@ -120,8 +127,10 @@ abstract public class Server
   }
 
   /**
-   * Enable access to the user database.  If this is set, the ACCT_DB_* cli
+   * Enables access to the user database.  If this is set, the ACCT_DB_* cli
    * options or environment variables must be set.
+   *
+   * @return Updated server instance.
    */
   protected final Server enableUserDB() {
     useUserDb = true;
@@ -133,6 +142,12 @@ abstract public class Server
     ┃    Server Methods                                                    ┃
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  public static Server getInstance() {
+    if (instance == null)
+      throw new IllegalStateException(ERR_NO_SERVER);
+    return instance;
+  }
 
   /**
    * Start up the HTTP server.
@@ -199,11 +214,5 @@ abstract public class Server
     onShutdown();
     Optional.ofNullable(grizzly).ifPresent(HttpServer::shutdownNow);
     DependencyProvider.getInstance().shutDown();
-  }
-
-  public static Server getInstance() {
-    if (instance == null)
-      throw new IllegalStateException(ERR_NO_SERVER);
-    return instance;
   }
 }

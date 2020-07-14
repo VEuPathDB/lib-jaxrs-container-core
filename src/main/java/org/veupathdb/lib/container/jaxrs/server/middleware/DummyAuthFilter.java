@@ -27,8 +27,8 @@ import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 
 /**
- * Provides client authentication checks for resource classes or methods
- * annotated with @Authenticated.
+ * Provides passthrough client authentication checks for resource classes or
+ * methods annotated with @Authenticated.
  *
  * @see Authenticated
  */
@@ -88,6 +88,8 @@ public class DummyAuthFilter implements ContainerRequestFilter {
 
   /**
    * Helper function to build an UnauthorizedError type.
+   *
+   * @return A response object containing a constructed 401 error body.
    */
   static Response build401() {
     return Response.status(Status.UNAUTHORIZED)

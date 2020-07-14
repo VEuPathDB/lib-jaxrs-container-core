@@ -22,6 +22,25 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 
+/**
+ * Jackson JSON (De)Serialization Filter
+ * <p>
+ * Serializes non-text response bodies to JSON.  Deserializes JSON request
+ * bodies into the handler method's declared input type.
+ * <p>
+ * This filter will only kick in if the following conditions are met:
+ * <ol>
+ *   <li>For requests and responses: the <code>Content-Type</code> header
+ *   matches the pattern "<code>^.+/json$</code>"</li>
+ *   <li>
+ *     For responses: the handler method return type is not one of:
+ *     <ul>
+ *       <li><code>String</code></li>
+ *       <li><code>CharSequence</code></li>
+ *     </ul>
+ *   </li>
+ * </ol>
+ */
 @Provider
 @Priority(5)
 public class JacksonFilter
@@ -91,6 +110,4 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
       }});
     }
   }
-
-
 }

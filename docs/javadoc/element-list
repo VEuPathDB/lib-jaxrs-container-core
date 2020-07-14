@@ -1,0 +1,15 @@
+org.veupathdb.lib.container.jaxrs
+org.veupathdb.lib.container.jaxrs.config
+org.veupathdb.lib.container.jaxrs.errors
+org.veupathdb.lib.container.jaxrs.health
+org.veupathdb.lib.container.jaxrs.providers
+org.veupathdb.lib.container.jaxrs.server
+org.veupathdb.lib.container.jaxrs.server.annotations
+org.veupathdb.lib.container.jaxrs.server.controller
+org.veupathdb.lib.container.jaxrs.server.middleware
+org.veupathdb.lib.container.jaxrs.utils
+org.veupathdb.lib.container.jaxrs.utils.db
+org.veupathdb.lib.container.jaxrs.utils.ldap
+org.veupathdb.lib.container.jaxrs.utils.net
+org.veupathdb.lib.container.jaxrs.view.error
+org.veupathdb.lib.container.jaxrs.view.health

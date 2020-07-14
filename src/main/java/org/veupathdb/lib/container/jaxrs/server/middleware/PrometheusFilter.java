@@ -11,6 +11,12 @@ import javax.annotation.Priority;
 import javax.ws.rs.container.*;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Prometheus Metrics Filter
+ * <p>
+ * Collects and records metrics data about HTTP requests.  Data collected by
+ * this filter is exposed by the <code>/metrics</code> endpoint.
+ */
 @Provider
 @Priority(2)
 @PreMatching

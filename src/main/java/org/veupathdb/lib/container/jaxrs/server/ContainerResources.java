@@ -62,6 +62,14 @@ abstract public class ContainerResources extends ResourceConfig {
   }
 
   /**
+   * Enable Jersey trace response headers.
+   */
+  public void enableJerseyTrace() {
+    property("jersey.config.server.tracing.type", "ALL");
+    property("jersey.config.server.tracing.threshold", "VERBOSE");
+  }
+
+  /**
    * Enable dummy authentication.
    *
    * WARNING:

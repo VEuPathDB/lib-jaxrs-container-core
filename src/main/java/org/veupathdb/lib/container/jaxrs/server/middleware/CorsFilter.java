@@ -4,19 +4,51 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
+/**
+ * CORS Header Filter
+ * <p>
+ * Appends CORS headers to server responses indicating to the client that this
+ * server accepts cross origin requests.
+ */
 public class CorsFilter implements ContainerResponseFilter
 {
-  private static final String[][] headers = {
+  /**
+   * Headers that may be included in cross origin requests.
+   */
+  private static final String[] ALLOWED_HEADERS = {
+    "Origin",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+    "Auth-Key"
+  };
+
+  /**
+   * Methods that may be used for cross origin requests.
+   */
+  private static final String[] ALLOWED_METHODS = {
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "OPTIONS",
+    "HEAD"
+  };
+
+  private static final String[][] CORS_HEADERS = {
     {"Access-Control-Allow-Origin", "*"},
-    {"Access-Control-Allow-Headers", "origin, content-type, accept, authorization, Auth-Key"},
+    {"Access-Control-Allow-Headers", String.join(", ", ALLOWED_HEADERS)},
     {"Access-Control-Allow-Credentials", "true"},
-    {"Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD"},
+    {"Access-Control-Allow-Methods", String.join(", ", ALLOWED_METHODS)},
   };
 
   @Override
-  public void filter(ContainerRequestContext req, ContainerResponseContext res) {
+  public void filter(
+    final ContainerRequestContext req,
+    final ContainerResponseContext res
+  ) {
     var head = res.getHeaders();
-    for (var pair : headers)
+    for (var pair : CORS_HEADERS)
       head.add(pair[0], pair[1]);
   }
 }

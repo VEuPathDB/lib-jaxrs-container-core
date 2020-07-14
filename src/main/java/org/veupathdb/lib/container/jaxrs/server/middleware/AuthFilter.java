@@ -32,6 +32,10 @@ import static java.util.Objects.isNull;
 /**
  * Provides client authentication checks for resource classes or methods
  * annotated with @Authenticated.
+ * <p>
+ * Authentication is performed by extracting the components of the
+ * <code>Auth-Key</code> request header and validating those components against
+ * the user database.
  *
  * @see Authenticated
  */
