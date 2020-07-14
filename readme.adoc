@@ -3,6 +3,8 @@
 
 Core functionality for containerized web services based on RAML & JaxRS.
 
+https://veupathdb.github.io/lib-jaxrs-container-core/javadoc/[JavaDocs]
+
 == Usage
 
 TODO
