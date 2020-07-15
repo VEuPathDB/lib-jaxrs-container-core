@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +11,9 @@ import static org.mockito.Mockito.mock;
 
 class DbManagerTest {
 
+  @AfterEach
   @BeforeEach
-  void setUp() throws Exception {
+  void tearDown() throws Exception {
     var dbManIn = DbManager.class.getDeclaredField("instance");
     dbManIn.setAccessible(true);
     dbManIn.set(null, null);

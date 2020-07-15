@@ -8,7 +8,7 @@ plugins {
   id("com.jfrog.bintray") version "1.8.5"
 }
 
-apply(from = "dependencies.gradle.kts")
+apply(from = "${projectDir.absolutePath}/dependencies.gradle.kts")
 
 // Project settings
 group   = "org.veupathdb.lib"

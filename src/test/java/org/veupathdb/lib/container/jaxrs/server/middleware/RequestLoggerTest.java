@@ -2,6 +2,7 @@ package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Supplier;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -16,6 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class RequestLoggerTest {
+
+  @AfterEach
+  void reset() throws Exception {
+    var i = LogProvider.class.getDeclaredField("instance");
+    i.setAccessible(true);
+    i.set(null, null);
+  }
 
   @Test
   void filter() throws Exception {
