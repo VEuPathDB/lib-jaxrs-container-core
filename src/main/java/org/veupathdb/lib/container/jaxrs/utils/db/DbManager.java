@@ -139,7 +139,7 @@ public class DbManager
         ERR_NOT_INIT,
         "Application"
       ));
-    return acctDb;
+    return appDb;
   }
 
   /**
@@ -157,7 +157,7 @@ public class DbManager
   public DatabaseInstance getUserDatabase() {
     if (Objects.isNull(userDb))
       throw new IllegalStateException(String.format(ERR_NOT_INIT, "User"));
-    return acctDb;
+    return userDb;
   }
 
   /**
