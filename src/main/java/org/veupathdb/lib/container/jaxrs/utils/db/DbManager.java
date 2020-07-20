@@ -170,7 +170,7 @@ public class DbManager
 
   private DatabaseInstance newDatabase(final DbOptions opts) {
     var detail = ConnectionDetails.fromOptions(opts);
-    var db = new DatabaseInstance(detail.toFgpUtilConfig());
+    var db = new DatabaseInstance(detail.toFgpUtilConfig(), opts.displayName());
 
     DependencyProvider.getInstance()
       .register(new DatabaseDependency(opts.displayName(), detail.host(),
