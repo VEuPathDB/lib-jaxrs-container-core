@@ -98,6 +98,10 @@ abstract public class Server
   protected void postCliParse(Options opts) {
   }
 
+  protected void postAcctDb() {}
+  protected void postUserDb() {}
+  protected void postAppDb() {}
+
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
     ┃    Service Settings                                                  ┃
@@ -170,16 +174,19 @@ abstract public class Server
     if (useAcctDb) {
       logger.info("Account DB Enabled");
       DbManager.initAccountDatabase(options);
+      postAcctDb();
     }
 
     if (useAppDb) {
       logger.info("Application DB Enabled");
       DbManager.initApplicationDatabase(options);
+      postAppDb();
     }
 
     if (useUserDb) {
       logger.info("User DB Enabled");
       DbManager.initUserDatabase(options);
+      postUserDb();
     }
 
     for (var dep : dependencies())
