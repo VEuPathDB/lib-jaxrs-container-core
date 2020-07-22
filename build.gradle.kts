@@ -9,6 +9,8 @@ plugins {
 }
 
 apply(from = "${projectDir.absolutePath}/dependencies.gradle.kts")
+apply(from = "${projectDir.absolutePath}/test-summary.gradle")
+
 
 // Project settings
 group   = "org.veupathdb.lib"
