@@ -74,8 +74,8 @@ dependencies {
   //
 
   // CLI
-  implementation("info.picocli:picocli:4.2.0")
-  annotationProcessor("info.picocli:picocli-codegen:4.2.0")
+  implementation("info.picocli:picocli:4.5.1")
+  annotationProcessor("info.picocli:picocli-codegen:4.5.1")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.9.0")
