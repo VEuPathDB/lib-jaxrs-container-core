@@ -14,7 +14,7 @@ apply(from = "${projectDir.absolutePath}/test-summary.gradle")
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "2.5.0"
+version = "2.5.1"
 
 // Additional settings
 val moduleName = "epvb.lib.container.jaxrs.core"

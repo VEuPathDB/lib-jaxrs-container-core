@@ -99,14 +99,8 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
     try {
       if (List.class.isAssignableFrom(type)) {
         var pType = (ParameterizedType) genericType;
-        return inputToStream(entityStream, (Class < ? >) pType.getActualTypeArguments()[0])
-          .collect(Collectors.toUnmodifiableList());
-      }
-
-      if (Set.class.isAssignableFrom(type)) {
-        var pType = (ParameterizedType) genericType;
-        return inputToStream(entityStream, (Class < ? >) pType.getActualTypeArguments()[0])
-          .collect(Collectors.toUnmodifiableSet());
+        return JSON.readValues(JSON.createParser(entityStream),
+          (Class < ? >) pType.getActualTypeArguments()[0]).readAll();
       }
 
       return JSON.readValue(entityStream, type);
@@ -125,16 +119,5 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
         }});
       }});
     }
-  }
-
-  public < T > Stream < T > inputToStream(final InputStream input, final Class < T > cls)
-  throws IOException {
-    return StreamSupport.stream(
-      Spliterators.spliteratorUnknownSize(
-        JSON.readValues(JSON.createParser(input), cls),
-        Spliterator.ORDERED
-      ),
-      false
-    );
   }
 }
