@@ -99,25 +99,27 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
     try {
       if (List.class.isAssignableFrom(type)) {
         var pType = (ParameterizedType) genericType;
-        return JSON.readValues(JSON.createParser(entityStream),
-          (Class < ? >) pType.getActualTypeArguments()[0]).readAll();
+        var typeFac = JSON.getTypeFactory()
+          .constructCollectionType(
+            (Class < ? extends List >)((Class < ? >) type),
+            (Class < ? >) pType.getActualTypeArguments()[0]);
+        return JSON.readValue(entityStream, typeFac);
       }
 
       return JSON.readValue(entityStream, type);
     } catch (JsonParseException e) {
       throw new BadRequestException(e.getMessage());
     } catch (JsonMappingException e) {
-      throw new UnprocessableEntityException(new HashMap <String, List <String> >(){{
-        put(e.getPath().get(0).getFieldName(), new ArrayList <>()
-        {{
-          add(e.getMessage()
-            .split(" at")[0]
-            .replaceAll(
-              " \\(class [^)]+\\)",
-              ""
-            ));
-        }});
-      }});
+      var message = e.getMessage()
+        .split(" at")[0]
+        .replaceAll(" \\(class [^)]+\\)", "");
+
+      if (e.getPath().isEmpty())
+        throw new UnprocessableEntityException(Collections.singletonList(message),
+          Collections.emptyMap());
+
+      throw new UnprocessableEntityException(Collections.singletonMap(
+        e.getPath().get(0).getFieldName(), Collections.singletonList(message)));
     }
   }
 }
