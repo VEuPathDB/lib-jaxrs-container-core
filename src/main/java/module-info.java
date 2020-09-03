@@ -6,6 +6,7 @@ module epvb.lib.container.jaxrs.core {
   requires java.annotation;
   requires java.management;
   requires java.logging;
+  requires java.sql;
 
   requires jersey.server;
   requires simpleclient;
@@ -19,7 +20,6 @@ module epvb.lib.container.jaxrs.core {
   requires fgputil.core;
   requires fgputil.db;
   requires fgputil.web;
-  requires java.sql;
   requires jakarta.inject;
   requires hk2.api;
   requires com.fasterxml.jackson.databind;

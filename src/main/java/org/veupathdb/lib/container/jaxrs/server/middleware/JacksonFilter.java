@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,8 +21,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 
 /**
@@ -93,6 +97,18 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
     final InputStream entityStream
   ) throws IOException, WebApplicationException {
     try {
+      if (List.class.isAssignableFrom(type)) {
+        var pType = (ParameterizedType) genericType;
+        return inputToStream(entityStream, (Class < ? >) pType.getActualTypeArguments()[0])
+          .collect(Collectors.toUnmodifiableList());
+      }
+
+      if (Set.class.isAssignableFrom(type)) {
+        var pType = (ParameterizedType) genericType;
+        return inputToStream(entityStream, (Class < ? >) pType.getActualTypeArguments()[0])
+          .collect(Collectors.toUnmodifiableSet());
+      }
+
       return JSON.readValue(entityStream, type);
     } catch (JsonParseException e) {
       throw new BadRequestException(e.getMessage());
@@ -109,5 +125,16 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
         }});
       }});
     }
+  }
+
+  public < T > Stream < T > inputToStream(final InputStream input, final Class < T > cls)
+  throws IOException {
+    return StreamSupport.stream(
+      Spliterators.spliteratorUnknownSize(
+        JSON.readValues(JSON.createParser(input), cls),
+        Spliterator.ORDERED
+      ),
+      false
+    );
   }
 }
