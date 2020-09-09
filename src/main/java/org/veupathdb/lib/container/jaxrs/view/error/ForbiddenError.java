@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class ForbiddenError extends ErrorResponse {
+public class ForbiddenError extends ErrorResponse
+{
   public ForbiddenError() {
     super(ErrorStatus.FORBIDDEN);
   }

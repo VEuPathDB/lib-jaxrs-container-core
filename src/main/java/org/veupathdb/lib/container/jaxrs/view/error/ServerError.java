@@ -2,7 +2,10 @@ package org.veupathdb.lib.container.jaxrs.view.error;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
-public class ServerError extends ErrorResponse {
+public class ServerError extends ErrorResponse
+{
+  public static final String JSON_KEY_REQUEST_ID = "requestId";
+
   private final String requestId;
 
   public ServerError(String rid) {
@@ -19,7 +22,7 @@ public class ServerError extends ErrorResponse {
     this(rid, err.getMessage());
   }
 
-  @JsonGetter
+  @JsonGetter(JSON_KEY_REQUEST_ID)
   public String getRequestId() {
     return requestId;
   }

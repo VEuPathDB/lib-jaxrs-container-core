@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class UnauthorizedError extends ErrorResponse {
+public class UnauthorizedError extends ErrorResponse
+{
   public UnauthorizedError() {
     super(ErrorStatus.UNAUTHORIZED);
   }

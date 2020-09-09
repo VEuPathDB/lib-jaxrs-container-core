@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class BadMethodError extends ErrorResponse {
+public class BadMethodError extends ErrorResponse
+{
   public BadMethodError() {
     super(ErrorStatus.BAD_METHOD);
   }

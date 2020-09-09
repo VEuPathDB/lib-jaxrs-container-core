@@ -1,7 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class BadContentTypeError extends ErrorResponse {
-
+public class BadContentTypeError extends ErrorResponse
+{
   public BadContentTypeError() {
     super(ErrorStatus.UNSUPPORTED_MEDIA);
   }

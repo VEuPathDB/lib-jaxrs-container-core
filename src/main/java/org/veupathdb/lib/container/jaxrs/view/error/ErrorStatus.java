@@ -1,6 +1,9 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public enum ErrorStatus {
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum ErrorStatus
+{
   BAD_REQUEST          ("bad-request"),
   UNAUTHORIZED         ("unauthorized"),
   FORBIDDEN            ("forbidden"),
@@ -18,6 +21,7 @@ public enum ErrorStatus {
   }
 
   @Override
+  @JsonValue
   public String toString() {
     return value;
   }

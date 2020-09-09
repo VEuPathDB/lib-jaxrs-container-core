@@ -1,7 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class NotFoundError extends ErrorResponse {
-
+public class NotFoundError extends ErrorResponse
+{
   public NotFoundError() {
     super(ErrorStatus.NOT_FOUND);
   }

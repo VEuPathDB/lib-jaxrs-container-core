@@ -1,7 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.view.error;
 
-public class BadRequestError extends ErrorResponse {
-
+public class BadRequestError extends ErrorResponse
+{
   public BadRequestError() {
     super(ErrorStatus.BAD_REQUEST);
   }
