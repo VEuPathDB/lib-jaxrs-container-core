@@ -2,6 +2,7 @@ package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import javax.annotation.Priority;
 import javax.ws.rs.*;
+import org.glassfish.jersey.server.ParamException.*;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
@@ -30,10 +31,18 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   }
 
   private final Map<Class<? extends Throwable>, Mapper> mappers = new HashMap<>() {{
-    put(BadRequestException.class,          BadRequestError::new);
-    put(NotAuthorizedException.class,       UnauthorizedError::new);
-    put(ForbiddenException.class,           ForbiddenError::new);
-    put(NotFoundException.class,            NotFoundError::new);
+    put(BadRequestException.class,  BadRequestError::new);
+    put(QueryParamException.class,  BadRequestError::new);
+    put(HeaderParamException.class, BadRequestError::new);
+    put(CookieParamException.class, BadRequestError::new);
+    put(FormParamException.class,   BadRequestError::new);
+
+    put(NotAuthorizedException.class, UnauthorizedError::new);
+    put(ForbiddenException.class,     ForbiddenError::new);
+
+    put(NotFoundException.class,  NotFoundError::new);
+    put(PathParamException.class, NotFoundError::new);
+
     put(NotAllowedException.class,          BadMethodError::new);
     put(NotSupportedException.class,        BadContentTypeError::new);
     put(UnprocessableEntityException.class, InvalidInputError::new);
