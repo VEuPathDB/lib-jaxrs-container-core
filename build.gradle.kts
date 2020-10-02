@@ -11,6 +11,10 @@ plugins {
 apply(from = "${projectDir.absolutePath}/dependencies.gradle.kts")
 apply(from = "${projectDir.absolutePath}/test-summary.gradle")
 
+java {
+  targetCompatibility = JavaVersion.VERSION_14
+  sourceCompatibility = JavaVersion.VERSION_14
+}
 
 // Project settings
 group   = "org.veupathdb.lib"
