@@ -3,7 +3,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 plugins {
-  java
+  `java-library`
   `maven-publish`
   id("com.jfrog.bintray") version "1.8.5"
 }
@@ -18,14 +18,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "2.6.0"
-
-// Additional settings
-val moduleName = "epvb.lib.container.jaxrs.core"
-val patchArgs  = listOf(
-  "--patch-module",
-  "${moduleName}=${tasks.compileJava.get().destinationDirectory.asFile.get().path}"
-)
+version = "2.7.0"
 
 repositories {
   jcenter()
@@ -44,46 +37,12 @@ tasks.jar {
   }
 }
 
-plugins.withType<JavaPlugin>().configureEach {
-  configure<JavaPluginExtension> {
-    modularity.inferModulePath.set(true)
-  }
-}
-
 tasks.compileJava {
   doFirst {
     exec {
       commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh",
         rootProject.projectDir.absolutePath)
     }
-  }
-
-  options.compilerArgs.addAll(listOf(
-    "--module-path", classpath.asPath
-  ))
-
-  classpath = files()
-}
-
-tasks.test {
-  doFirst {
-    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"),
-      Paths.get(projectDir.absolutePath, "src/main/java/module-info._"))
-  }
-  doLast {
-    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info._"),
-      Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"))
-  }
-}
-
-tasks.javadoc {
-  doFirst {
-    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"),
-      Paths.get(projectDir.absolutePath, "src/main/java/module-info._"))
-  }
-  doLast {
-    Files.move(Paths.get(projectDir.absolutePath, "src/main/java/module-info._"),
-      Paths.get(projectDir.absolutePath, "src/main/java/module-info.java"))
   }
 }
 

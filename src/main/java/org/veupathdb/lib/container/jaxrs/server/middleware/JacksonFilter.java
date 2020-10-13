@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -14,6 +15,8 @@ import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -25,6 +28,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
+import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
+import org.veupathdb.lib.container.jaxrs.server.annotations.DisableJackson;
+
+import static java.util.Collections.synchronizedMap;
 
 /**
  * Jackson JSON (De)Serialization Filter
@@ -48,15 +55,18 @@ import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 @Provider
 @Priority(5)
 public class JacksonFilter
-implements MessageBodyReader < Object >, MessageBodyWriter < Object >
+  implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
   private static final String SUBTYPE = "json";
 
   private static final ObjectMapper JSON = new ObjectMapper();
 
+  @Context
+  private ResourceInfo res;
+
   @Override
   public boolean isReadable(
-    final Class < ? > type,
+    final Class<?> type,
     final Type genericType,
     final Annotation[] annotations,
     final MediaType mediaType
@@ -66,22 +76,23 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
 
   @Override
   public boolean isWriteable(
-    final Class < ? > type,
+    final Class<?> type,
     final Type genericType,
     final Annotation[] annotations,
     final MediaType mediaType
   ) {
-    return SUBTYPE.equals(mediaType.getSubtype());
+    return SUBTYPE.equals(mediaType.getSubtype()) && Arrays.stream(annotations)
+      .noneMatch(a -> a instanceof DisableJackson);
   }
 
   @Override
   public void writeTo(
     final Object o,
-    final Class < ? > type,
+    final Class<?> type,
     final Type genericType,
     final Annotation[] annotations,
     final MediaType mediaType,
-    final MultivaluedMap < String, Object > httpHeaders,
+    final MultivaluedMap<String, Object> httpHeaders,
     final OutputStream entityStream
   ) throws IOException, WebApplicationException {
     JSON.writeValue(entityStream, o);
@@ -89,11 +100,11 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
 
   @Override
   public Object readFrom(
-    final Class < Object > type,
+    final Class<Object> type,
     final Type genericType,
     final Annotation[] annotations,
     final MediaType mediaType,
-    final MultivaluedMap < String, String > httpHeaders,
+    final MultivaluedMap<String, String> httpHeaders,
     final InputStream entityStream
   ) throws IOException, WebApplicationException {
     try {
@@ -101,8 +112,9 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
         var pType = (ParameterizedType) genericType;
         var typeFac = JSON.getTypeFactory()
           .constructCollectionType(
-            (Class < ? extends List >)((Class < ? >) type),
-            (Class < ? >) pType.getActualTypeArguments()[0]);
+            (Class<? extends List>) ((Class<?>) type),
+            (Class<?>) pType.getActualTypeArguments()[0]
+          );
         return JSON.readValue(entityStream, typeFac);
       }
 
@@ -115,8 +127,10 @@ implements MessageBodyReader < Object >, MessageBodyWriter < Object >
         .replaceAll(" \\(class [^)]+\\)", "");
 
       if (e.getPath().isEmpty())
-        throw new UnprocessableEntityException(Collections.singletonList(message),
-          Collections.emptyMap());
+        throw new UnprocessableEntityException(
+          Collections.singletonList(message),
+          Collections.emptyMap()
+        );
 
       throw new UnprocessableEntityException(Collections.singletonMap(
         e.getPath().get(0).getFieldName(), Collections.singletonList(message)));
