@@ -1,18 +1,16 @@
 package org.veupathdb.lib.container.jaxrs.utils;
 
-import com.devskiller.friendly_id.FriendlyId;
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.yaml.YamlConfiguration;
-import org.glassfish.grizzly.http.server.HttpHandler;
 import org.veupathdb.lib.container.jaxrs.Globals;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.devskiller.friendly_id.FriendlyId;
 
 public class Log {
   /**

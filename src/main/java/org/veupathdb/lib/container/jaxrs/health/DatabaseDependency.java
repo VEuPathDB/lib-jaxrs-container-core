@@ -1,12 +1,9 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
-import org.apache.logging.log4j.Logger;
-import org.gusdb.fgputil.db.pool.DatabaseInstance;
-import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
-
 import java.sql.SQLException;
 
-import static org.apache.logging.log4j.LogManager.getLogger;
+import org.gusdb.fgputil.db.pool.DatabaseInstance;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 /**
  * Database Dependency

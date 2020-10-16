@@ -4,16 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
@@ -23,15 +21,12 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
-import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.server.annotations.DisableJackson;
 
-import static java.util.Collections.synchronizedMap;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Jackson JSON (De)Serialization Filter
@@ -110,9 +105,10 @@ public class JacksonFilter
     try {
       if (List.class.isAssignableFrom(type)) {
         var pType = (ParameterizedType) genericType;
+        @SuppressWarnings("unchecked")
         var typeFac = JSON.getTypeFactory()
           .constructCollectionType(
-            (Class<? extends List>) ((Class<?>) type),
+            (Class<? extends List<?>>) ((Class<?>) type),
             (Class<?>) pType.getActualTypeArguments()[0]
           );
         return JSON.readValue(entityStream, typeFac);
