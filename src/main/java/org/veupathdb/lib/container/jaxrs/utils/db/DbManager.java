@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.veupathdb.lib.container.jaxrs.config.DbOptions;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.health.DatabaseDependency;
+import org.veupathdb.lib.container.jaxrs.health.FgpDatabaseDependency;
 import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
 
 /**
@@ -173,7 +173,7 @@ public class DbManager
     var db = new DatabaseInstance(detail.toFgpUtilConfig(), opts.displayName());
 
     DependencyProvider.getInstance()
-      .register(new DatabaseDependency(opts.displayName(), detail.host(),
+      .register(new FgpDatabaseDependency(opts.displayName(), detail.host(),
         detail.port(), db));
 
     return db;

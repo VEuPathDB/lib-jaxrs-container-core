@@ -17,7 +17,8 @@ import java.sql.Statement;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class DatabaseDependencyTest {
+class FgpDatabaseDependencyTest
+{
 
   @Nested
   class TestFn {
@@ -47,7 +48,7 @@ class DatabaseDependencyTest {
       //noinspection SqlNoDataSourceInspection
       when(stmt.execute("SELECT 1 FROM DUAL")).thenReturn(true);
 
-      var test = new DatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db);
 
       test.setPinger(pinger);
 
@@ -62,7 +63,7 @@ class DatabaseDependencyTest {
       when(pinger.isReachable("foo", 123)).thenReturn(true);
       when(ds.getConnection()).thenThrow(new SQLException());
 
-      var test = new DatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db);
 
       test.setPinger(pinger);
 
@@ -78,7 +79,7 @@ class DatabaseDependencyTest {
       when(ds.getConnection()).thenReturn(con);
       when(con.createStatement()).thenThrow(new SQLException());
 
-      var test = new DatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db);
 
       test.setPinger(pinger);
 
@@ -93,7 +94,7 @@ class DatabaseDependencyTest {
     void noPing() {
       when(pinger.isReachable("foo", 123)).thenReturn(false);
 
-      var test = new DatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db);
 
       test.setPinger(pinger);
 
@@ -107,7 +108,7 @@ class DatabaseDependencyTest {
   @Test
   void close() throws Exception {
     var db   = mock(DatabaseInstance.class);
-    var test = new DatabaseDependency("", "", 0, db);
+    var test = new FgpDatabaseDependency("", "", 0, db);
     test.close();
     verify(db).close();
 
@@ -117,11 +118,11 @@ class DatabaseDependencyTest {
 
   @Test
   void setTestQuery() throws Exception {
-    var test = new DatabaseDependency("", "", 0, null);
+    var test = new FgpDatabaseDependency("", "", 0, null);
     var val  = "some query";
     test.setTestQuery(val);
 
-    var field = DatabaseDependency.class.getDeclaredField("testQuery");
+    var field = FgpDatabaseDependency.class.getDeclaredField("testQuery");
     field.setAccessible(true);
 
     assertEquals(val, field.get(test));

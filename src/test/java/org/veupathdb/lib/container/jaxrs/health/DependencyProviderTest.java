@@ -27,8 +27,8 @@ class DependencyProviderTest {
   @Test
   @SuppressWarnings("unchecked")
   void register() throws Exception {
-    var dep1 = new DatabaseDependency("foo", "", 123, null);
-    var dep2 = new DatabaseDependency("foo", "", 123, null);
+    var dep1 = new FgpDatabaseDependency("foo", "", 123, null);
+    var dep2 = new FgpDatabaseDependency("foo", "", 123, null);
 
     test.register(dep1);
 
@@ -44,7 +44,7 @@ class DependencyProviderTest {
 
   @Test
   void testDependencies() {
-    var dep = mock(DatabaseDependency.class);
+    var dep = mock(FgpDatabaseDependency.class);
     var val = new TestResult(dep, false, Status.ONLINE);
     when(dep.getName()).thenReturn("foo");
     when(dep.test()).thenReturn(val);
@@ -56,8 +56,8 @@ class DependencyProviderTest {
 
   @Test
   void shutDown() throws Exception {
-    var dep1 = mock(DatabaseDependency.class);
-    var dep2 = mock(DatabaseDependency.class);
+    var dep1 = mock(FgpDatabaseDependency.class);
+    var dep2 = mock(FgpDatabaseDependency.class);
 
     when(dep1.getName()).thenReturn("foo");
     when(dep2.getName()).thenReturn("bar");

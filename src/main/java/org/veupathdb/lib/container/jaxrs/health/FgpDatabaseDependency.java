@@ -1,32 +1,38 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
-import java.io.Closeable;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
+import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
-public class DatabaseDependency extends ExternalDependency
+/**
+ * Database Dependency
+ * <p>
+ * Dependency wrapper for a database instance.
+ */
+public class FgpDatabaseDependency extends ExternalDependency
 {
-  private final String     url;
-  private final int        port;
-  private final DataSource ds;
+  private final String url;
+  private final int port;
+  private final DatabaseInstance ds;
 
-  private String testQuery = "SELECT 1;";
+  private String testQuery = "SELECT 1 FROM dual";
 
-  public DatabaseDependency(String name, String url, int port, DataSource ds) {
+  public FgpDatabaseDependency(
+    String name,
+    String url,
+    int port,
+    DatabaseInstance ds
+  ) {
     super(name);
-    this.url  = url;
+    this.ds = ds;
+    this.url = url;
     this.port = port;
-    this.ds   = ds;
-  }
-
-  public void setTestQuery(String testQuery) {
-    this.testQuery = testQuery;
   }
 
   @Override
   public TestResult test() {
+    // Get log here to include request context.
     var log = LogProvider.logger(getClass());
 
     log.info("Checking dependency health for database {}", name);
@@ -35,10 +41,10 @@ public class DatabaseDependency extends ExternalDependency
       return new TestResult(this, false, Status.UNKNOWN);
 
     try (
-      var con = ds.getConnection();
-      var stm = con.createStatement()
+      var con = ds.getDataSource().getConnection();
+      var stmt = con.createStatement()
     ) {
-      stm.execute(testQuery);
+      stmt.execute(testQuery);
       return new TestResult(this, true, Status.ONLINE);
     } catch (SQLException e) {
       log.warn("Health check failed for database {}", name);
@@ -49,9 +55,10 @@ public class DatabaseDependency extends ExternalDependency
 
   @Override
   public void close() throws Exception {
-    if (ds instanceof Closeable)
-      ((Closeable) ds).close();
-    else if (ds instanceof AutoCloseable)
-      ((AutoCloseable) ds).close();
+    ds.close();
+  }
+
+  public void setTestQuery(String testQuery) {
+    this.testQuery = testQuery;
   }
 }

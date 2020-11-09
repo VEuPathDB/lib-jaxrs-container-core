@@ -1,6 +1,4 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import java.nio.file.Files
-import java.nio.file.Paths
 
 plugins {
   `java-library`
@@ -18,7 +16,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "2.7.0"
+version = "3.0.0"
 
 repositories {
   jcenter()
