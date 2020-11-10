@@ -64,9 +64,12 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       LogProvider.logger(ErrorMapper.class).debug("Caught Exception: ", err);
     }
 
+    var mapper = mappers.get(err.getClass());
+
     return Response.status(code)
-      .entity(mappers.getOrDefault(err.getClass(), this::serverError)
-        .toError(err))
+      .entity((mapper != null
+        ? mapper.toError(err)
+        : (err instanceof WebApplicationException ? err : this.serverError(err))))
       .type(MediaType.APPLICATION_JSON_TYPE)
       .build();
   }
