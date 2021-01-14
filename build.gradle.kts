@@ -3,7 +3,7 @@ import com.jfrog.bintray.gradle.BintrayExtension
 plugins {
   `java-library`
   `maven-publish`
-  jacoco
+//  jacoco// version "0.8.7-SNAPSHOT"
   id("com.jfrog.bintray") version "1.8.5"
 }
 
@@ -11,13 +11,13 @@ apply(from = "${projectDir.absolutePath}/dependencies.gradle.kts")
 apply(from = "${projectDir.absolutePath}/test-summary.gradle")
 
 java {
-  targetCompatibility = JavaVersion.VERSION_14
-  sourceCompatibility = JavaVersion.VERSION_14
+  targetCompatibility = JavaVersion.VERSION_15
+  sourceCompatibility = JavaVersion.VERSION_15
 }
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "3.0.1"
+version = "4.0.0"
 
 repositories {
   jcenter()
@@ -77,22 +77,22 @@ publishing {
   }
 }
 
-tasks.register<JacocoReport>("codeCoverageReport") {
-  executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
-
-  subprojects.onEach {
-    sourceSets(it.sourceSets["main"])
-  }
-
-  reports {
-    xml.isEnabled = true
-    xml.destination = File("${buildDir}/reports/jacoco/report.xml")
-    html.isEnabled = false
-    csv.isEnabled = false
-  }
-
-  dependsOn("test")
-}
+//tasks.register<JacocoReport>("codeCoverageReport") {
+//  executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+//
+//  subprojects.onEach {
+//    sourceSets(it.sourceSets["main"])
+//  }
+//
+//  reports {
+//    xml.isEnabled = true
+//    xml.destination = File("${buildDir}/reports/jacoco/report.xml")
+//    html.isEnabled = false
+//    csv.isEnabled = false
+//  }
+//
+//  dependsOn("test")
+//}
 
 bintray {
   user = project.findProperty("bintray.user") as String? ?: ""
