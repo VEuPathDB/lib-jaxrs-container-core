@@ -200,6 +200,7 @@ If this value is used, the following raw connection info CLI args/env vars will
 be ignored:
 
 * <<Application DB Host,`--app-db-host|$APP_DB_HOST`>>
+* <<Application DB Name,`--app-db-name|$APP_DB_NAME`>>
 * <<Application DB Port,`--app-db-port|$APP_DB_PORT`>>
 * <<Application DB Platform,`--app-db-platform|$APP_DB_PLATFORM`>>
 
@@ -337,6 +338,7 @@ If this value is used, the following raw connection info CLI args/env vars will
 be ignored:
 
 * <<Account DB Host,`--acct-db-host|$ACCT_DB_HOST`>>
+* <<Account DB Name,`--acct-db-name|$ACCT_DB_NAME`>>
 * <<Account DB Port,`--acct-db-port|$ACCT_DB_PORT`>>
 * <<Account DB Platform,`--acct-db-platform|$ACCT_DB_PLATFORM`>>
 
@@ -474,6 +476,7 @@ If this value is used, the following raw connection info CLI args/env vars will
 be ignored:
 
 * <<User DB Host,`--user-db-host|$USER_DB_HOST`>>
+* <<User DB Name,`--user-db-name|$USER_DB_NAME`>>
 * <<User DB Port,`--user-db-port|$USER_DB_PORT`>>
 * <<User DB Platform,`--user-db-platform|$USER_DB_PLATFORM`>>
 
