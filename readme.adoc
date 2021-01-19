@@ -189,7 +189,7 @@ Defaults to `20`
 
 ===== `--app-db-ora`|`$APP_DB_TNS_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the TNS Name to use when connecting to an application DB instance.
 
@@ -219,19 +219,19 @@ Sets the host name for the application DB that this web service will connect to.
 
 ===== `--app-db-name`|`$APP_DB_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the net/db name for the application DB that this web service will connect to.
 
 ===== `--app-db-port`|`$APP_DB_PORT`
 
-Type:: `int`
+Type: `int`
 
 Sets the host port for the application DB that this web service will connect to.
 
 ===== `--app-db-platform`|`$APP_DB_PLATFORM`
 
-Type:: `enum`
+Type: `enum`
 Values::
 * `ORACLE`
 * `POSTGRESQL`
@@ -249,21 +249,21 @@ These options apply to both LDAP and non-LDAP connection types.
 
 ===== `--acct-db-user`|`$ACCT_DB_USER`
 
-Type:: `string`
+Type: `string`
 
 Sets the connection username for the account DB that this web service will
 connect to.
 
 ===== `--acct-db-pass`|`$ACCT_DB_PASS`
 
-Type:: `string`
+Type: `string`
 
 Sets the connection password for the account DB that this web service will
 connect to.
 
 ===== `--acct-db-pool-size`|`$ACCT_DB_POOL_SIZE`
 
-Type:: `int`
+Type: `int`
 
 Sets the connection pool size for the account DB that this web service will
 connect to.
@@ -274,7 +274,7 @@ Defaults to `20`
 
 ===== `--acct-db-ora`|`$ACCT_DB_TNS_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the TNS Name to use when connecting to an account DB instance.
 
@@ -298,25 +298,25 @@ required:
 
 ===== `--acct-db-host`|`$ACCT_DB_HOST`
 
-Type:: `string`
+Type: `string`
 
 Sets the host name for the account DB that this web service will connect to.
 
 ===== `--acct-db-name`|`$ACCT_DB_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the net/db name for the account DB that this web service will connect to.
 
 ===== `--acct-db-port`|`$ACCT_DB_PORT`
 
-Type:: `int`
+Type: `int`
 
 Sets the host port for the account DB that this web service will connect to.
 
 ===== `--acct-db-platform`|`$ACCT_DB_PLATFORM`
 
-Type:: `enum`
+Type: `enum`
 Values::
 * `ORACLE`
 * `POSTGRESQL`
@@ -334,21 +334,21 @@ These options apply to both LDAP and non-LDAP connection types.
 
 ===== `--user-db-user`|`$USER_DB_USER`
 
-Type:: `string`
+Type: `string`
 
 Sets the connection username for the user DB that this web service will
 connect to.
 
 ===== `--user-db-pass`|`$USER_DB_PASS`
 
-Type:: `string`
+Type: `string`
 
 Sets the connection password for the user DB that this web service will
 connect to.
 
 ===== `--user-db-pool-size`|`$USER_DB_POOL_SIZE`
 
-Type:: `int`
+Type: `int`
 
 Sets the connection pool size for the user DB that this web service will
 connect to.
@@ -359,7 +359,7 @@ Defaults to `20`
 
 ===== `--user-db-ora`|`$USER_DB_TNS_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the TNS Name to use when connecting to an user DB instance.
 
@@ -383,25 +383,25 @@ required:
 
 ===== `--user-db-host`|`$USER_DB_HOST`
 
-Type:: `string`
+Type: `string`
 
 Sets the host name for the user DB that this web service will connect to.
 
 ===== `--user-db-name`|`$USER_DB_NAME`
 
-Type:: `string`
+Type: `string`
 
 Sets the net/db name for the user DB that this web service will connect to.
 
 ===== `--user-db-port`|`$USER_DB_PORT`
 
-Type:: `int`
+Type: `int`
 
 Sets the host port for the user DB that this web service will connect to.
 
 ===== `--user-db-platform`|`$USER_DB_PLATFORM`
 
-Type:: `enum`
+Type: `enum`
 Values::
 * `ORACLE`
 * `POSTGRESQL`
