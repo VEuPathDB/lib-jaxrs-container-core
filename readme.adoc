@@ -13,9 +13,7 @@ https://veupathdb.github.io/lib-jaxrs-container-core/javadoc/[JavaDocs]
 
 TODO
 
-== Internal Configuration
-
-=== The Web Server
+== The Web Server
 
 Creating a web server base for a new web service is done by creating a
 entrypoint or "main" class that extends the type
@@ -35,7 +33,7 @@ public class Main extends Server {
 }
 ----
 
-==== Enable Site Data access
+=== Enable Site Data access
 
 If your service requires access to one or more of the VEuPathDB standard site
 databases they must be enabled in your Main class (extending `Server`) _before_
@@ -65,8 +63,7 @@ public class Main extends Server {
 }
 ----
 
-
-==== Extending the CLI Options
+=== Extending the CLI Options
 
 NOTE: CLI args/environment vars are processed using https://picocli.info/[PicoCLI]
 
@@ -108,7 +105,7 @@ TODO
 
 TODO
 
-== External Configuration
+== Runtime Configuration
 
 Projects based on this library may start with the following base options which
 may be configured via CLI arguments or environment variables.
@@ -190,7 +187,62 @@ Provided using::
 | ENV | $ORACLE_BASE_DN
 |===
 
-=== Application DB TNS Name
+=== Application DB Connection
+
+==== Standard Options
+
+These options apply to both LDAP and non-LDAP connection types.
+
+===== Application DB Username
+
+Sets the connection username for the application DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-user
+| ENV | $APP_DB_USER
+|===
+
+===== Application DB Password
+
+Sets the connection password for the application DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-pass
+| ENV | $APP_DB_PASS
+|===
+
+===== Application DB Connection Pool Size
+
+Sets the connection pool size for the application DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-pool-size
+| ENV | $APP_DB_POOL_SIZE
+|===
+
+==== Connecting with LDAP
+
+===== TNS Name
 
 Sets the TNS Name to use when connecting to an application DB instance.
 
@@ -220,7 +272,9 @@ Provided using::
 | ENV | $APP_DB_TNS_NAME
 |===
 
-=== Application DB Host
+==== Connecting with Raw Details
+
+===== Application DB Host
 
 Sets the host name for the application DB that this web service will connect to.
 
@@ -234,7 +288,7 @@ Provided using::
 | ENV | $APP_DB_HOST
 |===
 
-=== Application DB Name
+===== Application DB Name
 
 Sets the net/db name for the application DB that this web service will connect to.
 
@@ -248,7 +302,7 @@ Provided using::
 | ENV | $APP_DB_NAME
 |===
 
-=== Application DB Port
+===== Application DB Port
 
 Sets the host port for the application DB that this web service will connect to.
 
@@ -262,54 +316,7 @@ Provided using::
 | ENV | $APP_DB_PORT
 |===
 
-=== Application DB Username
-
-Sets the connection username for the application DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --app-db-user
-| ENV | $APP_DB_USER
-|===
-
-=== Application DB Password
-
-Sets the connection password for the application DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --app-db-pass
-| ENV | $APP_DB_PASS
-|===
-
-=== Application DB Connection Pool Size
-
-Sets the connection pool size for the application DB that this web service will
-connect to.
-
-Defaults to `20`
-
-Type:: `int`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --app-db-pool-size
-| ENV | $APP_DB_POOL_SIZE
-|===
-
-=== Application DB Platform
+===== Application DB Platform
 
 Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
 application database.
@@ -328,7 +335,62 @@ Provided using::
 | ENV | $APP_DB_PLATFORM
 |===
 
-=== Account DB TNS Name
+=== Account DB Connection
+
+==== Standard Options
+
+These options apply to both LDAP and non-LDAP connection types.
+
+===== Account DB Username
+
+Sets the connection username for the account DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-user
+| ENV | $ACCT_DB_USER
+|===
+
+===== Account DB Password
+
+Sets the connection password for the account DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-pass
+| ENV | $ACCT_DB_PASS
+|===
+
+===== Account DB Connection Pool Size
+
+Sets the connection pool size for the account DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-pool-size
+| ENV | $ACCT_DB_POOL_SIZE
+|===
+
+==== Connecting with LDAP
+
+===== TNS Name
 
 Sets the TNS Name to use when connecting to an account DB instance.
 
@@ -358,7 +420,9 @@ Provided using::
 | ENV | $ACCT_DB_TNS_NAME
 |===
 
-=== Account DB Host
+==== Connecting with Raw Details
+
+===== Account DB Host
 
 Sets the host name for the account DB that this web service will connect to.
 
@@ -372,7 +436,7 @@ Provided using::
 | ENV | $ACCT_DB_HOST
 |===
 
-=== Account DB Name
+===== Account DB Name
 
 Sets the net/db name for the account DB that this web service will connect to.
 
@@ -386,7 +450,7 @@ Provided using::
 | ENV | $ACCT_DB_NAME
 |===
 
-=== Account DB Port
+===== Account DB Port
 
 Sets the host port for the account DB that this web service will connect to.
 
@@ -400,54 +464,7 @@ Provided using::
 | ENV | $ACCT_DB_PORT
 |===
 
-=== Account DB Username
-
-Sets the connection username for the account DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --acct-db-user
-| ENV | $ACCT_DB_USER
-|===
-
-=== Account DB Password
-
-Sets the connection password for the account DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --acct-db-pass
-| ENV | $ACCT_DB_PASS
-|===
-
-=== Account DB Connection Pool Size
-
-Sets the connection pool size for the account DB that this web service will
-connect to.
-
-Defaults to `20`
-
-Type:: `int`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --acct-db-pool-size
-| ENV | $ACCT_DB_POOL_SIZE
-|===
-
-=== Account DB Platform
+===== Account DB Platform
 
 Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
 account database.
@@ -466,7 +483,62 @@ Provided using::
 | ENV | $ACCT_DB_PLATFORM
 |===
 
-=== User DB TNS Name
+=== User DB Connection
+
+==== Standard Options
+
+These options apply to both LDAP and non-LDAP connection types.
+
+===== User DB Username
+
+Sets the connection username for the user DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-user
+| ENV | $USER_DB_USER
+|===
+
+===== User DB Password
+
+Sets the connection password for the user DB that this web service will
+connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-pass
+| ENV | $USER_DB_PASS
+|===
+
+===== User DB Connection Pool Size
+
+Sets the connection pool size for the user DB that this web service will
+connect to.
+
+Defaults to `20`
+
+Type:: `int`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-pool-size
+| ENV | $USER_DB_POOL_SIZE
+|===
+
+==== Connecting with LDAP
+
+===== TNS Name
 
 Sets the TNS Name to use when connecting to an user DB instance.
 
@@ -496,7 +568,9 @@ Provided using::
 | ENV | $USER_DB_TNS_NAME
 |===
 
-=== User DB Host
+==== Connecting with Raw Details
+
+===== User DB Host
 
 Sets the host name for the user DB that this web service will connect to.
 
@@ -510,7 +584,7 @@ Provided using::
 | ENV | $USER_DB_HOST
 |===
 
-=== User DB Name
+===== User DB Name
 
 Sets the net/db name for the user DB that this web service will connect to.
 
@@ -524,7 +598,7 @@ Provided using::
 | ENV | $USER_DB_NAME
 |===
 
-=== User DB Port
+===== User DB Port
 
 Sets the host port for the user DB that this web service will connect to.
 
@@ -538,54 +612,7 @@ Provided using::
 | ENV | $USER_DB_PORT
 |===
 
-=== User DB Username
-
-Sets the connection username for the user DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --user-db-user
-| ENV | $USER_DB_USER
-|===
-
-=== User DB Password
-
-Sets the connection password for the user DB that this web service will
-connect to.
-
-Type:: `string`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --user-db-pass
-| ENV | $USER_DB_PASS
-|===
-
-=== User DB Connection Pool Size
-
-Sets the connection pool size for the user DB that this web service will
-connect to.
-
-Defaults to `20`
-
-Type:: `int`
-
-Provided using::
-+
-[cols=">1h,1m"]
-|===
-| CLI | --user-db-pool-size
-| ENV | $USER_DB_POOL_SIZE
-|===
-
-=== User DB Platform
+===== User DB Platform
 
 Sets whether this web service will connect to an `ORACLE` or `POSTGRESQL`
 user database.
