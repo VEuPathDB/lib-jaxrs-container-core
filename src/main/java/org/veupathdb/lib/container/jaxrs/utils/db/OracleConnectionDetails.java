@@ -17,7 +17,7 @@ public class OracleConnectionDetails extends RawConnectionDetails
     LDAP_JDBC_PATTERN = "jdbc:oracle:thin:@%s",
     LDAP_JDBC_SEGMENT = "ldap://%s/%s",
     LDAP_JDBC_JOIN    = " ",
-    RAW_JDBC_PATTERN  = "jdbc:oracle:thin:@%s:%d:%s";
+    RAW_JDBC_PATTERN  = "jdbc:oracle:thin:@//%s:%d/%s";
 
   private static final Pattern
     PAT_HOST = Pattern.compile("\\(HOST=([^)]+)\\)"),

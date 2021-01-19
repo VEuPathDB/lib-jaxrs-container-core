@@ -236,7 +236,7 @@ Provided using::
 
 === Application DB Name
 
-Sets the net/db name for the application DB that this web service will connect to.
+Sets the net/db name for the application DB that this web service will connect to.  For Oracle, this should be the Service Name (not SID).
 
 Type:: `string`
 
@@ -374,7 +374,7 @@ Provided using::
 
 === Account DB Name
 
-Sets the net/db name for the account DB that this web service will connect to.
+Sets the net/db name for the account DB that this web service will connect to.  For Oracle, this should be the Service Name (not SID).
 
 Type:: `string`
 
@@ -512,7 +512,7 @@ Provided using::
 
 === User DB Name
 
-Sets the net/db name for the user DB that this web service will connect to.
+Sets the net/db name for the user DB that this web service will connect to.  For Oracle, this should be the Service Name (not SID).
 
 Type:: `string`
 
