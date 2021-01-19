@@ -233,6 +233,20 @@ Provided using::
 | ENV | $APP_DB_HOST
 |===
 
+=== Application DB Name
+
+Sets the net/db name for the application DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --app-db-name
+| ENV | $APP_DB_NAME
+|===
+
 === Application DB Port
 
 Sets the host port for the application DB that this web service will connect to.
@@ -356,6 +370,20 @@ Provided using::
 | ENV | $ACCT_DB_HOST
 |===
 
+=== Account DB Name
+
+Sets the net/db name for the account DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --acct-db-name
+| ENV | $ACCT_DB_NAME
+|===
+
 === Account DB Port
 
 Sets the host port for the account DB that this web service will connect to.
@@ -477,6 +505,20 @@ Provided using::
 |===
 | CLI | --user-db-host
 | ENV | $USER_DB_HOST
+|===
+
+=== User DB Name
+
+Sets the net/db name for the user DB that this web service will connect to.
+
+Type:: `string`
+
+Provided using::
++
+[cols=">1h,1m"]
+|===
+| CLI | --user-db-name
+| ENV | $USER_DB_NAME
 |===
 
 === User DB Port
