@@ -70,7 +70,7 @@ public class LDAP
           log.debug("Connected to LDAP host #" + (i + 1));
           break;
         } catch (Exception e) {
-          // Do nothing.
+          log.debug("Try " + (i + 1) + " failed with: ", e);
         }
       }
     }
