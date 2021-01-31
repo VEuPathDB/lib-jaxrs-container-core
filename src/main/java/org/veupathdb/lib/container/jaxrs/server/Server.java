@@ -15,9 +15,10 @@ import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.OptionsProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RuntimeProvider;
 import org.veupathdb.lib.container.jaxrs.utils.Cli;
-import org.veupathdb.lib.container.jaxrs.utils.Log;
+import org.veupathdb.lib.container.jaxrs.utils.logging.Log;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 import org.veupathdb.lib.container.jaxrs.utils.ldap.OracleLDAPConfig;
+import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 
 @SuppressWarnings("unused")
 abstract public class Server
@@ -217,6 +218,7 @@ abstract public class Server
   }
 
   private void shutdown() {
+    LoggingVars.setNonRequestThreadVars("term0");
     logger.info("Server shutting down.");
     onShutdown();
     Optional.ofNullable(grizzly).ifPresent(HttpServer::shutdownNow);
