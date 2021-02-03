@@ -1,9 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.errors;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.ws.rs.ClientErrorException;
 
 /**
@@ -62,5 +59,66 @@ public class UnprocessableEntityException extends ClientErrorException
 
   public Map < String, List < String > > getByKey() {
     return byKey;
+  }
+
+  /**
+   * Keyed Single returns a new {@code UnprocessableEntityException} with a
+   * single error key mapped to a single error message.
+   *
+   * @param key   Error Key.
+   * @param error Error Message
+   *
+   * @return new {@code UnprocessableEntityException}.
+   */
+  public static UnprocessableEntityException keyedSingle(String key, String error) {
+    return new UnprocessableEntityException(
+      Collections.singletonMap(key, Collections.singletonList(error))
+    );
+  }
+
+  /**
+   * Keyed singles returns a new {@code UnprocessableEntityException} with two
+   * error keys, each mapped to a single error message.
+   *
+   * @param key1   First error key.
+   * @param error1 First error message.
+   * @param key2   Second error key.
+   * @param error2 Second error message.
+   *
+   * @return new {@code UnprocessableEntityException}.
+   */
+  public static UnprocessableEntityException keyedSingles(
+    String key1, String error1,
+    String key2, String error2
+  ) {
+    return new UnprocessableEntityException(new HashMap<>() {{
+      put(key1, Collections.singletonList(error1));
+      put(key2, Collections.singletonList(error2));
+    }});
+  }
+
+  /**
+   * Keyed singles returns a new {@code UnprocessableEntityException} with three
+   * error keys, each mapped to a single error message.
+   *
+   * @param key1   First error key.
+   * @param error1 First error message.
+   * @param key2   Second error key.
+   * @param error2 Second error message.
+   * @param key3   Third error key.
+   * @param error3 Third error message.
+   *
+   * @return new {@code UnprocessableEntityException}.
+   */
+  public static UnprocessableEntityException keyedSingles(
+    String key1, String error1,
+    String key2, String error2,
+    String key3, String error3
+  ) {
+    return new UnprocessableEntityException(new HashMap<>() {{
+      put(key1, Collections.singletonList(error1));
+      put(key2, Collections.singletonList(error2));
+      put(key3, Collections.singletonList(error3));
+    }});
   }
 }
