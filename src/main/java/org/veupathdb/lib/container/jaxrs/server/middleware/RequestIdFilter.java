@@ -33,17 +33,21 @@ implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Override
   public void filter(ContainerRequestContext req) {
+    doFilter(req, _request.get());
+  }
+
+  public void doFilter(ContainerRequestContext requestCxt, Request request) {
     // generate and assign request id
     var requestId = FriendlyId.createFriendlyId();
-    req.setProperty(RequestKeys.REQUEST_ID, requestId);
+    requestCxt.setProperty(RequestKeys.REQUEST_ID, requestId);
     ThreadContext.put(Globals.CONTEXT_ID, requestId);
 
     LoggingVars.setRequestThreadVars(requestId,
-      _request.get().getSession().getIdInternal(),
-      _request.get().getRemoteAddr());
+      request.getSession().getIdInternal(),
+      request.getRemoteAddr());
 
     // At the end so it has the context id
-    LOG.trace("RequestIdFilter#filter(req)");
+    LOG.trace("RequestIdFilter#filter(requestCxt)");
   }
 
   @Override
