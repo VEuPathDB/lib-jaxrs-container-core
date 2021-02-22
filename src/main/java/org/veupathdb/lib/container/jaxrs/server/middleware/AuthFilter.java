@@ -43,7 +43,6 @@ import static java.util.Objects.isNull;
 @Priority(4)
 public class AuthFilter implements ContainerRequestFilter
 {
-
   private static final String MESSAGE = "Users must be logged in to access this"
     + " resource.";
 
@@ -54,7 +53,7 @@ public class AuthFilter implements ContainerRequestFilter
    * authentication.  This is to prevent repeatedly reflectively searching
    * the types for the {@link Authenticated} annotation.
    */
-  private final Map < String, Boolean > CACHE = synchronizedMap(new HashMap <>());
+  private final Map < String, AuthRequirement > CACHE = synchronizedMap(new HashMap <>());
 
   private final Options opts;
 
@@ -87,7 +86,8 @@ public class AuthFilter implements ContainerRequestFilter
   public void filter(ContainerRequestContext req) {
     log.trace("AuthFilter#filter");
 
-    if (!isAuthRequired(resource))
+    var authRequirement = authRequirement(resource);
+    if (authRequirement == AuthRequirement.NotRequired)
       return;
 
     try {
@@ -101,10 +101,28 @@ public class AuthFilter implements ContainerRequestFilter
         return;
       }
 
+      // Check if this is a guest login (Auth-Key will be just a guest user ID).
+      if (authRequirement == AuthRequirement.RequiredAllowGuests) {
+        try {
+          var userID = Long.parseLong(rawAuth);
+          var user   = acctMan.getUserProfile(userID);
+
+          // We matched a user and that user is a guest.
+          if (user != null && user.isGuest()) {
+            log.debug("Request authenticated as guest");
+            req.setProperty(Globals.REQUEST_USER, user);
+            return;
+          }
+        } catch (NumberFormatException e) {
+          // Not a user ID.
+        }
+      }
+
+      // Auth-Key is not a guest user ID.
+
       final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
 
-      if (!new LoginCookieFactory(
-        opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
+      if (!new LoginCookieFactory(opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
         log.debug("Authentication failed: bad header");
         req.abortWith(build401());
         return;
@@ -133,6 +151,12 @@ public class AuthFilter implements ContainerRequestFilter
       .build();
   }
 
+  enum AuthRequirement {
+    RequiredAllowGuests,
+    RequiredDisallowGuests,
+    NotRequired
+  }
+
   /**
    * Checks if the given resource is annotated with the {@link Authenticated}
    * annotation.
@@ -141,35 +165,54 @@ public class AuthFilter implements ContainerRequestFilter
    *
    * @return whether or not the resource has the auth annotation.
    */
-  boolean isAuthRequired(ResourceInfo res) {
+  AuthRequirement authRequirement(ResourceInfo res) {
     log.trace("AuthFilter#isAuthRequired");
 
     final var meth = res.getResourceMethod();
     final var type = res.getResourceClass();
 
-    final var typeName = type.getName();
-    final var methName = typeName + '#' + meth.getName();
-
-    if (CACHE.getOrDefault(typeName, false))
-      return true;
-    else if (CACHE.containsKey(methName))
-      return CACHE.get(methName);
-
-    if (methodHasAuth(meth)) {
-      CACHE.put(methName, true);
-      return true;
-    } else {
-      CACHE.put(methName, false);
+    // If we have a value cached for the type, return that cached value.
+    final var typeName = type.getName(); {
+      var cached = CACHE.get(typeName);
+      if (cached != null) {
+        return cached;
+      }
     }
 
-    if (classHasAuth(type)) {
-      CACHE.put(typeName, true);
-      return true;
-    } else {
-      CACHE.put(typeName, false);
+    // If we have a value cached for the endpoint method, return that cached
+    // value.
+    final var methName = typeName + '#' + meth.getName(); {
+      var cached = CACHE.get(methName);
+      if (cached != null) {
+        return cached;
+      }
     }
 
-    return false;
+    var methodAuth = methodAuthAnnotation(meth);
+    if (methodAuth.isPresent()) {
+      var authType = methodAuth.get().allowGuests()
+        ? AuthRequirement.RequiredAllowGuests
+        : AuthRequirement.RequiredDisallowGuests;
+
+      CACHE.put(methName, authType);
+      return authType;
+    } else {
+      CACHE.put(methName, AuthRequirement.NotRequired);
+    }
+
+    var classAuth = classAuthAnnotation(type);
+    if (classAuth.isPresent()) {
+      var authType = classAuth.get().allowGuests()
+        ? AuthRequirement.RequiredAllowGuests
+        : AuthRequirement.RequiredDisallowGuests;
+
+      CACHE.put(typeName, authType);
+      return authType;
+    } else {
+      CACHE.put(typeName, AuthRequirement.NotRequired);
+    }
+
+    return AuthRequirement.NotRequired;
   }
 
   /**
@@ -180,10 +223,12 @@ public class AuthFilter implements ContainerRequestFilter
    *
    * @return whether or not the methods has the auth annotation.
    */
-  boolean methodHasAuth(Method meth) {
+  Optional<Authenticated> methodAuthAnnotation(Method meth) {
     log.trace("AuthFilter#methodHasAuth");
     return Arrays.stream(meth.getDeclaredAnnotations())
-      .anyMatch(Authenticated.class::isInstance);
+      .filter(Authenticated.class::isInstance)
+      .map(Authenticated.class::cast)
+      .findFirst();
   }
 
   /**
@@ -194,10 +239,11 @@ public class AuthFilter implements ContainerRequestFilter
    *
    * @return whether or not the class has the auth annotation.
    */
-  boolean classHasAuth(Class < ? > type) {
+  Optional<Authenticated> classAuthAnnotation(Class < ? > type) {
     log.trace("AuthFilter#classHasAuth");
     return Arrays.stream(type.getDeclaredAnnotations())
-      .anyMatch(Authenticated.class::isInstance);
+      .filter(Authenticated.class::isInstance)
+      .map(Authenticated.class::cast)
+      .findFirst();
   }
-
 }

@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Authenticated
-{}
+{
+  boolean allowGuests() default false;
+}
