@@ -90,56 +90,59 @@ public class AuthFilter implements ContainerRequestFilter
     if (authRequirement == AuthRequirement.NotRequired)
       return;
 
-    try {
-      log.debug("Authenticating request");
+    log.debug("Authenticating request");
 
-      final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
 
-      if (isNull(rawAuth) || rawAuth.isEmpty()) {
-        log.debug("Authentication failed: no auth header.");
-        req.abortWith(build401());
-        return;
-      }
-
-      // Check if this is a guest login (Auth-Key will be just a guest user ID).
-      if (authRequirement == AuthRequirement.RequiredAllowGuests) {
-        try {
-          var userID = Long.parseLong(rawAuth);
-          var user   = acctMan.getUserProfile(userID);
-
-          // We matched a user and that user is a guest.
-          if (user != null && user.isGuest()) {
-            log.debug("Request authenticated as guest");
-            req.setProperty(Globals.REQUEST_USER, user);
-            return;
-          }
-        } catch (NumberFormatException e) {
-          // Not a user ID.
-        }
-      }
-
-      // Auth-Key is not a guest user ID.
-
-      final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
-
-      if (!new LoginCookieFactory(opts.getAuthSecretKey().orElseThrow()).isValidCookie(auth)) {
-        log.debug("Authentication failed: bad header");
-        req.abortWith(build401());
-        return;
-      }
-
-      final var profile = acctMan.getUserProfile(auth.getUsername());
-      if (isNull(profile)) {
-        log.debug("Authentication failed: no such user");
-        req.abortWith(build401());
-        return;
-      }
-
-      log.debug("Request authenticated");
-      req.setProperty(Globals.REQUEST_USER, profile);
-    } catch (Throwable e) {
-      log.error("Error occurred in authentication: ", e);
+    if (isNull(rawAuth) || rawAuth.isEmpty()) {
+      log.debug("Authentication failed: no auth header.");
+      req.abortWith(build401());
+      return;
     }
+
+    // Check if this is a guest login (Auth-Key will be just a guest user ID).
+    if (authRequirement == AuthRequirement.RequiredAllowGuests) {
+      try {
+        var userID = Long.parseLong(rawAuth);
+        var user   = acctMan.getUserProfile(userID);
+
+        // We matched a user and that user is a guest.
+        if (user != null && user.isGuest()) {
+          log.debug("Request authenticated as guest");
+          req.setProperty(Globals.REQUEST_USER, user);
+          return;
+        }
+      } catch (NumberFormatException e) {
+        // Not a user ID.
+      }
+    }
+
+    // Auth-Key is not a guest user ID.
+
+    LoginCookieFactory.LoginCookieParts parts = null;
+    try {
+      parts = LoginCookieFactory.parseCookieValue(rawAuth);
+    } catch (IllegalArgumentException e) {
+      log.debug("Authentication failed: bad header");
+      req.abortWith(build401());
+      return;
+    }
+
+    if (!new LoginCookieFactory(opts.getAuthSecretKey().orElseThrow()).isValidCookie(parts)) {
+      log.debug("Authentication failed: bad header");
+      req.abortWith(build401());
+      return;
+    }
+
+    final var profile = acctMan.getUserProfile(parts.getUsername());
+    if (isNull(profile)) {
+      log.debug("Authentication failed: no such user");
+      req.abortWith(build401());
+      return;
+    }
+
+    log.debug("Request authenticated");
+    req.setProperty(Globals.REQUEST_USER, profile);
   }
 
   /**
