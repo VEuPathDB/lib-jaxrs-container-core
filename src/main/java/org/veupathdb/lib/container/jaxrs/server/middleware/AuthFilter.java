@@ -90,6 +90,7 @@ public class AuthFilter implements ContainerRequestFilter
     // Check if this is a guest login (Auth-Key will be just a guest user ID).
     if (authRequirement == AuthRequirement.RequiredAllowGuests) {
       try {
+        log.debug("Endpoint allows guest logins.");
         var optUser = UserRepo.Select.userByID(Long.parseLong(rawAuth));
 
         if (optUser.isPresent()) {
@@ -102,10 +103,14 @@ public class AuthFilter implements ContainerRequestFilter
             log.debug("Request authenticated as guest");
             req.setProperty(Globals.REQUEST_USER, user);
             return;
+          } else {
+            log.debug("Auth token is an int value but is not a guest user ID.");
+            req.abortWith(build401());
+            return;
           }
         }
       } catch (NumberFormatException e) {
-        // Not a user ID.
+        log.debug("Auth token is not a user id.");
       } catch (Exception e) {
         log.error("Failed to lookup user in account db", e);
         req.abortWith(build500());
@@ -153,7 +158,6 @@ public class AuthFilter implements ContainerRequestFilter
       .entity(new UnauthorizedError(MSG_NOT_LOGGED_IN))
       .build();
   }
-
   static Response build500() {
     return Response.status(Status.INTERNAL_SERVER_ERROR)
       .entity(new ServerError(MSG_SERVER_ERROR))
