@@ -1,9 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import org.apache.logging.log4j.Logger;
-import org.gusdb.fgputil.accountdb.AccountManager;
-import org.gusdb.fgputil.accountdb.UserPropertyName;
-import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 
 import javax.annotation.Priority;
@@ -22,8 +19,10 @@ import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
+import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
 import static java.util.Collections.synchronizedMap;
@@ -43,8 +42,9 @@ import static java.util.Objects.isNull;
 @Priority(4)
 public class AuthFilter implements ContainerRequestFilter
 {
-  private static final String MESSAGE = "Users must be logged in to access this"
-    + " resource.";
+  private static final String
+    MSG_NOT_LOGGED_IN = "Users must be logged in to access this resource.",
+    MSG_SERVER_ERROR  = "Login failed due to internal server error.";
 
   private final Logger log = LogProvider.logger(AuthFilter.class);
 
@@ -57,24 +57,11 @@ public class AuthFilter implements ContainerRequestFilter
 
   private final Options opts;
 
-  private final AccountManager acctMan;
-
   @Context
   private ResourceInfo resource;
 
-  public AuthFilter(
-    Options opts,
-    DatabaseInstance acctDb
-  ) {
+  public AuthFilter(Options opts) {
     this.opts = opts;
-    this.acctMan = new AccountManager(acctDb, Globals.DB_ACCOUNT_SCHEMA,
-      Arrays.asList(
-        new UserPropertyName("firstName", "first_name", true),
-        new UserPropertyName("middleName", "middle_name", true),
-        new UserPropertyName("lastName", "last_name", true),
-        new UserPropertyName("organization", "organization", true)
-      )
-    );
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())
@@ -103,23 +90,31 @@ public class AuthFilter implements ContainerRequestFilter
     // Check if this is a guest login (Auth-Key will be just a guest user ID).
     if (authRequirement == AuthRequirement.RequiredAllowGuests) {
       try {
-        var userID = Long.parseLong(rawAuth);
-        var user   = acctMan.getUserProfile(userID);
+        var optUser = UserRepo.Select.userByID(Long.parseLong(rawAuth));
 
-        // We matched a user and that user is a guest.
-        if (user != null && user.isGuest()) {
-          log.debug("Request authenticated as guest");
-          req.setProperty(Globals.REQUEST_USER, user);
-          return;
+        if (optUser.isPresent()) {
+          var user = optUser.get();
+
+          UserRepo.Select.populateIsGuest(user);
+
+          // We matched a user and that user is a guest.
+          if (user.isGuest()) {
+            log.debug("Request authenticated as guest");
+            req.setProperty(Globals.REQUEST_USER, user);
+            return;
+          }
         }
       } catch (NumberFormatException e) {
         // Not a user ID.
+      } catch (Exception e) {
+        log.error("Failed to lookup user in account db", e);
+        req.abortWith(build500());
       }
     }
 
     // Auth-Key is not a guest user ID.
 
-    LoginCookieFactory.LoginCookieParts parts = null;
+    LoginCookieFactory.LoginCookieParts parts;
     try {
       parts = LoginCookieFactory.parseCookieValue(rawAuth);
     } catch (IllegalArgumentException e) {
@@ -134,15 +129,20 @@ public class AuthFilter implements ContainerRequestFilter
       return;
     }
 
-    final var profile = acctMan.getUserProfile(parts.getUsername());
-    if (isNull(profile)) {
-      log.debug("Authentication failed: no such user");
-      req.abortWith(build401());
-      return;
-    }
+    try {
+      final var profile = UserRepo.Select.userByUsername(parts.getUsername());
+      if (isNull(profile)) {
+        log.debug("Authentication failed: no such user");
+        req.abortWith(build401());
+        return;
+      }
 
-    log.debug("Request authenticated");
-    req.setProperty(Globals.REQUEST_USER, profile);
+      log.debug("Request authenticated");
+      req.setProperty(Globals.REQUEST_USER, profile);
+    } catch (Exception e) {
+      log.error("Failed to lookup user in account db", e);
+      req.abortWith(build500());
+    }
   }
 
   /**
@@ -150,7 +150,13 @@ public class AuthFilter implements ContainerRequestFilter
    */
   static Response build401() {
     return Response.status(Status.UNAUTHORIZED)
-      .entity(new UnauthorizedError(MESSAGE))
+      .entity(new UnauthorizedError(MSG_NOT_LOGGED_IN))
+      .build();
+  }
+
+  static Response build500() {
+    return Response.status(Status.INTERNAL_SERVER_ERROR)
+      .entity(new ServerError(MSG_SERVER_ERROR))
       .build();
   }
 

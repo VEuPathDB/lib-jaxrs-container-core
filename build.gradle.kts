@@ -17,7 +17,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "4.4.1"
+version = "5.0.0"
 
 repositories {
   jcenter()

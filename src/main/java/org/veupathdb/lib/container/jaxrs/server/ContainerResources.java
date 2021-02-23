@@ -10,7 +10,6 @@ import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.server.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.server.controller.MetricsService;
 import org.veupathdb.lib.container.jaxrs.server.middleware.*;
-import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
 /**
  * Container Meta Resources
@@ -56,9 +55,13 @@ abstract public class ContainerResources extends ResourceConfig {
 
   /**
    * Enable authentication checks for annotated resources.
+   * <p>
+   * Note: The authentication feature requires both the AccountDB and UserDB to
+   * be enabled.
+   * </p>
    */
   public void enableAuth() {
-    registerInstances(new AuthFilter(opts, DbManager.accountDatabase()));
+    registerInstances(new AuthFilter(opts));
   }
 
   /**
