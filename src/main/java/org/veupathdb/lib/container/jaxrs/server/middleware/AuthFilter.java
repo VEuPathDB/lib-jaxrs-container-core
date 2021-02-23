@@ -98,16 +98,13 @@ public class AuthFilter implements ContainerRequestFilter
         var optUser = UserRepo.Select.userByID(userID);
 
         var user = optUser.orElseGet(() -> new User().setFirstName("Guest").setUserID(userID));
-        if (optUser.isPresent()) {
-
           UserRepo.Select.populateIsGuest(user);
 
-          // We matched a user and that user is a guest.
-          if (user.isGuest()) {
-            log.debug("Request authenticated as guest");
-            req.setProperty(Globals.REQUEST_USER, user);
-            return;
-          }
+        // We matched a user and that user is a guest.
+        if (user.isGuest()) {
+          log.debug("Request authenticated as guest");
+          req.setProperty(Globals.REQUEST_USER, user);
+          return;
         }
 
         // If we made it this far we know that the auth token passed is an int
