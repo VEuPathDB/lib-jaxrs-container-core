@@ -20,6 +20,7 @@ import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
@@ -116,7 +117,7 @@ public class AuthFilter implements ContainerRequestFilter
         log.debug("Auth token is not a user id.");
       } catch (Exception e) {
         log.error("Failed to lookup user in account db", e);
-        req.abortWith(build500());
+        req.abortWith(build500(req));
       }
     }
 
@@ -139,17 +140,17 @@ public class AuthFilter implements ContainerRequestFilter
 
     try {
       final var profile = UserRepo.Select.userByUsername(parts.getUsername());
-      if (isNull(profile)) {
+      if (profile.isEmpty()) {
         log.debug("Authentication failed: no such user");
         req.abortWith(build401());
         return;
       }
 
       log.debug("Request authenticated");
-      req.setProperty(Globals.REQUEST_USER, profile);
+      req.setProperty(Globals.REQUEST_USER, profile.get());
     } catch (Exception e) {
       log.error("Failed to lookup user in account db", e);
-      req.abortWith(build500());
+      req.abortWith(build500(req));
     }
   }
 
@@ -161,9 +162,12 @@ public class AuthFilter implements ContainerRequestFilter
       .entity(new UnauthorizedError(MSG_NOT_LOGGED_IN))
       .build();
   }
-  static Response build500() {
+  static Response build500(ContainerRequestContext ctx) {
     return Response.status(Status.INTERNAL_SERVER_ERROR)
-      .entity(new ServerError(MSG_SERVER_ERROR))
+      .entity(new ServerError(
+        RequestIdProvider.getRequestId(ctx.getRequest()),
+        MSG_SERVER_ERROR
+      ))
       .build();
   }
 
