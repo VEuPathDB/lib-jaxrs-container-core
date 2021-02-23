@@ -22,7 +22,8 @@ final class SQL
         {
           private static final String table = Tables.AccountDB.UserAccounts.Accounts;
 
-          static final String ByID = select(db, schema, table, "by-id");
+          static final String ByID       = select(db, schema, table, "by-id");
+          static final String ByUsername = select(db, schema, table, "by-username");
         }
       }
     }
@@ -31,10 +32,12 @@ final class SQL
     {
       private static final String db = Instances.UserDB;
 
-      static final class UserLogins5 {
+      static final class UserLogins5
+      {
         private static final String schema = Schema.UserDB.UserLogins5;
 
-        static final class Users {
+        static final class Users
+        {
           private static final String table = Tables.UserDB.UserLogins5.Users;
 
           static final String ByID = select(db, schema, table, "by-id");

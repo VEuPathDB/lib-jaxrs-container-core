@@ -23,7 +23,7 @@ public class UserRepo
 
     public static Optional<User> userByUsername(String username) throws Exception {
       return new BasicPreparedReadQuery<>(
-        SQL.Select.AccountDB.UserAccounts.Accounts.ByID,
+        SQL.Select.AccountDB.UserAccounts.Accounts.ByUsername,
         DbManager.accountDatabase().getDataSource()::getConnection,
         Select::acctDB2User,
         StatementPreparer.singleString(username)
