@@ -18,6 +18,7 @@ import java.util.*;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
@@ -91,10 +92,13 @@ public class AuthFilter implements ContainerRequestFilter
     if (authRequirement == AuthRequirement.RequiredAllowGuests) {
       try {
         log.debug("Endpoint allows guest logins.");
-        var optUser = UserRepo.Select.userByID(Long.parseLong(rawAuth));
+        var userID = Long.parseLong(rawAuth);
 
+        log.debug("Auth token is an int value.");
+        var optUser = UserRepo.Select.userByID(userID);
+
+        var user = optUser.orElseGet(() -> new User().setFirstName("Guest").setUserID(userID));
         if (optUser.isPresent()) {
-          var user = optUser.get();
 
           UserRepo.Select.populateIsGuest(user);
 
@@ -103,12 +107,14 @@ public class AuthFilter implements ContainerRequestFilter
             log.debug("Request authenticated as guest");
             req.setProperty(Globals.REQUEST_USER, user);
             return;
-          } else {
-            log.debug("Auth token is an int value but is not a guest user ID.");
-            req.abortWith(build401());
-            return;
           }
         }
+
+        // If we made it this far we know that the auth token passed is an int
+        // value which means it can't be a login cookie, so we can bail early.
+        log.debug("Auth token is an int value but is not a guest user ID.");
+        req.abortWith(build401());
+        return;
       } catch (NumberFormatException e) {
         log.debug("Auth token is not a user id.");
       } catch (Exception e) {
