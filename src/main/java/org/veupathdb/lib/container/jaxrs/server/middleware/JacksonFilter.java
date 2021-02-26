@@ -27,6 +27,7 @@ import org.veupathdb.lib.container.jaxrs.server.annotations.DisableJackson;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.veupathdb.lib.container.jaxrs.view.error.ErrorResponse;
 
 /**
  * Jackson JSON (De)Serialization Filter
@@ -76,8 +77,17 @@ public class JacksonFilter
     final Annotation[] annotations,
     final MediaType mediaType
   ) {
-    return SUBTYPE.equals(mediaType.getSubtype()) && Arrays.stream(annotations)
-      .noneMatch(a -> a instanceof DisableJackson);
+    // bail if it's not a json target
+    if (!SUBTYPE.equals(mediaType.getSubtype()))
+      return false;
+
+    // If it's an error type, kick in always
+    if (ErrorResponse.class.isAssignableFrom(type))
+      return true;
+    if (Exception.class.isAssignableFrom(type))
+      return true;
+
+    return Arrays.stream(annotations).noneMatch(a -> a instanceof DisableJackson);
   }
 
   @Override
