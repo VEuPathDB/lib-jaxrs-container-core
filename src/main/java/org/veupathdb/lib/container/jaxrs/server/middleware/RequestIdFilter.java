@@ -40,6 +40,7 @@ implements ContainerRequestFilter, ContainerResponseFilter {
     // generate and assign request id
     var requestId = FriendlyId.createFriendlyId();
     requestCxt.setProperty(RequestKeys.REQUEST_ID, requestId);
+    _request.get().setAttribute(RequestKeys.REQUEST_ID, requestId);
     ThreadContext.put(Globals.CONTEXT_ID, requestId);
 
     LoggingVars.setRequestThreadVars(requestId,

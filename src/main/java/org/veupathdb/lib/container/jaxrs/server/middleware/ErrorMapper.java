@@ -1,23 +1,40 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Priority;
-import javax.ws.rs.*;
-import org.glassfish.jersey.server.ParamException.*;
-import javax.ws.rs.container.ContainerRequestContext;
+import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.jersey.server.ParamException.CookieParamException;
+import org.glassfish.jersey.server.ParamException.FormParamException;
+import org.glassfish.jersey.server.ParamException.HeaderParamException;
+import org.glassfish.jersey.server.ParamException.PathParamException;
+import org.glassfish.jersey.server.ParamException.QueryParamException;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
-import org.veupathdb.lib.container.jaxrs.view.error.*;
+import org.veupathdb.lib.container.jaxrs.view.error.BadContentTypeError;
+import org.veupathdb.lib.container.jaxrs.view.error.BadMethodError;
+import org.veupathdb.lib.container.jaxrs.view.error.BadRequestError;
+import org.veupathdb.lib.container.jaxrs.view.error.ErrorResponse;
+import org.veupathdb.lib.container.jaxrs.view.error.ForbiddenError;
+import org.veupathdb.lib.container.jaxrs.view.error.InvalidInputError;
+import org.veupathdb.lib.container.jaxrs.view.error.NotFoundError;
+import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
+import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -49,8 +66,8 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
     put(InternalServerErrorException.class, ErrorMapper.this::serverError);
   }};
 
-  @Context
-  ContainerRequestContext ctx;
+  @Inject
+  private javax.inject.Provider<Request> _request;
 
   @Override
   public Response toResponse(Throwable err) {
@@ -76,7 +93,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
 
   private ErrorResponse serverError(Throwable error) {
     return new ServerError(
-      (String) ctx.getProperty(RequestKeys.REQUEST_ID),
+      (String) _request.get().getAttribute(RequestKeys.REQUEST_ID),
       error
     );
   }
