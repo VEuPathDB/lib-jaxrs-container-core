@@ -17,10 +17,9 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "5.1.1"
+version = "5.1.2"
 
 repositories {
-  jcenter()
   mavenCentral()
 }
 
@@ -51,6 +50,17 @@ val test by tasks.getting(Test::class) {
 }
 
 publishing {
+  repositories {
+    maven {
+      name = "GitHub"
+      url  = uri("https://maven.pkg.github.com/veupathdb/lib-jaxrs-container-core")
+      credentials {
+        username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+        password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+      }
+    }
+  }
+
   publications {
     create<MavenPublication>("gpr") {
       from(components["java"])
@@ -60,10 +70,17 @@ publishing {
         url.set("https://github.com/VEuPathDB/lib-jaxrs-container-core")
         developers {
           developer {
+            id.set("rdoherty")
+            name.set("Ryan Doherty")
+            email.set("rdoherty@upenn.edu")
+            url.set("https://github.com/ryanrdoherty")
+            organization.set("VEuPathDB")
+          }
+          developer {
             id.set("epharper")
             name.set("Elizabeth Paige Harper")
             email.set("epharper@upenn.edu")
-            url.set("https://github.com/foxcapades/")
+            url.set("https://github.com/foxcapades")
             organization.set("VEuPathDB")
           }
         }
