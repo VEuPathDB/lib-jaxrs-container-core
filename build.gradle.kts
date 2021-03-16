@@ -17,7 +17,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "5.1.6"
+version = "5.1.7"
 
 repositories {
   mavenCentral()
@@ -53,7 +53,7 @@ publishing {
   repositories {
     maven {
       name = "GitHub"
-      url  = uri("https://maven.pkg.github.com/veupathdb/lib-jaxrs-container-core")
+      url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
       credentials {
         username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
         password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
