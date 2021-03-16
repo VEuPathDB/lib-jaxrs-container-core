@@ -17,7 +17,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "4.4.1"
+version = "4.4.2"
 
 repositories {
   jcenter()
@@ -51,6 +51,17 @@ val test by tasks.getting(Test::class) {
 }
 
 publishing {
+  repositories {
+    maven {
+      name = "GitHub"
+      url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+      credentials {
+        username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+        password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+      }
+    }
+  }
+
   publications {
     create<MavenPublication>("gpr") {
       from(components["java"])
