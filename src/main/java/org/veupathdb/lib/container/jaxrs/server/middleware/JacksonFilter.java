@@ -132,7 +132,7 @@ public class JacksonFilter
         .split(" at")[0]
         .replaceAll(" \\(class [^)]+\\)", "");
 
-      if (e.getPath().isEmpty())
+      if (e.getPath() != null && e.getPath().isEmpty())
         throw new UnprocessableEntityException(
           Collections.singletonList(message),
           Collections.emptyMap()
