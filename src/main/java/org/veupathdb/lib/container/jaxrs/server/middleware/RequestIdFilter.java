@@ -29,7 +29,7 @@ implements ContainerRequestFilter, ContainerResponseFilter {
   private static final Logger LOG = LogManager.getLogger(RequestIdFilter.class);
 
   @Inject
-  private javax.inject.Provider<Request> _request;
+  javax.inject.Provider<Request> _request;
 
   @Override
   public void filter(ContainerRequestContext req) {
@@ -40,7 +40,7 @@ implements ContainerRequestFilter, ContainerResponseFilter {
     // generate and assign request id
     var requestId = FriendlyId.createFriendlyId();
     requestCxt.setProperty(RequestKeys.REQUEST_ID, requestId);
-    _request.get().setAttribute(RequestKeys.REQUEST_ID, requestId);
+    request.setAttribute(RequestKeys.REQUEST_ID, requestId);
     ThreadContext.put(Globals.CONTEXT_ID, requestId);
 
     LoggingVars.setRequestThreadVars(requestId,

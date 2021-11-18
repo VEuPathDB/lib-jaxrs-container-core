@@ -37,6 +37,7 @@ class RequestIdFilterTest {
     var req = mock(ContainerRequestContext.class);
     var res = mock(ContainerResponseContext.class);
     var test = new RequestIdFilter();
+    test._request = () -> mock(Request.class);
 
     ThreadContext.put(Globals.CONTEXT_ID, "foo");
 
