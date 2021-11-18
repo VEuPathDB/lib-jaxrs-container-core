@@ -1,5 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.gusdb.fgputil.db.platform.SupportedPlatform;
@@ -87,7 +88,8 @@ public class OracleConnectionDetails extends RawConnectionDetails
     final var log = LogProvider.logger(OracleConnectionDetails.class);
     final var opt = opts.tnsName();
 
-    if (opt.isPresent()) {
+    // ensure tns name is present and non-blank before attempting LDAP
+    if (opt.filter(Predicate.not(String::isBlank)).isPresent()) {
       log.debug("TNS name provided, using LDAP");
       return fromLdap(opts);
     }
