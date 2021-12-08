@@ -44,7 +44,7 @@ class RequestLoggerTest {
     new RequestLogger().filter(req);
 
     verify(stat, times(1)).getLogger(RequestLogger.class);
-    verify(log, times(1)).debug((String) any(), any(), any());
+    verify(log, times(1)).debug((Supplier<?>)any());
   }
 
   @Test
