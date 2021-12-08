@@ -30,7 +30,7 @@ abstract public class ContainerResources extends ResourceConfig {
     ApiDocService.class,
     HealthController.class,
     MetricsService.class,
-    ErrorMapper.class,
+    ErrorMapper.class
   };
 
   private final Options opts;

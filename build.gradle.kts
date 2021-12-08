@@ -1,10 +1,7 @@
-import com.jfrog.bintray.gradle.BintrayExtension
 
 plugins {
   `java-library`
   `maven-publish`
-//  jacoco// version "0.8.7-SNAPSHOT"
-  id("com.jfrog.bintray") version "1.8.5"
 }
 
 apply(from = "${projectDir.absolutePath}/dependencies.gradle.kts")
@@ -110,16 +107,3 @@ publishing {
 //
 //  dependsOn("test")
 //}
-
-bintray {
-  user = project.findProperty("bintray.user") as String? ?: ""
-  key  = project.findProperty("bintray.pass") as String? ?: ""
-  publish = true
-  setPublications("gpr")
-  pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-    repo = "maven"
-    name = "lib-jaxrs-container-core"
-    userOrg = "veupathdb"
-    setVersion(rootProject.version)
-  })
-}

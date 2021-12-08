@@ -77,15 +77,15 @@ public class JacksonFilter
     final Annotation[] annotations,
     final MediaType mediaType
   ) {
-    // bail if it's not a json target
-    if (!SUBTYPE.equals(mediaType.getSubtype()))
-      return false;
-
     // If it's an error type, kick in always
     if (ErrorResponse.class.isAssignableFrom(type))
       return true;
     if (Exception.class.isAssignableFrom(type))
       return true;
+
+    // bail if it's not a json target
+    if (!SUBTYPE.equals(mediaType.getSubtype()))
+      return false;
 
     return Arrays.stream(annotations).noneMatch(a -> a instanceof DisableJackson);
   }
