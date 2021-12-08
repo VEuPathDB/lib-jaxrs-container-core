@@ -31,6 +31,7 @@ abstract public class ContainerResources extends ResourceConfig {
     HealthController.class,
     MetricsService.class,
     ErrorMapper.class,
+    NonJsonExceptionWriter.class
   };
 
   private final Options opts;
