@@ -1,7 +1,7 @@
 val jersey    = "2.33"   // Jersey/JaxRS version
 val jackson   = "2.12.2" // FasterXML Jackson version
 val junit     = "5.7.1"  // JUnit version
-val log4j     = "2.14.0" // Log4J version
+val log4j     = "2.16.0" // Log4J version
 
 val implementation      by configurations
 val testImplementation  by configurations
