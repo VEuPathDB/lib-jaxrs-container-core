@@ -1,8 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
+import jakarta.ws.rs.core.Request;
 import org.glassfish.jersey.server.ContainerRequest;
-
-import javax.ws.rs.core.Request;
 
 import java.util.Optional;
 

@@ -2,7 +2,7 @@ package org.veupathdb.lib.container.jaxrs.server;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import javax.ws.rs.ApplicationPath;
+import jakarta.ws.rs.ApplicationPath;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.middleware.CorsFilter;

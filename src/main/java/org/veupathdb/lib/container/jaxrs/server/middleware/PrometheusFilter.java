@@ -7,9 +7,9 @@ import io.prometheus.client.Histogram.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Priority;
-import javax.ws.rs.container.*;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.container.*;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Prometheus Metrics Filter
