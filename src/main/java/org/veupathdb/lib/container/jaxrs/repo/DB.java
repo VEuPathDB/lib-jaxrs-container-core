@@ -15,7 +15,8 @@ interface Schema
 
   interface UserDB
   {
-    String UserLogins5 = "userlogins5";
+    /** NOTE: This is not the name of a schema; user schema is a parameter */
+    String UserSchema = "userschema";
   }
 }
 
@@ -32,7 +33,7 @@ interface Tables
 
   interface UserDB
   {
-    interface UserLogins5
+    interface UserSchema
     {
       String Users = "users";
     }
@@ -68,7 +69,7 @@ interface Columns
 
   interface UserDB
   {
-    interface UserLogins5
+    interface UserSchema
     {
       interface Users
       {

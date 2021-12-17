@@ -18,7 +18,6 @@ import java.util.*;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
@@ -96,15 +95,13 @@ public class AuthFilter implements ContainerRequestFilter
         var userID = Long.parseLong(rawAuth);
 
         log.debug("Auth token is an int value.");
-        var optUser = UserRepo.Select.userByID(userID);
 
-        var user = optUser.orElseGet(() -> new User().setFirstName("Guest").setUserID(userID));
-          UserRepo.Select.populateIsGuest(user);
+        var optUser = UserRepo.Select.guestUserByID(userID);
 
         // We matched a user and that user is a guest.
-        if (user.isGuest()) {
+        if (optUser.isPresent()) {
           log.debug("Request authenticated as guest");
-          req.setProperty(Globals.REQUEST_USER, user);
+          req.setProperty(Globals.REQUEST_USER, optUser.get());
           return;
         }
 
@@ -116,8 +113,9 @@ public class AuthFilter implements ContainerRequestFilter
       } catch (NumberFormatException e) {
         log.debug("Auth token is not a user id.");
       } catch (Exception e) {
-        log.error("Failed to lookup user in account db", e);
+        log.error("Failed to lookup user in user db", e);
         req.abortWith(build500(req));
+        return;
       }
     }
 
@@ -139,7 +137,7 @@ public class AuthFilter implements ContainerRequestFilter
     }
 
     try {
-      final var profile = UserRepo.Select.userByUsername(parts.getUsername());
+      final var profile = UserRepo.Select.registeredUserByEmail(parts.getUsername());
       if (profile.isEmpty()) {
         log.debug("Authentication failed: no such user");
         req.abortWith(build401());
@@ -162,6 +160,7 @@ public class AuthFilter implements ContainerRequestFilter
       .entity(new UnauthorizedError(MSG_NOT_LOGGED_IN))
       .build();
   }
+
   static Response build500(ContainerRequestContext ctx) {
     return Response.status(Status.INTERNAL_SERVER_ERROR)
       .entity(new ServerError(

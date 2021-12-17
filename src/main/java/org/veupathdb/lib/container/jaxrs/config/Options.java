@@ -227,6 +227,12 @@ public class Options
     arity = "1")
   private SupportedPlatform userDbPlatform;
 
+  @Option(
+    names = "--user-db-schema",
+    defaultValue = "${env:USER_DB_SCHEMA}",
+    description = "env: USER_DB_SCHEMA\nDefaults to userlogins5",
+    arity = "1")
+  private String userDbSchema;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
@@ -258,6 +264,18 @@ public class Options
     return new DbOptionsImpl(userDbTsName, userDbHost, userDbPort, userDbName,
       userDbUser, userDbPass, userDbPlatform, userDbPoolSize, "user-db"
     );
+  }
+
+  /**
+   * Retrieves either the configured user schema or the default value
+   * {@code userlogins5} if none was configured.
+   *
+   * @return The configured or default user schema name.
+   */
+  public String getUserDbSchema() {
+    return userDbSchema == null || userDbSchema.isBlank()
+      ? "userlogins5"
+      : userDbSchema;
   }
 
   public Optional < String > getLdapServers() {
