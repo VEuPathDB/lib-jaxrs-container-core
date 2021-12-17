@@ -13,7 +13,7 @@ public class UserRepo
   {
     public static Optional<User> guestUserByID(long userID) throws Exception {
       return new BasicPreparedReadQuery<>(
-        SQL.Select.UserDB.UserSchema.Users.GuestByID,
+        SQL.Select.UserDB.UserSchema.Users.guestByID(),
         DbManager.userDatabase().getDataSource()::getConnection,
         Select::userDB2User,
         ps -> {
