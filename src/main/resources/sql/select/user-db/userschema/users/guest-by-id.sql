@@ -1,6 +1,8 @@
 SELECT
   *
 FROM
-  userlogins5.users
+  %susers
 WHERE
+  is_guest = ?
+AND
   user_id = ?
