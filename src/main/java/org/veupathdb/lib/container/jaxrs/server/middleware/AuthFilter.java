@@ -18,7 +18,6 @@ import java.util.*;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
@@ -97,11 +96,7 @@ public class AuthFilter implements ContainerRequestFilter
 
         log.debug("Auth token is an int value.");
 
-        // normalize guest lookup schema, using default if not provided
-        var userSchema = opts.getUserDbSchema().orElse("userlogins5");
-        if (!userSchema.endsWith(".")) userSchema += ".";
-
-        var optUser = UserRepo.Select.guestUserByID(userSchema, userID);
+        var optUser = UserRepo.Select.guestUserByID(userID);
 
         // We matched a user and that user is a guest.
         if (optUser.isPresent()) {

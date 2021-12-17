@@ -11,9 +11,9 @@ public class UserRepo
 {
   public static final class Select
   {
-    public static Optional<User> guestUserByID(String userSchema, long userID) throws Exception {
+    public static Optional<User> guestUserByID(long userID) throws Exception {
       return new BasicPreparedReadQuery<>(
-        String.format(SQL.Select.UserDB.UserSchema.Users.GuestByID, userSchema),
+        SQL.Select.UserDB.UserSchema.Users.GuestByID,
         DbManager.userDatabase().getDataSource()::getConnection,
         Select::userDB2User,
         ps -> {

@@ -3,6 +3,7 @@ package org.veupathdb.lib.container.jaxrs.repo;
 import java.util.function.Supplier;
 
 import io.vulpine.lib.sql.load.SqlLoader;
+import org.veupathdb.lib.container.jaxrs.providers.OptionsProvider;
 
 final class SQL
 {
@@ -40,6 +41,20 @@ final class SQL
           private static final String table = Tables.UserDB.UserSchema.Users;
 
           static final String GuestByID = select(db, schema, table, "guest-by-id");
+        }
+
+        /**
+         * Loads a select query from the target path, injecting the user schema
+         * name into the queries wherever the string
+         * {@code $&#123;user-schema&#125;} appears.
+         *
+         * @param path Path to the SQL file to load relative to the root of the
+         *             jar file (resources).
+         *
+         * @return The loaded select query with the user schema name injected.
+         */
+        private static String select(String... path) {
+          return SQL.select(path).replace("${user_schema}", OptionsProvider.getOptions().getUserDbSchema());
         }
       }
     }

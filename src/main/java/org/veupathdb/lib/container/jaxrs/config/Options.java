@@ -266,8 +266,16 @@ public class Options
     );
   }
 
-  public Optional < String > getUserDbSchema() {
-    return Optional.ofNullable(userDbSchema);
+  /**
+   * Retrieves either the configured user schema or the default value
+   * {@code userlogins5} if none was configured.
+   *
+   * @return The configured or default user schema name.
+   */
+  public String getUserDbSchema() {
+    return userDbSchema == null || userDbSchema.isBlank()
+      ? "userlogins5"
+      : userDbSchema;
   }
 
   public Optional < String > getLdapServers() {
