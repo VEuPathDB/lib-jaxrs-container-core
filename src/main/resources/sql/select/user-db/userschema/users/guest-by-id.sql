@@ -1,7 +1,7 @@
 SELECT
   *
 FROM
-  %susers
+  ${user_schema}.users
 WHERE
   is_guest = ?
 AND
