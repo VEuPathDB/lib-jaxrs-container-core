@@ -4,8 +4,6 @@ import com.devskiller.friendly_id.FriendlyId;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Histogram.Timer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.*;
@@ -22,7 +20,7 @@ import jakarta.ws.rs.ext.Provider;
 @PreMatching
 public class PrometheusFilter
 implements ContainerRequestFilter, ContainerResponseFilter {
-  private static final Logger LOG = LogManager.getLogger(PrometheusFilter.class);
+
   private static final String TIME_KEY = FriendlyId.createFriendlyId();
 
   private static final Counter reqCount = Counter.build()
@@ -40,16 +38,24 @@ implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Override
   public void filter(ContainerRequestContext req) {
-    LOG.trace("PrometheusFilter#filter(req)");
     req.setProperty(TIME_KEY, reqTime.labels(req.getUriInfo().getPath(),
       req.getMethod()).startTimer());
   }
 
   @Override
   public void filter(ContainerRequestContext req, ContainerResponseContext res) {
-    LOG.trace("PrometheusFilter#filter(req, res)");
-    ((Timer) req.getProperty(TIME_KEY)).observeDuration();
-    reqCount.labels(req.getUriInfo().getPath(), req.getMethod(),
-      String.valueOf(res.getStatus())).inc();
+
+    ((Timer) req.getProperty(TIME_KEY))
+      .observeDuration();
+
+    var path = req.getUriInfo().getPath();
+    var vars = req.getUriInfo().getPathParameters();
+
+    for (var entry : vars.entrySet())
+      for (var value : entry.getValue())
+        path = path.replace(value, entry.getKey());
+
+    reqCount.labels(path, req.getMethod(), String.valueOf(res.getStatus()))
+      .inc();
   }
 }
