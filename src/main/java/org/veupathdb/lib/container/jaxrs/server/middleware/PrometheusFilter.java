@@ -9,6 +9,8 @@ import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.*;
 import jakarta.ws.rs.ext.Provider;
 
+import java.util.function.Function;
+
 /**
  * Prometheus Metrics Filter
  * <p>
@@ -20,6 +22,8 @@ import jakarta.ws.rs.ext.Provider;
 @PreMatching
 public class PrometheusFilter
 implements ContainerRequestFilter, ContainerResponseFilter {
+
+  private static Function<String, String> PathTransform = Function.identity();
 
   private static final String TIME_KEY = FriendlyId.createFriendlyId();
 
@@ -38,8 +42,12 @@ implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Override
   public void filter(ContainerRequestContext req) {
-    req.setProperty(TIME_KEY, reqTime.labels(req.getUriInfo().getPath(),
-      req.getMethod()).startTimer());
+    req.setProperty(
+      TIME_KEY,
+      reqTime.labels(
+        PathTransform.apply(req.getUriInfo().getPath()),
+        req.getMethod()
+      ).startTimer());
   }
 
   @Override
@@ -48,7 +56,7 @@ implements ContainerRequestFilter, ContainerResponseFilter {
     ((Timer) req.getProperty(TIME_KEY))
       .observeDuration();
 
-    var path = req.getUriInfo().getPath();
+    var path = PathTransform.apply(req.getUriInfo().getPath());
     var vars = req.getUriInfo().getPathParameters();
 
     for (var entry : vars.entrySet())
@@ -57,5 +65,9 @@ implements ContainerRequestFilter, ContainerResponseFilter {
 
     reqCount.labels(path, req.getMethod(), String.valueOf(res.getStatus()))
       .inc();
+  }
+
+  public static void setPathTransform(Function<String, String> fn) {
+    PathTransform = fn;
   }
 }
