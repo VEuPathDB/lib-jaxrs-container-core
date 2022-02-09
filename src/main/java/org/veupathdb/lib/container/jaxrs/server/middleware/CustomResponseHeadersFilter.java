@@ -29,6 +29,7 @@ public class CustomResponseHeadersFilter implements ContainerResponseFilter {
   @Override
   public void filter(ContainerRequestContext req, ContainerResponseContext res) {
     Object o = req.getProperty(CUSTOM_HEADERS_KEY);
+    if (o == null) return;
     if (o instanceof Map) {
       for (Map.Entry<?,?> entry : ((Map<?,?>)o).entrySet()) {
         if (!(entry.getKey() instanceof String)) {
@@ -47,7 +48,7 @@ public class CustomResponseHeadersFilter implements ContainerResponseFilter {
 
   private RuntimeException makeTypeException(String name, Object obj, Class<?> requiredClass) {
     RuntimeException e = new RuntimeException("Invalid type sent for '" + CUSTOM_HEADERS_KEY + "' " + name +
-        "; must be " + requiredClass.getName() + ", but was " + obj.getClass().getName());
+        "; must be " + requiredClass.getName() + ", but was " + (obj == null ? "null" : obj.getClass().getName()));
     LOG.error("Bad property sent to " + CustomResponseHeadersFilter.class.getSimpleName(), e);
     return e;
   }
