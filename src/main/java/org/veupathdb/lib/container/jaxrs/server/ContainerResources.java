@@ -1,11 +1,8 @@
 package org.veupathdb.lib.container.jaxrs.server;
 
-import org.glassfish.jersey.server.ResourceConfig;
-
 import javax.ws.rs.ApplicationPath;
-
+import org.glassfish.jersey.server.ResourceConfig;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.server.middleware.CorsFilter;
 import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.server.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.server.controller.MetricsService;
@@ -26,6 +23,7 @@ abstract public class ContainerResources extends ResourceConfig {
     PrometheusFilter.class,
     RequestIdFilter.class,
     RequestLogger.class,
+    CustomResponseHeadersFilter.class,
 
     ApiDocService.class,
     HealthController.class,
