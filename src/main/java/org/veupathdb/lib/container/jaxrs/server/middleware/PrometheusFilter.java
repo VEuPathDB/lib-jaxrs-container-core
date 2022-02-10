@@ -67,6 +67,33 @@ implements ContainerRequestFilter, ContainerResponseFilter {
       .inc();
   }
 
+  /**
+   * Set custom URL path transformation to apply to paths being recorded in the
+   * response timings.
+   *
+   * This can be useful in stripping out variables from the URL that may pollute
+   * the prometheus metrics.
+   *
+   * For example, it may be desired that the following paths be recorded as one
+   * metric:
+   *
+   * <pre>
+   *   /users/123/preferences
+   *   /users/234/preferences
+   *   /users/345/preferences
+   * </pre>
+   *
+   * For metrics purposes it would be best to strip out the user ID from the
+   * path before recording.  For example, the above paths could be transformed
+   * to the following to get a merged metric:
+   *
+   * <pre>
+   *   /users/{user-id}/preferences
+   * </pre>
+   *
+   * @param fn Function used to transform the path before recording it in the
+   *           request/response time metrics.
+   */
   public static void setPathTransform(Function<String, String> fn) {
     PathTransform = fn;
   }

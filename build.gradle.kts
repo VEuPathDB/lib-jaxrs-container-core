@@ -13,7 +13,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.1.0"
+version = "6.2.0"
 
 repositories {
   mavenCentral()
@@ -41,7 +41,7 @@ dependencies {
   ))
 
   // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.16.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.17.0")
 
   // Extra FgpUtil dependencies
   runtimeOnly("org.apache.commons:commons-dbcp2:2.8.0")
@@ -71,17 +71,17 @@ dependencies {
   //
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.0")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
 
   //
   // Logging Stuff
   //
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.16.0")
-  implementation("org.apache.logging.log4j:log4j-core:2.16.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.17.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.17.0")
   implementation("org.apache.logging.log4j:log4j:2.16.0")
 
   //
@@ -93,8 +93,8 @@ dependencies {
   annotationProcessor("info.picocli:picocli-codegen:4.6.2")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.12.0")
-  implementation("io.prometheus:simpleclient_common:0.12.0")
+  implementation("io.prometheus:simpleclient:0.14.1")
+  implementation("io.prometheus:simpleclient_common:0.14.1")
 
   //
   // Utils
@@ -116,7 +116,7 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.1.0")
+  testImplementation("org.mockito:mockito-core:4.3.1")
 }
 
 tasks.jar {
