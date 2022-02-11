@@ -119,6 +119,7 @@ public class AuthFilter implements ContainerRequestFilter
         if (optUser.isPresent()) {
           log.debug("Request authenticated as guest");
           req.setProperty(Globals.REQUEST_USER, optUser.get());
+          req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
           return;
         }
 
@@ -163,6 +164,8 @@ public class AuthFilter implements ContainerRequestFilter
 
       log.debug("Request authenticated");
       req.setProperty(Globals.REQUEST_USER, profile.get());
+      req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
+
     } catch (Exception e) {
       log.error("Failed to lookup user in account db", e);
       req.abortWith(build500(req));
