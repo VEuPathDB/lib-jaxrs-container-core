@@ -66,8 +66,7 @@ public class AuthFilter implements ContainerRequestFilter
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())
-      throw new InvalidConfigException("Auth secret key is required for this "
-        + "service");
+      throw new InvalidConfigException("Auth secret key is required for this service");
   }
 
   @Override
@@ -80,10 +79,28 @@ public class AuthFilter implements ContainerRequestFilter
 
     log.debug("Authenticating request");
 
-    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+    // user can choose to submit auth key as header or query param
+    final var authHeader = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+    final var authParam = req.getUriInfo().getQueryParameters(false).getFirst(RequestKeys.AUTH_HEADER);
 
-    if (isNull(rawAuth) || rawAuth.isEmpty()) {
-      log.debug("Authentication failed: no auth header.");
+    // if both are submitted, they must match (no preference for one over the other)
+    if (!isNull(authHeader) && !isNull(authParam) && !authHeader.equals(authParam)) {
+      log.debug("Authentication failed: unequal auth header and query param values.");
+      req.abortWith(build401());
+    }
+
+    // if header is not present, but query param is, add header with param value
+    //   so downstream code does not have to parse query params to get it
+    if (authHeader == null) {
+      req.getHeaders().add(RequestKeys.AUTH_HEADER, authParam);
+    }
+
+    // distill the two values to one
+    final var rawAuth = authHeader == null ? authParam : authHeader;
+
+    // value must be non-null and non-empty
+    if (isNull(rawAuth) || rawAuth.isBlank()) {
+      log.debug("Authentication failed: no auth header or query param.");
       req.abortWith(build401());
       return;
     }
