@@ -81,7 +81,7 @@ public class AuthFilter implements ContainerRequestFilter
 
     // user can choose to submit auth key as header or query param
     final var authHeader = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
-    final var authParam = req.getUriInfo().getQueryParameters(false).getFirst(RequestKeys.AUTH_HEADER);
+    final var authParam = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.AUTH_HEADER);
 
     // if both are submitted, they must match (no preference for one over the other)
     if (!isNull(authHeader) && !isNull(authParam) && !authHeader.equals(authParam)) {
