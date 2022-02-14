@@ -1,14 +1,14 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import com.devskiller.friendly_id.FriendlyId;
-import javax.annotation.Priority;
-import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -29,7 +29,7 @@ implements ContainerRequestFilter, ContainerResponseFilter {
   private static final Logger LOG = LogManager.getLogger(RequestIdFilter.class);
 
   @Inject
-  javax.inject.Provider<Request> _request;
+  jakarta.inject.Provider<Request> _request;
 
   @Override
   public void filter(ContainerRequestContext req) {

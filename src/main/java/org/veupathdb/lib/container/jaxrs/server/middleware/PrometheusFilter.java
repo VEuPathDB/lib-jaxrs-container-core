@@ -4,12 +4,12 @@ import com.devskiller.friendly_id.FriendlyId;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Histogram.Timer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Priority;
-import javax.ws.rs.container.*;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.container.*;
+import jakarta.ws.rs.ext.Provider;
+
+import java.util.function.Function;
 
 /**
  * Prometheus Metrics Filter
@@ -22,7 +22,9 @@ import javax.ws.rs.ext.Provider;
 @PreMatching
 public class PrometheusFilter
 implements ContainerRequestFilter, ContainerResponseFilter {
-  private static final Logger LOG = LogManager.getLogger(PrometheusFilter.class);
+
+  private static Function<String, String> PathTransform = Function.identity();
+
   private static final String TIME_KEY = FriendlyId.createFriendlyId();
 
   private static final Counter reqCount = Counter.build()
@@ -40,16 +42,59 @@ implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Override
   public void filter(ContainerRequestContext req) {
-    LOG.trace("PrometheusFilter#filter(req)");
-    req.setProperty(TIME_KEY, reqTime.labels(req.getUriInfo().getPath(),
-      req.getMethod()).startTimer());
+    req.setProperty(
+      TIME_KEY,
+      reqTime.labels(
+        PathTransform.apply(req.getUriInfo().getPath()),
+        req.getMethod()
+      ).startTimer());
   }
 
   @Override
   public void filter(ContainerRequestContext req, ContainerResponseContext res) {
-    LOG.trace("PrometheusFilter#filter(req, res)");
-    ((Timer) req.getProperty(TIME_KEY)).observeDuration();
-    reqCount.labels(req.getUriInfo().getPath(), req.getMethod(),
-      String.valueOf(res.getStatus())).inc();
+
+    ((Timer) req.getProperty(TIME_KEY))
+      .observeDuration();
+
+    var path = PathTransform.apply(req.getUriInfo().getPath());
+    var vars = req.getUriInfo().getPathParameters();
+
+    for (var entry : vars.entrySet())
+      for (var value : entry.getValue())
+        path = path.replace(value, entry.getKey());
+
+    reqCount.labels(path, req.getMethod(), String.valueOf(res.getStatus()))
+      .inc();
+  }
+
+  /**
+   * Set custom URL path transformation to apply to paths being recorded in the
+   * response timings.
+   *
+   * This can be useful in stripping out variables from the URL that may pollute
+   * the prometheus metrics.
+   *
+   * For example, it may be desired that the following paths be recorded as one
+   * metric:
+   *
+   * <pre>
+   *   /users/123/preferences
+   *   /users/234/preferences
+   *   /users/345/preferences
+   * </pre>
+   *
+   * For metrics purposes it would be best to strip out the user ID from the
+   * path before recording.  For example, the above paths could be transformed
+   * to the following to get a merged metric:
+   *
+   * <pre>
+   *   /users/{user-id}/preferences
+   * </pre>
+   *
+   * @param fn Function used to transform the path before recording it in the
+   *           request/response time metrics.
+   */
+  public static void setPathTransform(Function<String, String> fn) {
+    PathTransform = fn;
   }
 }

@@ -1,9 +1,9 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import javax.ws.rs.ext.Provider;
 
 import java.util.function.Supplier;
 
+import jakarta.ws.rs.ext.Provider;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 
 @Provider
