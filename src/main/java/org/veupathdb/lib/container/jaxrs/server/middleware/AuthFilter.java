@@ -119,7 +119,6 @@ public class AuthFilter implements ContainerRequestFilter
         if (optUser.isPresent()) {
           log.debug("Request authenticated as guest");
           req.setProperty(Globals.REQUEST_USER, optUser.get());
-          req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
           return;
         }
 
