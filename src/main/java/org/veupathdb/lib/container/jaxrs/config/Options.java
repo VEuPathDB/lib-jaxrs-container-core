@@ -9,8 +9,7 @@ import java.util.Optional;
  * CLI Options.
  */
 @SuppressWarnings("unused")
-public class Options
-{
+public class Options {
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
@@ -240,11 +239,11 @@ public class Options
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  public Optional < String > getAuthSecretKey() {
+  public Optional<String> getAuthSecretKey() {
     return Optional.ofNullable(authSecretKey);
   }
 
-  public Optional < Integer > getServerPort() {
+  public Optional<Integer> getServerPort() {
     return Optional.ofNullable(serverPort);
   }
 
@@ -278,11 +277,11 @@ public class Options
       : userDbSchema;
   }
 
-  public Optional < String > getLdapServers() {
+  public Optional <String> getLdapServers() {
     return Optional.ofNullable(ldapServers);
   }
 
-  public Optional < String > getOracleBaseDn() {
+  public Optional<String> getOracleBaseDn() {
     return Optional.ofNullable(oracleBaseDn);
   }
 }
