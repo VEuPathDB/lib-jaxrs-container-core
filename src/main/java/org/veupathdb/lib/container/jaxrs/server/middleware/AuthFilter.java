@@ -1,16 +1,14 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
-
-import javax.annotation.Priority;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -18,6 +16,7 @@ import java.util.*;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
@@ -66,7 +65,8 @@ public class AuthFilter implements ContainerRequestFilter
 
     // Only validate that the secret key is present if we actually need it.
     if (opts.getAuthSecretKey().isEmpty())
-      throw new InvalidConfigException("Auth secret key is required for this service");
+      throw new InvalidConfigException("Auth secret key is required for this "
+        + "service");
   }
 
   @Override
@@ -133,7 +133,6 @@ public class AuthFilter implements ContainerRequestFilter
       } catch (Exception e) {
         log.error("Failed to lookup user in user db", e);
         req.abortWith(build500(req));
-        return;
       }
     }
 
@@ -164,8 +163,6 @@ public class AuthFilter implements ContainerRequestFilter
 
       log.debug("Request authenticated");
       req.setProperty(Globals.REQUEST_USER, profile.get());
-      req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
-
     } catch (Exception e) {
       log.error("Failed to lookup user in account db", e);
       req.abortWith(build500(req));
@@ -176,13 +173,12 @@ public class AuthFilter implements ContainerRequestFilter
    * Helper function to build an UnauthorizedError type.
    */
   static Response build401() {
-    return Response.status(Status.UNAUTHORIZED)
+    return Response.status(Response.Status.UNAUTHORIZED)
       .entity(new UnauthorizedError(MSG_NOT_LOGGED_IN))
       .build();
   }
-
   static Response build500(ContainerRequestContext ctx) {
-    return Response.status(Status.INTERNAL_SERVER_ERROR)
+    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
       .entity(new ServerError(
         RequestIdProvider.getRequestId(ctx.getRequest()),
         MSG_SERVER_ERROR
