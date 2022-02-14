@@ -13,7 +13,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "5.6.1"
+version = "6.2.0"
 
 repositories {
   mavenCentral()
@@ -41,10 +41,10 @@ dependencies {
   ))
 
   // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.16.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.17.0")
 
   // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.7.0")
+  runtimeOnly("org.apache.commons:commons-dbcp2:2.8.0")
 
   // // // // // // // // // // // // // // // // // // // // // // // // // //
   //
@@ -57,31 +57,31 @@ dependencies {
   //
 
   // JaxRS
-  implementation("jakarta.ws.rs:jakarta.ws.rs-api:2.1.6")
+  implementation("jakarta.platform:jakarta.jakartaee-web-api:9.1.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.33")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.33")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:2.33")
-  implementation("org.glassfish.hk2:hk2-api:2.6.1")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:2.33")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.3")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.3")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.3")
+  implementation("org.glassfish.hk2:hk2-api:3.0.2")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.3")
 
   //
   // (De)Serialization stuff
   //
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.12.2")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.2")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.2")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
 
   //
   // Logging Stuff
   //
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.16.0")
-  implementation("org.apache.logging.log4j:log4j-core:2.16.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.17.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.17.0")
   implementation("org.apache.logging.log4j:log4j:2.16.0")
 
   //
@@ -89,12 +89,12 @@ dependencies {
   //
 
   // CLI
-  implementation("info.picocli:picocli:4.5.1")
-  annotationProcessor("info.picocli:picocli-codegen:4.5.1")
+  implementation("info.picocli:picocli:4.6.2")
+  annotationProcessor("info.picocli:picocli-codegen:4.6.2")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.9.0")
-  implementation("io.prometheus:simpleclient_common:0.9.0")
+  implementation("io.prometheus:simpleclient:0.14.1")
+  implementation("io.prometheus:simpleclient_common:0.14.1")
 
   //
   // Utils
@@ -104,7 +104,7 @@ dependencies {
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
 
   // LDAP utils
-  implementation("com.unboundid:unboundid-ldapsdk:5.1.0")
+  implementation("com.unboundid:unboundid-ldapsdk:6.0.3")
 
   // Query stuff
   implementation("io.vulpine.lib:lib-query-util:2.1.0")
@@ -115,8 +115,8 @@ dependencies {
   //
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-  testImplementation("org.mockito:mockito-core:2.+")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  testImplementation("org.mockito:mockito-core:4.3.1")
 }
 
 tasks.jar {
@@ -184,20 +184,3 @@ publishing {
     }
   }
 }
-
-//tasks.register<JacocoReport>("codeCoverageReport") {
-//  executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
-//
-//  subprojects.onEach {
-//    sourceSets(it.sourceSets["main"])
-//  }
-//
-//  reports {
-//    xml.isEnabled = true
-//    xml.destination = File("${buildDir}/reports/jacoco/report.xml")
-//    html.isEnabled = false
-//    csv.isEnabled = false
-//  }
-//
-//  dependsOn("test")
-//}
