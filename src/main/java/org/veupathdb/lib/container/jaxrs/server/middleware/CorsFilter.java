@@ -1,8 +1,8 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
