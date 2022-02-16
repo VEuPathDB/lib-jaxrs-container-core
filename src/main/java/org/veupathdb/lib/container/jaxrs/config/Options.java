@@ -277,7 +277,7 @@ public class Options {
       : userDbSchema;
   }
 
-  public Optional <String> getLdapServers() {
+  public Optional<String> getLdapServers() {
     return Optional.ofNullable(ldapServers);
   }
 
