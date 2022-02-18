@@ -32,12 +32,12 @@ public final class DBPrometheus {
   public static void register(String name, DatabaseInstance db) {
     openConnections.add(new GaugeSet(
       Gauge.build().
-        name("db-active-connections").
+        name("db_active_connections").
         help("Number of active database connections.").
         labelNames("db").
         register(),
       Gauge.build().
-        name("db-idle-connections").
+        name("db_idle_connections").
         help("Number of idle database connections.").
         labelNames("db").
         register(),
