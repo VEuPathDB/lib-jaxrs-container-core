@@ -176,6 +176,8 @@ public class DbManager
       .register(new FgpDatabaseDependency(opts.displayName(), detail.host(),
         detail.port(), db));
 
+    DBPrometheus.register(opts.displayName(), db);
+
     return db;
   }
 }
