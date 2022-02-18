@@ -32,17 +32,19 @@ public final class DBPrometheus {
   public static void register(String name, DatabaseInstance db) {
     openConnections.add(new GaugeSet(
       Gauge.build().
-        name("db_active_connections").
+        name("db_active_connections_" + safeName(name)).
         help("Number of active database connections.").
-        labelNames("db").
         register(),
       Gauge.build().
-        name("db_idle_connections").
+        name("db_idle_connections_" + safeName(name)).
         help("Number of idle database connections.").
-        labelNames("db").
         register(),
       db
     ));
+  }
+
+  private static String safeName(String name) {
+    return name.replace('-', '_');
   }
 
   private static class GaugeSet {

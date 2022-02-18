@@ -13,7 +13,7 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.3.1"
+version = "6.3.2"
 
 repositories {
   mavenCentral()
