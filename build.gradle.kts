@@ -60,28 +60,28 @@ dependencies {
   implementation("jakarta.platform:jakarta.jakartaee-web-api:9.1.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.3")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.3")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.3")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
   implementation("org.glassfish.hk2:hk2-api:3.0.2")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.3")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
 
   //
   // (De)Serialization stuff
   //
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.2")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
 
   //
   // Logging Stuff
   //
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.17.0")
-  implementation("org.apache.logging.log4j:log4j-core:2.17.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.17.1")
+  implementation("org.apache.logging.log4j:log4j-core:2.17.1")
   implementation("org.apache.logging.log4j:log4j:2.16.0")
 
   //
@@ -89,12 +89,12 @@ dependencies {
   //
 
   // CLI
-  implementation("info.picocli:picocli:4.6.2")
-  annotationProcessor("info.picocli:picocli-codegen:4.6.2")
+  implementation("info.picocli:picocli:4.6.3")
+  annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.14.1")
-  implementation("io.prometheus:simpleclient_common:0.14.1")
+  implementation("io.prometheus:simpleclient:0.15.0")
+  implementation("io.prometheus:simpleclient_common:0.15.0")
 
   //
   // Utils
