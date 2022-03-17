@@ -47,7 +47,7 @@ public class AuthFilter implements ContainerRequestFilter
     MSG_NOT_LOGGED_IN = "Users must be logged in to access this resource.",
     MSG_SERVER_ERROR  = "Login failed due to internal server error.";
 
-  private final Logger log = LogProvider.logger(AuthFilter.class);
+  private static final Logger log = LogProvider.logger(AuthFilter.class);
 
   /**
    * Cache of resource classes or methods and whether or not they require
@@ -69,15 +69,7 @@ public class AuthFilter implements ContainerRequestFilter
       throw new InvalidConfigException("Auth secret key is required for this service");
   }
 
-  @Override
-  public void filter(ContainerRequestContext req) {
-    log.trace("AuthFilter#filter");
-
-    var authRequirement = authRequirement(resource);
-    if (authRequirement == AuthRequirement.NotRequired)
-      return;
-
-    log.debug("Authenticating request");
+  public static Optional<String> findAuthValue(ContainerRequestContext req) {
 
     // user can choose to submit auth key as header or query param
     final var authHeader = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
@@ -89,21 +81,34 @@ public class AuthFilter implements ContainerRequestFilter
       req.abortWith(build401());
     }
 
-    // if header is not present, but query param is, add header with param value
-    //   so downstream code does not have to parse query params to get it
-    if (authHeader == null) {
-      req.getHeaders().add(RequestKeys.AUTH_HEADER, authParam);
-    }
-
     // distill the two values to one
     final var rawAuth = authHeader == null ? authParam : authHeader;
 
+    // treat blank values as missing
+    return isNull(rawAuth) || rawAuth.isBlank() ? Optional.empty() : Optional.of(rawAuth);
+  }
+
+  @Override
+  public void filter(ContainerRequestContext req) {
+    log.trace("AuthFilter#filter");
+
+    var authRequirement = authRequirement(resource);
+    if (authRequirement == AuthRequirement.NotRequired)
+      return;
+
+    log.debug("Authenticating request");
+
+    // find submitted auth value
+    final var rawAuthOpt = findAuthValue(req);
+
     // value must be non-null and non-empty
-    if (isNull(rawAuth) || rawAuth.isBlank()) {
+    if (rawAuthOpt.isEmpty()) {
       log.debug("Authentication failed: no auth header or query param.");
       req.abortWith(build401());
       return;
     }
+
+    final var rawAuth = rawAuthOpt.get();
 
     // Check if this is a guest login (Auth-Key will be just a guest user ID).
     if (authRequirement == AuthRequirement.RequiredAllowGuests) {
@@ -119,7 +124,7 @@ public class AuthFilter implements ContainerRequestFilter
         if (optUser.isPresent()) {
           log.debug("Request authenticated as guest");
           req.setProperty(Globals.REQUEST_USER, optUser.get());
-          req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
+          req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
           return;
         }
 
@@ -162,9 +167,9 @@ public class AuthFilter implements ContainerRequestFilter
         return;
       }
 
-      log.debug("Request authenticated");
+      log.debug("Request authenticated as a registered user");
       req.setProperty(Globals.REQUEST_USER, profile.get());
-      req.setProperty(Globals.SUBMITTED_AUTH_KEY, rawAuth);
+      req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
 
     } catch (Exception e) {
       log.error("Failed to lookup user in account db", e);
