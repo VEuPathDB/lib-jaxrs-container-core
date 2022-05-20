@@ -7,8 +7,8 @@ import org.mockito.Mockito;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
 import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 
 import static org.junit.jupiter.api.Assertions.*;

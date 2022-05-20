@@ -1,7 +1,6 @@
 package org.veupathdb.lib.container.jaxrs;
 
 public final class Globals {
-
   private Globals() {}
 
   public static final String

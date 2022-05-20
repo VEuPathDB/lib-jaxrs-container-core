@@ -2,21 +2,21 @@ package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Priority;
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.NotAllowedException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.jersey.server.ParamException.CookieParamException;
 import org.glassfish.jersey.server.ParamException.FormParamException;
@@ -36,7 +36,7 @@ import org.veupathdb.lib.container.jaxrs.view.error.NotFoundError;
 import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Provider
 @PreMatching
@@ -67,7 +67,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   }};
 
   @Inject
-  private javax.inject.Provider<Request> _request;
+  private jakarta.inject.Provider<Request> _request;
 
   @Override
   public Response toResponse(Throwable err) {
