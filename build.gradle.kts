@@ -89,3 +89,20 @@ publishing {
     }
   }
 }
+
+//tasks.register<JacocoReport>("codeCoverageReport") {
+//  executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+//
+//  subprojects.onEach {
+//    sourceSets(it.sourceSets["main"])
+//  }
+//
+//  reports {
+//    xml.isEnabled = true
+//    xml.destination = File("${buildDir}/reports/jacoco/report.xml")
+//    html.isEnabled = false
+//    csv.isEnabled = false
+//  }
+//
+//  dependsOn("test")
+//}
