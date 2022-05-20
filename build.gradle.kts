@@ -14,10 +14,18 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "5.7.0"
+version = "5.8.0"
 
 repositories {
   mavenCentral()
+  maven {
+    name = "GitHubPackages"
+    url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+    credentials {
+      username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+      password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+    }
+  }
 }
 
 java {
@@ -29,15 +37,6 @@ tasks.jar {
   manifest {
     attributes["Implementation-Title"]   = project.name
     attributes["Implementation-Version"] = project.version
-  }
-}
-
-tasks.compileJava {
-  doFirst {
-    exec {
-      commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh",
-        rootProject.projectDir.absolutePath)
-    }
   }
 }
 
@@ -90,20 +89,3 @@ publishing {
     }
   }
 }
-
-//tasks.register<JacocoReport>("codeCoverageReport") {
-//  executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
-//
-//  subprojects.onEach {
-//    sourceSets(it.sourceSets["main"])
-//  }
-//
-//  reports {
-//    xml.isEnabled = true
-//    xml.destination = File("${buildDir}/reports/jacoco/report.xml")
-//    html.isEnabled = false
-//    csv.isEnabled = false
-//  }
-//
-//  dependsOn("test")
-//}

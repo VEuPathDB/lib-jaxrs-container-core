@@ -1,7 +1,8 @@
 val jersey    = "2.33"   // Jersey/JaxRS version
-val jackson   = "2.12.2" // FasterXML Jackson version
+val jackson   = "2.13.0" // FasterXML Jackson version
 val junit     = "5.7.1"  // JUnit version
-val log4j     = "2.16.0" // Log4J version
+val log4j     = "2.17.2" // Log4J version
+val fgputil   = "2.5"    // FgpUtil version
 
 val implementation      by configurations
 val testImplementation  by configurations
@@ -17,19 +18,10 @@ dependencies {
   //
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // FgpUtil jars
-  implementation(files(
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-accountdb-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-core-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-db-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-web-1.0.0.jar"
-  ))
-
-  // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:${log4j}")
-
-  // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.7.0")
+  implementation("org.gusdb:fgputil-core:${fgputil}")
+  implementation("org.gusdb:fgputil-db:${fgputil}")
+  implementation("org.gusdb:fgputil-accountdb:${fgputil}")
+  implementation("org.gusdb:fgputil-web:${fgputil}")
 
   // // // // // // // // // // // // // // // // // // // // // // // // // //
   //
