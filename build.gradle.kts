@@ -13,10 +13,18 @@ java {
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.4.0"
+version = "6.5.0"
 
 repositories {
   mavenCentral()
+  maven {
+    name = "GitHubPackages"
+    url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+    credentials {
+      username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+      password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+    }
+  }
 }
 
 java {
@@ -28,61 +36,54 @@ dependencies {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // //
   //
-  // FgpUtil & Compatibility Dependencies
-  //
-  // // // // // // // // // // // // // // // // // // // // // // // // // //
-
-  // FgpUtil jars
-  implementation(files(
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-accountdb-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-core-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-db-1.0.0.jar",
-    "${rootProject.projectDir.absolutePath}/vendor/fgputil-web-1.0.0.jar"
-  ))
-
-  // Compatibility bridge to support the long dead log4j-1.X
-  runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.17.0")
-
-  // Extra FgpUtil dependencies
-  runtimeOnly("org.apache.commons:commons-dbcp2:2.8.0")
-
-  // // // // // // // // // // // // // // // // // // // // // // // // // //
-  //
   // Project Dependencies
   //
   // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  // versions
+  val jackson = "2.13.3"      // FasterXML Jackson version
+  val jersey  = "3.0.4"       // Jersey/JaxRS version
+  val junit   = "5.8.2"       // JUnit version
+  val log4j   = "2.17.2"      // Log4J version
+  val fgputil = "2.5-jakarta" // FgpUtil version
+
+  // FgpUtil
+  implementation("org.gusdb:fgputil-core:${fgputil}")
+  implementation("org.gusdb:fgputil-db:${fgputil}")
+  implementation("org.gusdb:fgputil-web:${fgputil}")
+  implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   //
   // Server Stuff
   //
 
-  // JaxRS
+  // JaxRS API
   implementation("jakarta.platform:jakarta.jakartaee-web-api:9.1.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
-  implementation("org.glassfish.hk2:hk2-api:3.0.2")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jersey}")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${jersey}")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${jersey}")
+  implementation("org.glassfish.hk2:hk2-api:${jersey}")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:${jersey}")
 
   //
   // (De)Serialization stuff
   //
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.2")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
+  implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson}")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
 
   //
   // Logging Stuff
   //
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.17.1")
-  implementation("org.apache.logging.log4j:log4j-core:2.17.1")
-  implementation("org.apache.logging.log4j:log4j:2.16.0")
+  implementation("org.apache.logging.log4j:log4j-api:${log4j}")
+  implementation("org.apache.logging.log4j:log4j-core:${log4j}")
+  implementation("org.apache.logging.log4j:log4j:${log4j}")
 
   //
   // Miscellaneous Stuff
@@ -126,15 +127,6 @@ tasks.jar {
   }
 }
 
-tasks.compileJava {
-  doFirst {
-    exec {
-      commandLine("${projectDir.absolutePath}/bin/install-fgputil.sh",
-        rootProject.projectDir.absolutePath)
-    }
-  }
-}
-
 val test by tasks.getting(Test::class) {
   // Use junit platform for unit tests
   useJUnitPlatform()
@@ -161,17 +153,17 @@ publishing {
         url.set("https://github.com/VEuPathDB/lib-jaxrs-container-core")
         developers {
           developer {
-            id.set("rdoherty")
-            name.set("Ryan Doherty")
-            email.set("rdoherty@upenn.edu")
-            url.set("https://github.com/ryanrdoherty")
-            organization.set("VEuPathDB")
-          }
-          developer {
             id.set("epharper")
             name.set("Elizabeth Paige Harper")
             email.set("epharper@upenn.edu")
             url.set("https://github.com/foxcapades")
+            organization.set("VEuPathDB")
+          }
+          developer {
+            id.set("rdoherty")
+            name.set("Ryan Doherty")
+            email.set("rdoherty@upenn.edu")
+            url.set("https://github.com/ryanrdoherty")
             organization.set("VEuPathDB")
           }
         }
