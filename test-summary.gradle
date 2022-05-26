@@ -47,7 +47,6 @@ allprojects { project ->
   }
 }
 
-
 gradle.buildFinished {
   def allResults = rootProject.ext.testsResults
 
