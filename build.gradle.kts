@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.5.1"
+version = "6.6.0"
 
 plugins {
   `java-library`
@@ -50,7 +50,7 @@ dependencies {
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:12.2.0.1")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.5.0.0")
 
   // Jersey
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jersey}")

@@ -90,11 +90,11 @@ abstract public class Server
   }
 
   /**
-   * Hook point for performing tasks after the CLI/Environment configuration has
+   * Hook-point for performing tasks after the CLI/Environment configuration has
    * been parsed.
    * <p>
    * This method will be called before the server is started and before any of
-   * the built in DB connections are established.
+   * the built-in DB connections are established.
    */
   protected void postCliParse(Options opts) {
   }
@@ -102,6 +102,11 @@ abstract public class Server
   protected void postAcctDb() {}
   protected void postUserDb() {}
   protected void postAppDb() {}
+
+  /**
+   * Hook-point for performing tasks after the service has started up.
+   */
+  protected void postStartup() {}
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
@@ -209,6 +214,8 @@ abstract public class Server
       logger.fatal("Could not start server.", e);
       RuntimeProvider.runtime().exit(1);
     }
+
+    postStartup();
 
     logger.info("Server started.  Listening on port {}.", port);
   }
