@@ -39,18 +39,31 @@ public class RequestAuth implements Map.Entry<String, String> {
     return "AuthHeader(header="+header+", secret=***)";
   }
 
+  /**
+   * Alias of {@link #getHeader()}.
+   *
+   * @deprecated Shift usage to {@link #getHeader()} instead of this method.
+   */
   @Override
   @Deprecated
   public String getKey() {
     return header;
   }
 
+  /**
+   * Alias of {@link #getToken()}.
+   *
+   * @deprecated Shift usage to {@link #getToken()} instead of this method.
+   */
   @Override
   @Deprecated
   public String getValue() {
     return token;
   }
 
+  /**
+   * Unsupported operation.
+   */
   @Override
   @Deprecated
   public String setValue(String value) {
