@@ -4,6 +4,17 @@ import java.util.Map;
 
 /**
  * Request Auth Token/Header
+ *
+ * Wraps the authentication information for a request.
+ *
+ * @apiNote This type presently implements the interface {@link Map.Entry}.
+ * This is temporary and was done to ease the transition of consumers of this
+ * library from older versions.  When all known consumers of this library have
+ * been updated to declare their types as {@link RequestAuth} instead of
+ * {@code Map.Entry}, the implements should be dropped.
+ *
+ * @author Elizabeth Paige Harper (https://github.com/foxcapades)
+ * @since v7.0.0
  */
 public class RequestAuth implements Map.Entry<String, String> {
   private final String header;
