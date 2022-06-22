@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.6.0"
+version = "6.7.0"
 
 plugins {
   `java-library`
@@ -93,7 +93,7 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.3.1")
+  testImplementation("org.mockito:mockito-core:4.6.1")
 }
 
 tasks.jar {

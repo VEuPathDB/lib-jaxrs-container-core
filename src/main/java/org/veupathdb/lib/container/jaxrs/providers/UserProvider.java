@@ -1,6 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import org.glassfish.jersey.server.ContainerRequest;
@@ -18,7 +17,7 @@ public class UserProvider {
       .map(User.class::cast);
   }
 
-  public static Optional<Entry<String,String>> getSubmittedAuth(ContainerRequest req) {
+  public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
     String auth = Optional.ofNullable(Objects
       // caller must pass a non-null request
       .requireNonNull(req)
