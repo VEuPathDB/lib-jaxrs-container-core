@@ -78,7 +78,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
     if (code == INTERNAL_SERVER_ERROR.getStatusCode()) {
       LogProvider.logger(ErrorMapper.class).warn("Caught Exception: ", err);
     } else {
-      LogProvider.logger(ErrorMapper.class).debug("Caught Exception: ", err);
+      LogProvider.logger(ErrorMapper.class).debug("Caught Exception: {}", err.getMessage());
     }
 
     var mapper = mappers.get(err.getClass());
