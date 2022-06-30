@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.7.1"
+version = "6.7.2"
 
 plugins {
   `java-library`
@@ -38,10 +38,10 @@ dependencies {
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // versions
-  val jackson = "2.13.3"      // FasterXML Jackson version
-  val jersey  = "3.0.4"       // Jersey/JaxRS version
-  val log4j   = "2.17.2"      // Log4J version
-  val fgputil = "2.7-jakarta" // FgpUtil version
+  val jackson = "2.13.3"        // FasterXML Jackson version
+  val jersey  = "3.0.4"         // Jersey/JaxRS version
+  val log4j   = "2.17.2"        // Log4J version
+  val fgputil = "2.7.1-jakarta" // FgpUtil version
 
   // FgpUtil
   implementation("org.gusdb:fgputil-core:${fgputil}")
