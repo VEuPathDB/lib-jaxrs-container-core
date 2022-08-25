@@ -10,18 +10,23 @@ import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;
 import org.veupathdb.lib.container.jaxrs.server.controller.HealthController;
 import org.veupathdb.lib.container.jaxrs.server.controller.MetricsService;
 import org.veupathdb.lib.container.jaxrs.server.middleware.*;
+import org.veupathdb.lib.jaxrs.raml.multipart.MultipartApplicationEventListener;
+import org.veupathdb.lib.jaxrs.raml.multipart.MultipartMessageBodyReader;
 
 /**
  * Container Meta Resources
- *
+ * <p>
  * Universal services that should be available in all containerized services.
- *
+ * <p>
  * This class is intended for framework internal use and is subject to change
  * with framework updates.
  */
 @ApplicationPath("/")
 abstract public class ContainerResources extends ResourceConfig {
   private static final Class<?>[] DEFAULT_CLASSES = {
+    MultipartApplicationEventListener.class,
+    MultipartMessageBodyReader.class,
+
     JacksonFilter.class,
     PrometheusFilter.class,
     RequestIdFilter.class,

@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.8.0"
+version = "6.9.0"
 
 plugins {
   `java-library`
@@ -39,8 +39,8 @@ dependencies {
 
   // versions
   val jackson = "2.13.3"        // FasterXML Jackson version
-  val jersey  = "3.0.4"         // Jersey/JaxRS version
-  val log4j   = "2.17.2"        // Log4J version
+  val jersey  = "3.0.6"         // Jersey/JaxRS version
+  val log4j   = "2.18.0"        // Log4J version
   val fgputil = "2.7.1-jakarta" // FgpUtil version
 
   // FgpUtil
@@ -59,6 +59,8 @@ dependencies {
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:${jersey}")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
+  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.0.0")
+
   // Jackson
   implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
   implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson}")
@@ -74,8 +76,8 @@ dependencies {
   annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.15.0")
-  implementation("io.prometheus:simpleclient_common:0.15.0")
+  implementation("io.prometheus:simpleclient:0.16.0")
+  implementation("io.prometheus:simpleclient_common:0.16.0")
   api("org.veupathdb.lib:lib-prometheus-stats:1.1.0")
 
   // Unique, human readable id generation
@@ -93,8 +95,8 @@ dependencies {
   //
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.6.1")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+  testImplementation("org.mockito:mockito-core:4.7.0")
 }
 
 tasks.jar {
