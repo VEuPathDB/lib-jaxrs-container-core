@@ -9,6 +9,8 @@ public enum ErrorStatus
   FORBIDDEN            ("forbidden"),
   NOT_FOUND            ("not-found"),
   BAD_METHOD           ("method-not-allowed"),
+
+  CONFLICT             ("conflict"),
   UNSUPPORTED_MEDIA    ("unsupported-content-type"),
   TEAPOT               ("I'm a teapot."),
   UNPROCESSABLE_ENTITY ("invalid-input"),

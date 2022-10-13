@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.9.1"
+version = "6.10.0"
 
 plugins {
   `java-library`
@@ -38,9 +38,9 @@ dependencies {
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // versions
-  val jackson = "2.13.3"        // FasterXML Jackson version
-  val jersey  = "3.0.6"         // Jersey/JaxRS version
-  val log4j   = "2.18.0"        // Log4J version
+  val jackson = "2.13.4"        // FasterXML Jackson version
+  val jersey  = "3.0.8"         // Jersey/JaxRS version
+  val log4j   = "2.19.0"        // Log4J version
   val fgputil = "2.7.1-jakarta" // FgpUtil version
 
   // FgpUtil
@@ -50,7 +50,7 @@ dependencies {
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.5.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.7.0.0")
 
   // Jersey
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jersey}")
@@ -84,7 +84,7 @@ dependencies {
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
 
   // LDAP utils
-  implementation("com.unboundid:unboundid-ldapsdk:6.0.5")
+  implementation("com.unboundid:unboundid-ldapsdk:6.0.6")
 
   // Query stuff
   implementation("io.vulpine.lib:lib-query-util:2.1.0")
@@ -96,7 +96,7 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-  testImplementation("org.mockito:mockito-core:4.7.0")
+  testImplementation("org.mockito:mockito-core:4.8.0")
 }
 
 tasks.jar {

@@ -26,15 +26,7 @@ import org.glassfish.jersey.server.ParamException.QueryParamException;
 import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
-import org.veupathdb.lib.container.jaxrs.view.error.BadContentTypeError;
-import org.veupathdb.lib.container.jaxrs.view.error.BadMethodError;
-import org.veupathdb.lib.container.jaxrs.view.error.BadRequestError;
-import org.veupathdb.lib.container.jaxrs.view.error.ErrorResponse;
-import org.veupathdb.lib.container.jaxrs.view.error.ForbiddenError;
-import org.veupathdb.lib.container.jaxrs.view.error.InvalidInputError;
-import org.veupathdb.lib.container.jaxrs.view.error.NotFoundError;
-import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
-import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
+import org.veupathdb.lib.container.jaxrs.view.error.*;
 
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -47,23 +39,16 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
     ErrorResponse toError(Throwable t);
   }
 
-  private final Map<Class<? extends Throwable>, Mapper> mappers = new HashMap<>() {{
-    put(BadRequestException.class,  BadRequestError::new);
-    put(QueryParamException.class,  BadRequestError::new);
-    put(HeaderParamException.class, BadRequestError::new);
-    put(CookieParamException.class, BadRequestError::new);
-    put(FormParamException.class,   BadRequestError::new);
-
-    put(NotAuthorizedException.class, UnauthorizedError::new);
-    put(ForbiddenException.class,     ForbiddenError::new);
-
-    put(NotFoundException.class,  NotFoundError::new);
-    put(PathParamException.class, NotFoundError::new);
-
-    put(NotAllowedException.class,          BadMethodError::new);
-    put(NotSupportedException.class,        BadContentTypeError::new);
-    put(UnprocessableEntityException.class, InvalidInputError::new);
-    put(InternalServerErrorException.class, ErrorMapper.this::serverError);
+  private final Map<Integer, Mapper> mappers = new HashMap<>() {{
+    put(400, BadRequestError::new);
+    put(401, UnauthorizedError::new);
+    put(403, ForbiddenError::new);
+    put(404, NotFoundError::new);
+    put(405, BadMethodError::new);
+    put(409, ConflictError::new);
+    put(415, BadContentTypeError::new);
+    put(422, InvalidInputError::new);
+    put(500, ErrorMapper.this::serverError);
   }};
 
   @Inject
@@ -81,7 +66,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       LogProvider.logger(ErrorMapper.class).debug("Caught Exception: {}", err.getMessage());
     }
 
-    var mapper = mappers.get(err.getClass());
+    var mapper = mappers.get(code);
 
     return Response.status(code)
       .entity((mapper != null
