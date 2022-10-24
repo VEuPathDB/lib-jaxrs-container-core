@@ -11,6 +11,7 @@ public enum ErrorStatus
   BAD_METHOD           ("method-not-allowed"),
 
   CONFLICT             ("conflict"),
+  GONE                 ("gone"),
   UNSUPPORTED_MEDIA    ("unsupported-content-type"),
   TEAPOT               ("I'm a teapot."),
   UNPROCESSABLE_ENTITY ("invalid-input"),
