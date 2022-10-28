@@ -7,7 +7,6 @@ import io.prometheus.client.Histogram.Timer;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.*;
-import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
 
 import java.util.function.Function;
