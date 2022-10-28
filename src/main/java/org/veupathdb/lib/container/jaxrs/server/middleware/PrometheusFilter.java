@@ -7,6 +7,7 @@ import io.prometheus.client.Histogram.Timer;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.*;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
 
 import java.util.function.Function;
@@ -45,25 +46,16 @@ implements ContainerRequestFilter, ContainerResponseFilter {
     req.setProperty(
       TIME_KEY,
       reqTime.labels(
-        PathTransform.apply(req.getUriInfo().getPath()),
+        getSubstitutedPath(req),
         req.getMethod()
       ).startTimer());
   }
 
   @Override
   public void filter(ContainerRequestContext req, ContainerResponseContext res) {
-
     ((Timer) req.getProperty(TIME_KEY))
       .observeDuration();
-
-    var path = PathTransform.apply(req.getUriInfo().getPath());
-    var vars = req.getUriInfo().getPathParameters();
-
-    for (var entry : vars.entrySet())
-      for (var value : entry.getValue())
-        path = path.replace(value, entry.getKey());
-
-    reqCount.labels(path, req.getMethod(), String.valueOf(res.getStatus()))
+    reqCount.labels(getSubstitutedPath(req), req.getMethod(), String.valueOf(res.getStatus()))
       .inc();
   }
 
@@ -96,5 +88,16 @@ implements ContainerRequestFilter, ContainerResponseFilter {
    */
   public static void setPathTransform(Function<String, String> fn) {
     PathTransform = fn;
+  }
+
+  private static String getSubstitutedPath(ContainerRequestContext req) {
+    var path = PathTransform.apply(req.getUriInfo().getPath());
+    var vars = req.getUriInfo().getPathParameters();
+
+    for (var entry : vars.entrySet())
+      for (var value : entry.getValue())
+        path = path.replace(value, entry.getKey());
+
+    return path;
   }
 }
