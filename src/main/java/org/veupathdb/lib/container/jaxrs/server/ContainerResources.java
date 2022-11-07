@@ -30,7 +30,6 @@ abstract public class ContainerResources extends ResourceConfig {
     JacksonFilter.class,
     PrometheusFilter.class,
     RequestIdFilter.class,
-    RequestLogger.class,
     CustomResponseHeadersFilter.class,
 
     ApiDocService.class,
