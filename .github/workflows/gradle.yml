@@ -21,6 +21,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew clean build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #      run: ./gradlew clean codeCoverageReport
 #    - name: Code Coverage
 #      env:
