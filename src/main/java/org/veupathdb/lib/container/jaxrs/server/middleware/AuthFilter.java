@@ -64,7 +64,9 @@ public class AuthFilter implements ContainerRequestFilter
     this.opts = opts;
 
     // Only validate that the secret key is present if we actually need it.
-    if (opts.getAuthSecretKey().isEmpty())
+    if (opts.getAuthSecretKey()
+        .filter(secretKey -> !secretKey.isBlank())
+        .isEmpty())
       throw new InvalidConfigException("Auth secret key is required for this "
         + "service");
   }
