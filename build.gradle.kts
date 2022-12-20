@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.12.1"
+version = "6.13.0"
 
 plugins {
   `java-library`
@@ -37,43 +37,39 @@ dependencies {
   //
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // versions
-  val jackson = "2.13.4"        // FasterXML Jackson version
-  val jersey  = "3.0.8"         // Jersey/JaxRS version
-  val log4j   = "2.19.0"        // Log4J version
-  val fgputil = "2.7.1-jakarta" // FgpUtil version
 
   // FgpUtil
+  val fgputil = "2.9.3-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.7.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.8.0.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jersey}")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${jersey}")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${jersey}")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:${jersey}")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.0")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.0")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.0")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.0")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.0.2")
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson}")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson}")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0")
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:${log4j}")
-  implementation("org.apache.logging.log4j:log4j-core:${log4j}")
-  implementation("org.apache.logging.log4j:log4j:${log4j}")
+  implementation("org.apache.logging.log4j:log4j-api:2.19.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.19.0")
+  implementation("org.apache.logging.log4j:log4j:2.19.0")
 
   // CLI
-  implementation("info.picocli:picocli:4.6.3")
-  annotationProcessor("info.picocli:picocli-codegen:4.6.3")
+  implementation("info.picocli:picocli:4.7.0")
+  annotationProcessor("info.picocli:picocli-codegen:4.7.0")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
@@ -84,7 +80,7 @@ dependencies {
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
 
   // LDAP utils
-  implementation("com.unboundid:unboundid-ldapsdk:6.0.6")
+  implementation("com.unboundid:unboundid-ldapsdk:6.0.7")
 
   // Query stuff
   implementation("io.vulpine.lib:lib-query-util:2.1.0")
