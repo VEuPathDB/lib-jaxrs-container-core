@@ -98,9 +98,11 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
       req.setProperty(METHOD_KEY, req.getMethod());
       req.setProperty(IS_ERROR_KEY, isError);
     }
-    reqCount.labels((String) req.getProperty(MATCHED_URL_KEY), req.getMethod(), String.valueOf(res.getStatus()))
-      .inc();
-    req.removeProperty(MATCHED_URL_KEY);
+    final String matchedUrlKey = (String) req.getProperty(MATCHED_URL_KEY);
+    if (matchedUrlKey != null) {
+      reqCount.labels(matchedUrlKey, req.getMethod(), String.valueOf(res.getStatus())).inc();
+      req.removeProperty(MATCHED_URL_KEY);
+    }
   }
 
   @Override
