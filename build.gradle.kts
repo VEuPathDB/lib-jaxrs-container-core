@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.13.1"
+version = "6.13.2"
 
 plugins {
   `java-library`
@@ -39,7 +39,7 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.9.3-jakarta"
+  val fgputil = "2.12.0-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
@@ -92,8 +92,8 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-  testImplementation("org.mockito:mockito-core:4.8.0")
-  testImplementation("org.mockito:mockito-junit-jupiter:4.8.0")
+  testImplementation("org.mockito:mockito-core:4.11.0")
+  testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
 }
 
 tasks.jar {
