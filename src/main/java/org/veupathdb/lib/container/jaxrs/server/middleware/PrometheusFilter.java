@@ -71,7 +71,6 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     fn.accept(() -> format(START_FORMAT, req.getMethod(), "/" + path));
     String pathTemplate = getPathTemplate(req);
     req.setProperty(MATCHED_URL_KEY, pathTemplate);
-    LOG.info("Matched template: " + getPathTemplate(req) + ". Starting timer with path a label.");
     req.setProperty(
       TIME_KEY,
       reqTime.labels(
@@ -122,7 +121,6 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
       context.removeProperty(METHOD_KEY);
       context.removeProperty(IS_ERROR_KEY);
 
-      LOG.info("Observing duration with request body.");
       ((Timer) context.getProperty(TIME_KEY))
           .observeDuration();
       context.removeProperty(TIME_KEY);
