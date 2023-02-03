@@ -1,7 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import com.devskiller.friendly_id.FriendlyId;
-import io.prometheus.client.Histogram;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
