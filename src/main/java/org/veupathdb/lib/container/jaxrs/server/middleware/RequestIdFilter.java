@@ -21,6 +21,7 @@ import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Assigns a unique ID to each request for logging, error tracing purposes.
@@ -46,11 +47,16 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     var requestId = FriendlyId.createFriendlyId();
     requestCxt.setProperty(RequestKeys.REQUEST_ID, requestId);
     request.setAttribute(RequestKeys.REQUEST_ID, requestId);
+
     ThreadContext.put(Globals.CONTEXT_ID, requestId);
 
+    final String traceId = Optional.ofNullable(request.getHeader(Globals.TRACE_ID_HEADER))
+        .orElse(FriendlyId.createFriendlyId());
+
     LoggingVars.setRequestThreadVars(requestId,
-      request.getSession().getIdInternal(),
-      request.getRemoteAddr());
+        request.getSession().getIdInternal(),
+        request.getRemoteAddr(),
+        traceId);
 
     // At the end so it has the context id
     LOG.trace("RequestIdFilter#filter(requestCxt)");
