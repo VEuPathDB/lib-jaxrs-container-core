@@ -121,9 +121,12 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
       context.removeProperty(METHOD_KEY);
       context.removeProperty(IS_ERROR_KEY);
 
-      ((Timer) context.getProperty(TIME_KEY))
-          .observeDuration();
-      context.removeProperty(TIME_KEY);
+      final String matchedUrlKey = (String) context.getProperty(MATCHED_URL_KEY);
+      if (matchedUrlKey != null) {
+        ((Timer) context.getProperty(TIME_KEY))
+            .observeDuration();
+        context.removeProperty(TIME_KEY);
+      }
     }
   }
 
