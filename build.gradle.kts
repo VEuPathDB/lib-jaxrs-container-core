@@ -39,7 +39,7 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.0-jakarta"
+  val fgputil = "2.12.2-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
