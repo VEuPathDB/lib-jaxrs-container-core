@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.14.1"
+version = "6.14.2"
 
 plugins {
   `java-library`
@@ -39,7 +39,7 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.2-jakarta"
+  val fgputil = "2.12.3-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
