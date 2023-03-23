@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.14.3"
+version = "6.14.4"
 
 plugins {
   `java-library`
@@ -39,37 +39,36 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.3-jakarta"
+  val fgputil = "2.12.6-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.8.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.0")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.0")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.0")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.0")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.1")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.1")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.1")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.0")
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.19.0")
-  implementation("org.apache.logging.log4j:log4j-core:2.19.0")
-  implementation("org.apache.logging.log4j:log4j:2.19.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 
   // CLI
-  implementation("info.picocli:picocli:4.7.0")
-  annotationProcessor("info.picocli:picocli-codegen:4.7.0")
+  implementation("info.picocli:picocli:4.7.1")
+  annotationProcessor("info.picocli:picocli-codegen:4.7.1")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
@@ -80,7 +79,7 @@ dependencies {
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
 
   // LDAP utils
-  implementation("com.unboundid:unboundid-ldapsdk:6.0.7")
+  implementation("com.unboundid:unboundid-ldapsdk:6.0.8")
 
   // Query stuff
   implementation("io.vulpine.lib:lib-query-util:2.1.0")
@@ -91,9 +90,9 @@ dependencies {
   //
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-  testImplementation("org.mockito:mockito-core:4.11.0")
-  testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+  testImplementation("org.mockito:mockito-core:5.2.0")
+  testImplementation("org.mockito:mockito-junit-jupiter:5.2.0")
 }
 
 tasks.jar {
