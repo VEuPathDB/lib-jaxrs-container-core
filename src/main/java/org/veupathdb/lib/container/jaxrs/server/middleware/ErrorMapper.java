@@ -17,6 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.jersey.server.ParamException.CookieParamException;
 import org.glassfish.jersey.server.ParamException.FormParamException;
@@ -34,6 +35,8 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 @PreMatching
 @Priority(1)
 public class ErrorMapper implements ExceptionMapper<Throwable> {
+
+  private Logger log = LogProvider.logger(getClass());
 
   private interface Mapper {
     ErrorResponse toError(Throwable t);
@@ -57,14 +60,16 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
 
   @Override
   public Response toResponse(Throwable err) {
+    log.trace("toResponse(err={})", () -> err);
+
     var code = err instanceof WebApplicationException
       ? ((WebApplicationException) err).getResponse().getStatus()
       : INTERNAL_SERVER_ERROR.getStatusCode();
 
     if (code == INTERNAL_SERVER_ERROR.getStatusCode()) {
-      LogProvider.logger(ErrorMapper.class).warn("Caught Exception: ", err);
+      log.warn("Caught Exception: ", err);
     } else {
-      LogProvider.logger(ErrorMapper.class).debug("Caught Exception: {}", err.getMessage());
+      log.debug("Caught Exception: ", err);
     }
 
     var mapper = mappers.get(code);
@@ -78,6 +83,8 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   }
 
   private ErrorResponse serverError(Throwable error) {
+    log.trace("serverError(error={})", () -> error);
+
     return new ServerError(
       (String) _request.get().getAttribute(RequestKeys.REQUEST_ID),
       error
