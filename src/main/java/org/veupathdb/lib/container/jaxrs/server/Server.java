@@ -19,6 +19,7 @@ import org.veupathdb.lib.container.jaxrs.utils.logging.Log;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 import org.veupathdb.lib.container.jaxrs.utils.ldap.OracleLDAPConfig;
 import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
+import org.veupathdb.lib.prom.PrometheusJVM;
 
 @SuppressWarnings("unused")
 abstract public class Server
@@ -44,6 +45,8 @@ abstract public class Server
     if (instance != null)
       throw new IllegalStateException(ERR_MULTI_SERVER);
 
+    PrometheusJVM.enable();
+    
     Log.initialize();
     this.logger = LogProvider.logger(Server.class);
     instance = this;
