@@ -69,6 +69,7 @@ class PrometheusFilterTest {
     when(res.getStatus()).thenReturn(0);
     when(req.getProperty(TIME_KEY)).thenReturn(timer);
     when(req.getProperty(MATCHED_URL_KEY)).thenReturn("url");
+    when(timer.observeDuration()).thenReturn(100.0);
 
     var i = LogProvider.class.getDeclaredField("instance");
     i.setAccessible(true);
@@ -76,6 +77,7 @@ class PrometheusFilterTest {
 
     new PrometheusFilter().filter(req, res);
 
+    verify(timer, times(1)).observeDuration();
     verify(stat, times(1)).getLogger(PrometheusFilter.class);
     verify(log, times(1)).debug((Supplier<?>) any());
   }

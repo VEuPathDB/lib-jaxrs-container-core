@@ -73,7 +73,7 @@ dependencies {
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
   implementation("io.prometheus:simpleclient_common:0.16.0")
-  api("org.veupathdb.lib:lib-prometheus-stats:1.1.0")
+  api("org.veupathdb.lib:lib-prometheus-stats:1.2.3")
 
   // Unique, human readable id generation
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
