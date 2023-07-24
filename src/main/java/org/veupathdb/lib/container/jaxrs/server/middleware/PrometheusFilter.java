@@ -5,6 +5,7 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Histogram.Timer;
 
+import io.prometheus.client.Summary;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.*;
@@ -63,6 +64,20 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     .buckets(0.005, 0.01, 0.1, 0.5, 1, 5, 10, Double.POSITIVE_INFINITY)
     .register();
 
+  /**
+   * Capture a few quantiles to estimate service health. Quantiles are nice for a generic framework since different
+   * services will have different latency distributions. Fixed bucket sizes are difficult to choose and the same set of
+   * buckets may not be useful for all services.
+   */
+  private static final Summary reqTimeSummary = Summary.build()
+    .name("http_request_duration_quantiles")
+    .help("Request times in milliseconds")
+    .labelNames("path", "method")
+    .quantile(0.5, 0.05)
+    .quantile(0.9, 0.03)
+    .quantile(0.95, 0.01)
+    .register();
+
   @Override
   public void filter(ContainerRequestContext req) {
     String path = req.getUriInfo().getPath();
@@ -87,8 +102,8 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     // check to see if this response has a body; if so, defer completion logging to the WriterInterceptor method
     if (!hasResponseBody) {
       logResponse(req.getUriInfo().getPath(), res.getStatus(), req.getMethod(), isError);
-      ((Timer) req.getProperty(TIME_KEY))
-          .observeDuration();
+      double observedDuration = ((Timer) req.getProperty(TIME_KEY)).observeDuration();
+      reqTimeSummary.labels(req.getUriInfo().getPath(), req.getMethod()).observe(observedDuration);
       req.removeProperty(TIME_KEY);
     } else {
       // If response body is present, set properties to be used in WriterInterceptor.
@@ -100,7 +115,10 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     final String matchedUrlKey = (String) req.getProperty(MATCHED_URL_KEY);
     if (matchedUrlKey != null) {
       reqCount.labels(matchedUrlKey, req.getMethod(), String.valueOf(res.getStatus())).inc();
-      req.removeProperty(MATCHED_URL_KEY);
+      // If we have a response body, we'll need to retain this key.
+      if (!hasResponseBody) {
+        req.removeProperty(MATCHED_URL_KEY);
+      }
     }
   }
 
@@ -116,17 +134,18 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
       String method = (String) context.getProperty(METHOD_KEY);
       boolean isError = (boolean) context.getProperty(IS_ERROR_KEY);
       logResponse(path, status, method, isError);
+
+      final String matchedUrlKey = (String) context.getProperty(MATCHED_URL_KEY);
+      if (matchedUrlKey != null) {
+        double observedDuration = ((Timer) context.getProperty(TIME_KEY)).observeDuration();
+        reqTimeSummary.labels(path, method).observe(observedDuration);
+        context.removeProperty(TIME_KEY);
+        context.removeProperty(MATCHED_URL_KEY);
+      }
       context.removeProperty(PATH_KEY);
       context.removeProperty(STATUS_KEY);
       context.removeProperty(METHOD_KEY);
       context.removeProperty(IS_ERROR_KEY);
-
-      final String matchedUrlKey = (String) context.getProperty(MATCHED_URL_KEY);
-      if (matchedUrlKey != null) {
-        ((Timer) context.getProperty(TIME_KEY))
-            .observeDuration();
-        context.removeProperty(TIME_KEY);
-      }
     }
   }
 
