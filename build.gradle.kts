@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.15.0"
+version = "6.15.1"
 
 plugins {
   `java-library`
@@ -39,7 +39,7 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.6-jakarta"
+  val fgputil = "2.12.9-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
@@ -58,17 +58,17 @@ dependencies {
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.0")
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.2")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.1")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.1")
 
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:2.20.0")
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 
   // CLI
-  implementation("info.picocli:picocli:4.7.1")
-  annotationProcessor("info.picocli:picocli-codegen:4.7.1")
+  implementation("info.picocli:picocli:4.7.3")
+  annotationProcessor("info.picocli:picocli-codegen:4.7.3")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
