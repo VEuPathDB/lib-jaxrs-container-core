@@ -138,7 +138,7 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
       final String matchedUrlKey = (String) context.getProperty(MATCHED_URL_KEY);
       if (matchedUrlKey != null) {
         double observedDuration = ((Timer) context.getProperty(TIME_KEY)).observeDuration();
-        reqTimeSummary.labels(path, method).observe(observedDuration);
+        reqTimeSummary.labels(matchedUrlKey, method).observe(observedDuration);
         context.removeProperty(TIME_KEY);
         context.removeProperty(MATCHED_URL_KEY);
       }
