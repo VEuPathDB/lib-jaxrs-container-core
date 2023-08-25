@@ -120,24 +120,30 @@ public class AuthFilter implements ContainerRequestFilter
 
         log.debug("Auth token is an int value.");
 
-        var optUser = UserRepo.Select.guestUserByID(userID);
+        // try to find registered user for this ID; if found then this is not a guest ID
+        final var optUser = UserRepo.Select.registeredUserById(userID);
 
-        // We matched a user and that user is a guest.
+        // if found a registered user with this ID, then disallow access as a guest; registered users must use WDK cookie
         if (optUser.isPresent()) {
-          log.debug("Request authenticated as guest");
-          req.setProperty(Globals.REQUEST_USER, optUser.get());
-          req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
+          log.debug("Auth token is an int value but is not a guest user ID.");
+          req.abortWith(build401());
           return;
         }
 
-        // If we made it this far we know that the auth token passed is an int
-        // value which means it can't be a login cookie, so we can bail early.
-        log.debug("Auth token is an int value but is not a guest user ID.");
-        req.abortWith(build401());
+        // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
+        log.debug("Request authenticated as guest");
+        req.setProperty(Globals.REQUEST_USER, new User()
+            .setUserID(userID)
+            .setFirstName("Guest")
+            .setGuest(true));
+        req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
         return;
-      } catch (NumberFormatException e) {
+      }
+      catch (NumberFormatException e) {
+        // fall through to try to find registered user matching this auth value
         log.debug("Auth token is not a user id.");
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         log.error("Failed to lookup user in user db", e);
         req.abortWith(build500(req));
       }

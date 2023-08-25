@@ -26,6 +26,8 @@ final class SQL
           private static final String table = Tables.AccountDB.UserAccounts.Accounts;
 
           static final String ByEmail = select(db, schema, table, "by-email");
+
+          static final String ById = select(db, schema, table, "by-id");
         }
       }
     }
