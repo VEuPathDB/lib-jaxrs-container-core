@@ -23,6 +23,15 @@ public class UserRepo
       ).execute().getValue();
     }
 
+    public static Optional<User> registeredUserById(long id) throws Exception {
+      return new BasicPreparedReadQuery<>(
+          SQL.Select.AccountDB.UserAccounts.Accounts.ById,
+          DbManager.accountDatabase().getDataSource()::getConnection,
+          Select::acctDB2User,
+          StatementPreparer.singleLong(id)
+      ).execute().getValue();
+    }
+
     public static Optional<User> registeredUserByEmail(String email) throws Exception {
       return new BasicPreparedReadQuery<>(
         SQL.Select.AccountDB.UserAccounts.Accounts.ByEmail,
