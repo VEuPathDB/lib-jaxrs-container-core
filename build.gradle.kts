@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.16.0"
+version = "6.16.1"
 
 plugins {
   `java-library`
@@ -39,7 +39,7 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.9-jakarta"
+  val fgputil = "2.12.11-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
@@ -55,7 +55,7 @@ dependencies {
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
-  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.0")
+  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.1")
 
   // Jackson
   implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
