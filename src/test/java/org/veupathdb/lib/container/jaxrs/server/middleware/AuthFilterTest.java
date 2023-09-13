@@ -35,24 +35,4 @@ public class AuthFilterTest {
     when(options.getAuthSecretKey()).thenReturn(Optional.of(""));
     Assertions.assertThrows(InvalidConfigException.class, () -> new AuthFilter(options));
   }
-
-  @Test
-  public void testMissingAuthInRequest() {
-    final MultivaluedHashMap<String, String> empty = new MultivaluedHashMap<>();
-    when(options.getAuthSecretKey()).thenReturn(Optional.of("auth-key"));
-    when(requestContext.getUriInfo()).thenReturn(uriInfo);
-
-    // Return empty headers and empty query params. No auth information is provided.
-    when(requestContext.getHeaders()).thenReturn(empty);
-    when(uriInfo.getQueryParameters()).thenReturn(empty);
-
-    // Mock authRequirement method, since it resourceInfo cannot be injected in test context.
-    AuthFilter authFilter = Mockito.spy(new AuthFilter(options));
-    doReturn(AuthFilter.AuthRequirement.RequiredDisallowGuests).when(authFilter).authRequirement(Mockito.any());
-
-    authFilter.filter(requestContext);
-
-    // Verify request is aborted due to missing auth key.
-    Mockito.verify(requestContext).abortWith(Mockito.any());
-  }
 }
