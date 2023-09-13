@@ -53,7 +53,7 @@ public class AuthFilter implements ContainerRequestFilter
 
   /**
    * Cache of resource references to AuthInfo details describing the auth
-   * requirements and allowances of the target resource.
+   * requirements and allowances of specific resources.
    */
   private final Map <String, AuthInfo> CACHE = synchronizedMap(new HashMap<>());
 
