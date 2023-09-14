@@ -29,6 +29,13 @@ public class Options {
   private String authSecretKey;
 
   @Option(
+    names = "--admin-auth-token",
+    defaultValue = "${env:ADMIN_AUTH_TOKEN}",
+    description = "env: ADMIN_AUTH_TOKEN",
+    arity = "1")
+  private String adminAuthToken;
+
+  @Option(
     names = "--server-port",
     defaultValue = "${env:SERVER_PORT}",
     description = "env: SERVER_PORT",
@@ -241,6 +248,10 @@ public class Options {
 
   public Optional<String> getAuthSecretKey() {
     return Optional.ofNullable(authSecretKey);
+  }
+
+  public Optional<String> getAdminAuthToken() {
+    return Optional.ofNullable(adminAuthToken);
   }
 
   public Optional<Integer> getServerPort() {

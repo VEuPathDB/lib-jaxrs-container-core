@@ -20,13 +20,16 @@ import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.RequestIdProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
+import org.veupathdb.lib.container.jaxrs.server.annotations.AllowAdminAuth;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
+import static org.gusdb.fgputil.functional.Functions.with;
 
 /**
  * Provides client authentication checks for resource classes or methods
@@ -49,11 +52,10 @@ public class AuthFilter implements ContainerRequestFilter
   private static final Logger log = LogProvider.logger(AuthFilter.class);
 
   /**
-   * Cache of resource classes or methods and whether or not they require
-   * authentication.  This is to prevent repeatedly reflectively searching
-   * the types for the {@link Authenticated} annotation.
+   * Cache of resource references to AuthInfo details describing the auth
+   * requirements and allowances of specific resources.
    */
-  private final Map < String, AuthRequirement > CACHE = synchronizedMap(new HashMap <>());
+  private final Map <String, AuthInfo> CACHE = synchronizedMap(new HashMap<>());
 
   private final Options opts;
 
@@ -94,11 +96,21 @@ public class AuthFilter implements ContainerRequestFilter
   public void filter(ContainerRequestContext req) {
     log.trace("AuthFilter#filter");
 
-    var authRequirement = authRequirement(resource);
-    if (authRequirement == AuthRequirement.NotRequired)
+    // Determine what the auth requirements and/or allowances are for the target
+    // resource.
+    var authInfo = fetchAuthInfo();
+
+    // If no authentication is required, then we can stop here and allow the
+    // request to continue.
+    if (authInfo.authRequirement == AuthRequirement.NotRequired)
       return;
 
     log.debug("Authenticating request");
+
+    // If admin auth is allowed on the target resource and the request has a
+    // valid admin auth token, allow the request to continue.
+    if (authInfo.adminAuthStatus == AdminAuthStatus.Allowed && hasAdminAuth(req))
+      return;
 
     // find submitted auth value
     final var rawAuthOpt = findAuthValue(req);
@@ -113,7 +125,7 @@ public class AuthFilter implements ContainerRequestFilter
     final var rawAuth = rawAuthOpt.get();
 
     // Check if this is a guest login (Auth-Key will be just a guest user ID).
-    if (authRequirement == AuthRequirement.RequiredAllowGuests) {
+    if (authInfo.authRequirement == AuthRequirement.RequiredAllowGuests) {
       try {
         log.debug("Endpoint allows guest logins.");
         var userID = Long.parseLong(rawAuth);
@@ -201,99 +213,119 @@ public class AuthFilter implements ContainerRequestFilter
       .build();
   }
 
-  enum AuthRequirement {
-    RequiredAllowGuests,
-    RequiredDisallowGuests,
-    NotRequired
+  private AuthInfo fetchAuthInfo() {
+    var ref = resource.getResourceClass().getCanonicalName() + "#" + resource.getResourceMethod().getName();
+
+    if (CACHE.containsKey(ref)) {
+      return warnForAdminAuthMisconfiguration(CACHE.get(ref));
+    }
+
+    var info = new AuthInfo(determineAdminAuthStatus(), determineAuthRequirement());
+
+    CACHE.put(ref, info);
+
+    return warnForAdminAuthMisconfiguration(info);
+  }
+
+  private AdminAuthStatus determineAdminAuthStatus() {
+    // Test whether the class or method has the AllowAdminAuth annotation.
+    var hasAnnotation = stream(resource.getResourceClass().getDeclaredAnnotations())
+      .anyMatch(a -> a instanceof AllowAdminAuth)
+      || stream(resource.getResourceMethod().getDeclaredAnnotations())
+      .anyMatch(a -> a instanceof AllowAdminAuth);
+
+    // Test whether the service has an admin auth token configured.
+    var hasAuthToken = with(opts.getAdminAuthToken(), opt -> opt.isPresent() && !opt.get().isBlank());
+
+    return hasAnnotation
+      ? (hasAuthToken ? AdminAuthStatus.Allowed : AdminAuthStatus.Misconfigured)
+      : AdminAuthStatus.Disallowed;
+  }
+
+  private AuthRequirement determineAuthRequirement() {
+    var opt = resourceAuthAnnotation(resource);
+
+    if (opt.isEmpty())
+      return AuthRequirement.NotRequired;
+
+    var ann = opt.get();
+
+    return ann.allowGuests()
+      ? AuthRequirement.RequiredAllowGuests
+      : AuthRequirement.RequiredDisallowGuests;
   }
 
   /**
-   * Checks if the given resource is annotated with the {@link Authenticated}
-   * annotation.
+   * Tests whether the given request has an admin auth header with a value that
+   * matches the service's configured admin auth token value.
    *
-   * @param res resource to check.
+   * @param req Request to test for a valid admin auth token.
    *
-   * @return whether or not the resource has the auth annotation.
+   * @return Whether the given request has a valid admin auth token header.
    */
-  AuthRequirement authRequirement(ResourceInfo res) {
-    log.trace("AuthFilter#isAuthRequired");
-
-    final var meth = res.getResourceMethod();
-    final var type = res.getResourceClass();
-
-    // If we have a value cached for the type, return that cached value.
-    final var typeName = type.getName(); {
-      var cached = CACHE.get(typeName);
-      if (cached != null) {
-        return cached;
-      }
-    }
-
-    // If we have a value cached for the endpoint method, return that cached
-    // value.
-    final var methName = typeName + '#' + meth.getName(); {
-      var cached = CACHE.get(methName);
-      if (cached != null) {
-        return cached;
-      }
-    }
-
-    var methodAuth = methodAuthAnnotation(meth);
-    if (methodAuth.isPresent()) {
-      var authType = methodAuth.get().allowGuests()
-        ? AuthRequirement.RequiredAllowGuests
-        : AuthRequirement.RequiredDisallowGuests;
-
-      CACHE.put(methName, authType);
-      return authType;
-    } else {
-      CACHE.put(methName, AuthRequirement.NotRequired);
-    }
-
-    var classAuth = classAuthAnnotation(type);
-    if (classAuth.isPresent()) {
-      var authType = classAuth.get().allowGuests()
-        ? AuthRequirement.RequiredAllowGuests
-        : AuthRequirement.RequiredDisallowGuests;
-
-      CACHE.put(typeName, authType);
-      return authType;
-    } else {
-      CACHE.put(typeName, AuthRequirement.NotRequired);
-    }
-
-    return AuthRequirement.NotRequired;
+  private boolean hasAdminAuth(ContainerRequestContext req) {
+    return opts.getAdminAuthToken()
+      .orElseThrow()
+      .equals(req.getHeaders().getFirst(RequestKeys.ADMIN_TOKEN_HEADER));
   }
 
-  /**
-   * Reflectively checks whether or not the give method is annotated with
-   * {@link Authenticated}.
-   *
-   * @param meth Method to check
-   *
-   * @return whether or not the methods has the auth annotation.
-   */
-  Optional<Authenticated> methodAuthAnnotation(Method meth) {
-    log.trace("AuthFilter#methodHasAuth");
-    return Arrays.stream(meth.getDeclaredAnnotations())
+  private static Optional<Authenticated> resourceAuthAnnotation(ResourceInfo res) {
+    var ann = classAuthAnnotation(res.getResourceClass());
+    return ann.isPresent() ? ann : methodAuthAnnotation(res.getResourceMethod());
+  }
+
+  private static Optional<Authenticated> methodAuthAnnotation(Method meth) {
+    return stream(meth.getDeclaredAnnotations())
+      .filter(Authenticated.class::isInstance)
+      .map(Authenticated.class::cast)
+      .findFirst();
+  }
+
+  private static Optional<Authenticated> classAuthAnnotation(Class <?> type) {
+    return stream(type.getDeclaredAnnotations())
       .filter(Authenticated.class::isInstance)
       .map(Authenticated.class::cast)
       .findFirst();
   }
 
   /**
-   * Reflectively checks whether or not the given class is annotated with
-   * {@link Authenticated}.
+   * Pass-through for the given AuthInfo that logs an error for the service
+   * being misconfigured due to a missing admin auth token value.
+   * <p>
+   * This warning should appear on every request to the misconfigured service,
+   * so when a developer notices admin auth not working, they will be able to
+   * check the logs and see the reason.
    *
-   * @param type Class to check
+   * @param info AuthInfo to pass through.
    *
-   * @return whether or not the class has the auth annotation.
+   * @return The given AuthInfo.
    */
-  Optional<Authenticated> classAuthAnnotation(Class < ? > type) {
-    log.trace("AuthFilter#classHasAuth");
-    return Arrays.stream(type.getDeclaredAnnotations())
-      .filter(Authenticated.class::isInstance)
-      .map(Authenticated.class::cast)
-      .findFirst();
+  private static AuthInfo warnForAdminAuthMisconfiguration(AuthInfo info) {
+    if (info.adminAuthStatus == AdminAuthStatus.Misconfigured)
+      log.error("Resource is annotated with AllowAdminAuth but no admin auth token is configured on the service.");
+
+    return info;
   }
+}
+
+class AuthInfo {
+  public final AdminAuthStatus adminAuthStatus;
+  public final AuthRequirement authRequirement;
+
+  AuthInfo(AdminAuthStatus adminStatus, AuthRequirement authRequirement) {
+    this.adminAuthStatus = adminStatus;
+    this.authRequirement = authRequirement;
+  }
+}
+
+enum AdminAuthStatus {
+  Allowed,
+  Misconfigured,
+  Disallowed
+}
+
+enum AuthRequirement {
+  RequiredAllowGuests,
+  RequiredDisallowGuests,
+  NotRequired
 }
