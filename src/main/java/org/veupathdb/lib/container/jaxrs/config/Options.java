@@ -43,6 +43,13 @@ public class Options {
   private Integer serverPort;
 
   @Option(
+    names = "--enable-cors",
+    defaultValue = "${env:ENABLE_CORS}",
+    description = "env: ENABLE_CORS",
+    arity = "1")
+  private Boolean enableCors;
+
+  @Option(
     names = "--ldap-server",
     defaultValue = "${env:LDAP_SERVER}",
     description = "env: LDAP_SERVER\nFormatted as <ldap.host.name>:<port>",
@@ -256,6 +263,10 @@ public class Options {
 
   public Optional<Integer> getServerPort() {
     return Optional.ofNullable(serverPort);
+  }
+
+  public boolean getCorsEnabled() {
+    return enableCors != null && enableCors;
   }
 
   public DbOptions getAppDbOpts() {

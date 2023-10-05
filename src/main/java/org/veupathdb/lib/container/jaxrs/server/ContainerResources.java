@@ -44,6 +44,9 @@ abstract public class ContainerResources extends ResourceConfig {
     this.opts = opts;
     registerClasses(DEFAULT_CLASSES);
 
+    if (opts.getCorsEnabled())
+      enableCors();
+
     for (var o : resources())
       if (o instanceof Class)
         register((Class<?>) o);
