@@ -14,34 +14,11 @@ import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
  */
 public class CorsFilter implements ContainerResponseFilter
 {
-  /**
-   * Headers that may be included in cross origin requests.
-   */
-  private static final String[] ALLOWED_HEADERS = {
-    "Origin",
-    "Content-Type",
-    "Accept",
-    "Authorization",
-    "Auth-Key"
-  };
-
-  /**
-   * Methods that may be used for cross origin requests.
-   */
-  private static final String[] ALLOWED_METHODS = {
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "OPTIONS",
-    "HEAD"
-  };
-
   private static final String[][] CORS_HEADERS = {
     {"Access-Control-Allow-Origin", "*"},
-    {"Access-Control-Allow-Headers", String.join(", ", ALLOWED_HEADERS)},
+    {"Access-Control-Allow-Headers", "*"},
     {"Access-Control-Allow-Credentials", "true"},
-    {"Access-Control-Allow-Methods", String.join(", ", ALLOWED_METHODS)},
+    {"Access-Control-Allow-Methods", "*"},
   };
 
   @Override
