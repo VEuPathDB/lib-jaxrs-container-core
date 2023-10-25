@@ -6,10 +6,16 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
@@ -55,7 +61,18 @@ public class JacksonFilter
 {
   private static final String SUBTYPE = "json";
 
-  private static final ObjectMapper JSON = new ObjectMapper();
+  private static final ObjectMapper JSON;
+
+  static {
+    JSON = JsonMapper.builder()
+      .addModule(new ParameterNamesModule())
+      .addModule(new Jdk8Module())
+      .addModule(new JavaTimeModule())
+      .build();
+
+    JSON.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+    JSON.getDateFormat().setTimeZone(TimeZone.getDefault());
+  }
 
   @Context
   private ResourceInfo res;

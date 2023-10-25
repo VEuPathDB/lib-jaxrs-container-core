@@ -58,9 +58,13 @@ dependencies {
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.1")
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.1")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.1")
+  api("com.fasterxml.jackson.core:jackson-core:2.15.3")
+  api("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+  api("com.fasterxml.jackson.core:jackson-annotations:2.15.3")
+  api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.15.3")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.15.3")
+  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.3")
 
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:2.20.0")
