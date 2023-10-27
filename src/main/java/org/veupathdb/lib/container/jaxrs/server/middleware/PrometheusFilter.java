@@ -57,6 +57,12 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     .labelNames("path", "method", "status")
     .register();
 
+  private static final Counter failedDuringResponseStream = Counter.build()
+      .name("failed_during_response_stream")
+      .help("Count of HTTP requests that failed while streaming results.")
+      .labelNames("path", "method")
+      .register();
+
   private static final Histogram reqTime = Histogram.build()
     .name("http_request_duration")
     .help("Request times in milliseconds")
@@ -127,6 +133,10 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     try {
       // write the response
       context.proceed();
+    }
+    catch (Exception e) {
+      failedDuringResponseStream.labels((String) context.getProperty(PATH_KEY), (String) context.getProperty(METHOD_KEY)).inc();
+      throw e;
     }
     finally {
       String path = (String) context.getProperty(PATH_KEY);
