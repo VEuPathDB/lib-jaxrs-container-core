@@ -15,4 +15,11 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AllowAdminAuth {}
+public @interface AllowAdminAuth {
+  /**
+   * Whether admin authentication is <b>REQUIRED</b> for the endpoint.  If set
+   * to true, the only authentication that will be accepted for the endpoint is
+   * admin auth.  Normal user auth will be rejected even if valid.
+   */
+  boolean required() default false;
+}

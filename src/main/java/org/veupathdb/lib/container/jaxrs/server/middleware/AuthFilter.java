@@ -112,6 +112,19 @@ public class AuthFilter implements ContainerRequestFilter
     if (authInfo.adminAuthStatus == AdminAuthStatus.Allowed && hasAdminAuth(req))
       return;
 
+    // If admin auth is required on the target resource...
+    if (authInfo.adminAuthStatus == AdminAuthStatus.Required) {
+      // and the request has a valid admin auth token, allow the request to
+      // continue.
+      if (hasAdminAuth(req))
+        return;
+
+      // else, the request does not have a valid admin auth token, kick it back
+      // with a 401
+      req.abortWith(build401());
+      return;
+    }
+
     // find submitted auth value
     final var rawAuthOpt = findAuthValue(req);
 
@@ -228,18 +241,27 @@ public class AuthFilter implements ContainerRequestFilter
   }
 
   private AdminAuthStatus determineAdminAuthStatus() {
-    // Test whether the class or method has the AllowAdminAuth annotation.
-    var hasAnnotation = stream(resource.getResourceClass().getDeclaredAnnotations())
-      .anyMatch(a -> a instanceof AllowAdminAuth)
-      || stream(resource.getResourceMethod().getDeclaredAnnotations())
-      .anyMatch(a -> a instanceof AllowAdminAuth);
+    var annotation = stream(resource.getResourceClass().getDeclaredAnnotations())
+      .filter(a -> a instanceof AllowAdminAuth)
+      .map(a -> (AllowAdminAuth) a)
+      .findFirst()
+      .orElseGet(() -> stream(resource.getResourceMethod().getDeclaredAnnotations())
+        .filter(a -> a instanceof AllowAdminAuth)
+        .map(a -> (AllowAdminAuth) a)
+        .findFirst()
+        .orElse(null));
+
+    // If there is no admin auth annotation then there is no admin auth allowed.
+    if (annotation == null)
+      return AdminAuthStatus.Disallowed;
 
     // Test whether the service has an admin auth token configured.
     var hasAuthToken = with(opts.getAdminAuthToken(), opt -> opt.isPresent() && !opt.get().isBlank());
 
-    return hasAnnotation
-      ? (hasAuthToken ? AdminAuthStatus.Allowed : AdminAuthStatus.Misconfigured)
-      : AdminAuthStatus.Disallowed;
+    if (!hasAuthToken)
+      return AdminAuthStatus.Misconfigured;
+
+    return annotation.required() ? AdminAuthStatus.Required : AdminAuthStatus.Allowed;
   }
 
   private AuthRequirement determineAuthRequirement() {
@@ -320,8 +342,9 @@ class AuthInfo {
 
 enum AdminAuthStatus {
   Allowed,
+  Required,
   Misconfigured,
-  Disallowed
+  Disallowed,
 }
 
 enum AuthRequirement {
