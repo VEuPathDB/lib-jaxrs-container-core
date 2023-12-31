@@ -61,7 +61,7 @@ public class DummyAuthFilter implements ContainerRequestFilter {
 
     log.debug("Authenticating request");
 
-    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER_LEGACY);
 
     if (isNull(rawAuth) || rawAuth.isEmpty()) {
       log.debug("Authentication failed: no auth header.");

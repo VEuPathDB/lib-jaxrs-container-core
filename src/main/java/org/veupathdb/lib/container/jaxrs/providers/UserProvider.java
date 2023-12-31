@@ -2,8 +2,11 @@ package org.veupathdb.lib.container.jaxrs.providers;
 
 import java.util.Objects;
 import java.util.Optional;
+
+import jakarta.ws.rs.core.HttpHeaders;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
+import org.gusdb.oauth2.client.ValidatedToken;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.server.middleware.AuthFilter;
@@ -18,19 +21,33 @@ public class UserProvider {
   }
 
   public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
-    String auth = Optional.ofNullable(Objects
-      // caller must pass a non-null request
-      .requireNonNull(req)
-      // try to get auth as request property (put there if auth is enabled)
-      .getProperty(RequestKeys.AUTH_HEADER)
-    )
-    // apply cast to String
-    .map(String.class::cast)
-    // auth may not be enabled; look for auth value independently
-    .orElse(AuthFilter.findAuthValue(req).orElse(null));
+    // caller must pass a non-null request
+    Objects.requireNonNull(req);
 
-    // convert value to Entry if present
-    return Optional.ofNullable(auth)
-      .map(s -> new TwoTuple<>(RequestKeys.AUTH_HEADER, s));
+    // look for bearer token on request first
+    String token = (String)req.getProperty(HttpHeaders.AUTHORIZATION);
+    // auth may not be enabled; if missing look for token value independently
+    if (token == null) {
+      token = AuthFilter.findBearerToken(req).map(obj -> obj.getTokenValue()).orElse(null);
+    }
+    // if found using either method, return header name/value
+    if (token != null) {
+      return Optional.of(new TwoTuple<>(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+    }
+
+    // fall back to legacy auth (WDK cookie value or guest ID)
+    String auth = (String)req.getProperty(RequestKeys.AUTH_HEADER_LEGACY);
+    // auth may not be enabled; look for auth value independently
+    if (auth == null) {
+      auth = AuthFilter.findLegacyAuthValue(req).orElse(null);
+    }
+    // if found using either method, return header name/value
+    if (auth != null) {
+      return Optional.of(new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, auth));
+    }
+
+    // no auth submitted
+    return Optional.empty();
   }
+
 }

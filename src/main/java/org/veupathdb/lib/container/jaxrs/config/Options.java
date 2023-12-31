@@ -64,6 +64,32 @@ public class Options {
   private String oracleBaseDn;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃    Authentication/OAuth Config                     ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+      names = "--oauth-url",
+      defaultValue = "${env:OAUTH_URL}",
+      description = "env: OAUTH_URL",
+      arity = "1")
+  private String oauthUrl;
+
+  // Do we need a mount to /etc/pki/java/cacerts ???
+  @Option(
+      names = "--key-store-file",
+      defaultValue = "${env:KEY_STORE_FILE}",
+      description = "env: KEY_STORE_FILE",
+      arity = "1")
+  private String keyStoreFile;
+
+  @Option(
+      names = "--key-store-pass-phrase",
+      defaultValue = "${env:KEY_STORE_PASS_PHRASE}",
+      description = "env: KEY_STORE_PASS_PHRASE",
+      arity = "1")
+  private String keyStorePassPhrase;
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Application DB Config                           ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
@@ -267,6 +293,18 @@ public class Options {
 
   public boolean getCorsEnabled() {
     return enableCors != null && enableCors;
+  }
+
+  public Optional<String> getOAuthUrl() {
+    return Optional.ofNullable(oauthUrl);
+  }
+
+  public Optional<String> getKeyStoreFile() {
+    return Optional.ofNullable(keyStoreFile);
+  }
+
+  public Optional<String> getKeyStorePassPhrase() {
+    return Optional.ofNullable(keyStorePassPhrase);
   }
 
   public DbOptions getAppDbOpts() {

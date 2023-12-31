@@ -5,14 +5,14 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
-
-import java.lang.reflect.Method;
-import java.util.*;
-
+import org.gusdb.oauth2.client.KeyStoreTrustManager;
+import org.gusdb.oauth2.client.OAuthClient;
+import org.gusdb.oauth2.client.ValidatedToken;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
@@ -25,6 +25,12 @@ import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.ServerError;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
+
+import javax.net.ssl.TrustManager;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
@@ -73,18 +79,38 @@ public class AuthFilter implements ContainerRequestFilter
         + "service");
   }
 
-  public static Optional<String> findAuthValue(ContainerRequestContext req) {
-
+  public static Optional<String> findLegacyAuthValue(ContainerRequestContext req) {
     // user can choose to submit auth key as header or query param
-    final var authHeader = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
-    final var authParam = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.AUTH_HEADER);
+    final var authHeader = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER_LEGACY);
+    final var authParam = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.AUTH_HEADER_LEGACY);
+    return resolveSingleValue(authHeader, authParam, req);
+  }
+
+  public static Optional<ValidatedToken> findBearerToken(ContainerRequestContext req) {
+
+    // user can choose to submit authorization value as header or query param
+    final var authHeader = req.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+    final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
+    final var paramToken = req.getUriInfo().getQueryParameters().getFirst(HttpHeaders.AUTHORIZATION);
+    final var bearerToken = resolveSingleValue(headerToken, paramToken, req);
+
+    // TODO: if necessary, read key store environment vars to read mounted key store file
+    TrustManager tm = new KeyStoreTrustManager();
+
+    // TODO: make configurable
+    String oauthBaseUrl = "https://eupathdb.org/oauth";
+
+    // parse and validate the token and its signature
+    return bearerToken.map(token -> new OAuthClient(tm).getValidatedEcdsaSignedToken(oauthBaseUrl, token));
+  }
+
+  private static Optional<String> resolveSingleValue(String authHeader, String authParam, ContainerRequestContext req) {
 
     // if both are submitted, they must match (no preference for one over the other)
     if (!isNull(authHeader) && !isNull(authParam) && !authHeader.equals(authParam)) {
       log.debug("Authentication failed: unequal auth header and query param values.");
       req.abortWith(build401());
     }
-
     // distill the two values to one
     final var rawAuth = authHeader == null ? authParam : authHeader;
 
@@ -125,8 +151,23 @@ public class AuthFilter implements ContainerRequestFilter
       return;
     }
 
+    // prefer bearer token authentication
+    Optional<ValidatedToken> bearerToken = findBearerToken(req);
+    if (bearerToken.isPresent()) {
+      ValidatedToken token = bearerToken.get();
+      if (token.isGuest() && authInfo.authRequirement == AuthRequirement.RequiredDisallowGuests) {
+        req.abortWith(build401());
+      }
+      req.setProperty(Globals.REQUEST_USER, new User()
+          .setUserID(Long.parseLong(token.getUserId()))
+          .setFirstName("Guest")
+          .setGuest(token.isGuest()));
+      req.setProperty(HttpHeaders.AUTHORIZATION, token.getTokenValue());
+      return;
+    }
+
     // find submitted auth value
-    final var rawAuthOpt = findAuthValue(req);
+    final var rawAuthOpt = findLegacyAuthValue(req);
 
     // value must be non-null and non-empty
     if (rawAuthOpt.isEmpty()) {
@@ -161,7 +202,7 @@ public class AuthFilter implements ContainerRequestFilter
             .setUserID(userID)
             .setFirstName("Guest")
             .setGuest(true));
-        req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
+        req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
         return;
       }
       catch (NumberFormatException e) {
@@ -201,7 +242,7 @@ public class AuthFilter implements ContainerRequestFilter
 
       log.debug("Request authenticated as a registered user");
       req.setProperty(Globals.REQUEST_USER, profile.get());
-      req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
+      req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
 
     } catch (Exception e) {
       log.error("Failed to lookup user in account db", e);
@@ -227,17 +268,17 @@ public class AuthFilter implements ContainerRequestFilter
   }
 
   private AuthInfo fetchAuthInfo() {
+
+    // find resource method identifier
     var ref = resource.getResourceClass().getCanonicalName() + "#" + resource.getResourceMethod().getName();
 
-    if (CACHE.containsKey(ref)) {
-      return warnForAdminAuthMisconfiguration(CACHE.get(ref));
+    // if auth info not yet in cache, create it and add
+    if (!CACHE.containsKey(ref)) {
+      CACHE.put(ref, new AuthInfo(determineAdminAuthStatus(), determineAuthRequirement()));
     }
 
-    var info = new AuthInfo(determineAdminAuthStatus(), determineAuthRequirement());
-
-    CACHE.put(ref, info);
-
-    return warnForAdminAuthMisconfiguration(info);
+    // check for misconfiguration
+    return warnForAdminAuthMisconfiguration(CACHE.get(ref));
   }
 
   private AdminAuthStatus determineAdminAuthStatus() {
