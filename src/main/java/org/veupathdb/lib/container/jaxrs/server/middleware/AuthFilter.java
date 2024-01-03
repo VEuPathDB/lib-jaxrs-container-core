@@ -80,50 +80,48 @@ public class AuthFilter implements ContainerRequestFilter
     // Determine what the auth requirements and/or allowances are for the target resource
     var requirements = fetchAuthRequirements();
 
-    boolean hasValidAdmin = false;
+    // look for admin and check valid (500/403), but only if needed
+    boolean hasValidAdmin = requirements.adminDiscoveryRequired && hasValidAdminAuth(req);
 
-    // only check if needed
-    if (requirements.adminDiscoveryRequired) {
-      //look for admin and check valid (500/403);
-      hasValidAdmin = hasValidAdminAuth(req);
-    }
-
-    if (requirements.adminRequired && !hasValidAdmin) {
+    // return 403 response if admin required but not present
+    if (requirements.adminRequired && !hasValidAdmin)
       req.abortWith(build403());
-    }
 
-    if (!requirements.userDiscoveryRequired) return; // done
+    // return now if no need to look up user information
+    if (!requirements.userDiscoveryRequired)
+      return;
 
-    // look for user in Auth-Key (500/401)
-    Optional<User> authKeyUser = findUser(req);
+    // look for user submitted using normal auth (will abort with 401 if present but invalid, 500 if error)
+    Optional<User> authUser = findAuthUser(req);
 
-    // check if override is not needed
-    if (requirements.overrideOption == AdminOverrideOption.DISALLOW || !hasValidAdmin) {
+    // check if admin override need not be considered
+    if (!hasValidAdmin || requirements.overrideOption == AdminOverrideOption.DISALLOW) {
 
       // user required but not present
-      if (authKeyUser.isEmpty())
+      if (authUser.isEmpty())
         req.abortWith(build401());
 
       // non-guest user required but user is guest
-      if (!requirements.guestsAllowed && authKeyUser.orElseThrow().isGuest())
+      if (!requirements.guestsAllowed && authUser.orElseThrow().isGuest())
         req.abortWith(build403());
 
-      // set request user to submitted value
-      req.setProperty(Globals.REQUEST_USER, authKeyUser);
-      return;
+      // set request_user user to submitted value
+      req.setProperty(Globals.REQUEST_USER, authUser);
     }
 
-    // reaching here means ( override != disallow && hasValidAdmin )
-    // find proxied user
-    Optional<User> proxiedUser = findProxiedUser(req);
+    // valid admin wishes to override user ID and apply a custom user ID
+    else { // i.e. hasValidAdmin && override != disallow
 
-    // if override only allowed with proxied user but user not present, throw 401
-    if (requirements.overrideOption == AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty())
-      req.abortWith(build401());
+      // find proxied user
+      Optional<User> proxiedUser = findProxiedUser(req);
 
-    // set proxied user as the "request user"
-    req.setProperty(Globals.REQUEST_USER, authKeyUser);
+      // if override is only allowed with proxied user but user not present, return 401
+      if (requirements.overrideOption == AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty())
+        req.abortWith(build401());
 
+      // set proxied user as the "request user" (may be empty)
+      req.setProperty(Globals.REQUEST_USER, proxiedUser);
+    }
   }
 
   private AuthRequirements fetchAuthRequirements() {
@@ -179,7 +177,7 @@ public class AuthFilter implements ContainerRequestFilter
     return false;
   }
 
-  private Optional<User> findUser(ContainerRequestContext req) {
+  private Optional<User> findAuthUser(ContainerRequestContext req) {
 
     // find submitted auth value
     final var rawAuthOpt = findSubmittedValue(req, RequestKeys.AUTH_HEADER);
@@ -325,7 +323,6 @@ class AuthRequirements {
   // flags indicating whether to probe submitted values
   public final boolean adminDiscoveryRequired;
   public final boolean userDiscoveryRequired;
-  public final boolean proxiedUserDiscoveryRequired;
 
   // flags indicating how to handle submitted values
   public final boolean adminRequired;
@@ -340,7 +337,6 @@ class AuthRequirements {
     overrideOption = authAnnotationOpt.map(Authenticated::adminOverride).orElse(AdminOverrideOption.DISALLOW);
     boolean adminOverrideDisallowed = overrideOption != AdminOverrideOption.DISALLOW;
     adminDiscoveryRequired = adminRequired || !adminOverrideDisallowed;
-    proxiedUserDiscoveryRequired = !adminOverrideDisallowed;
     guestsAllowed = authAnnotationOpt.isPresent() && authAnnotationOpt.get().allowGuests();
   }
 }
