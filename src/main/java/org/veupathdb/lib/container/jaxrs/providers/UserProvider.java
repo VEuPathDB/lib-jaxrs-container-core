@@ -27,7 +27,7 @@ public class UserProvider {
     // apply cast to String
     .map(String.class::cast)
     // auth may not be enabled; look for auth value independently
-    .orElse(AuthFilter.findAuthValue(req).orElse(null));
+    .orElse(AuthFilter.findSubmittedValue(req, RequestKeys.AUTH_HEADER).orElse(null));
 
     // convert value to Entry if present
     return Optional.ofNullable(auth)
