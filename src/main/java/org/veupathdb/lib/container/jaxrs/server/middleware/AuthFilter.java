@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
@@ -56,7 +57,7 @@ public class AuthFilter implements ContainerRequestFilter
    * Cache of resource references to AuthInfo details describing the auth
    * requirements and allowances of specific resources.
    */
-  private final Map <String, AuthRequirements> CACHE = synchronizedMap(new HashMap<>());
+  private final Map<String, AuthRequirements> CACHE = new ConcurrentHashMap<>();
 
   private final Options opts;
 
@@ -126,10 +127,7 @@ public class AuthFilter implements ContainerRequestFilter
 
   private AuthRequirements fetchAuthRequirements() {
     var ref = resource.getResourceClass().getCanonicalName() + "#" + resource.getResourceMethod().getName();
-    if (!CACHE.containsKey(ref)) {
-      CACHE.put(ref, new AuthRequirements(resource));
-    }
-    return CACHE.get(ref);
+    return CACHE.computeIfAbsent(ref, key -> new AuthRequirements(resource));
   }
 
   public static Optional<String> findSubmittedValue(ContainerRequestContext req, String key) {
@@ -335,8 +333,7 @@ class AuthRequirements {
     adminRequired = adminAnnotationOpt.isPresent();
     userDiscoveryRequired = authAnnotationOpt.isPresent();
     overrideOption = authAnnotationOpt.map(Authenticated::adminOverride).orElse(AdminOverrideOption.DISALLOW);
-    boolean adminOverrideDisallowed = overrideOption != AdminOverrideOption.DISALLOW;
-    adminDiscoveryRequired = adminRequired || !adminOverrideDisallowed;
+    adminDiscoveryRequired = adminRequired || overrideOption != AdminOverrideOption.DISALLOW;
     guestsAllowed = authAnnotationOpt.isPresent() && authAnnotationOpt.get().allowGuests();
   }
 }
