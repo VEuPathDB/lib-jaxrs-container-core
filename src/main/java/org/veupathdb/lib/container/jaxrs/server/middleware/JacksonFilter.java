@@ -70,7 +70,7 @@ public class JacksonFilter
       .addModule(new JavaTimeModule())
       .build();
 
-    JSON.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+    JSON.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
     JSON.getDateFormat().setTimeZone(TimeZone.getDefault());
   }
 
