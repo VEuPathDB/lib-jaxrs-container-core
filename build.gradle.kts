@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.21.0-alpha3"
+version = "6.21.0-alpha4"
 
 plugins {
   `java-library`

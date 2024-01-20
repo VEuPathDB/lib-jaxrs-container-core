@@ -112,7 +112,7 @@ public class AuthFilter implements ContainerRequestFilter {
         throw new ForbiddenException();
 
       // set request_user user to submitted value
-      req.setProperty(Globals.REQUEST_USER, authUser);
+      authUser.ifPresent(user -> req.setProperty(Globals.REQUEST_USER, user));
     }
 
     // valid admin wishes to override user ID and apply a custom user ID
@@ -127,7 +127,7 @@ public class AuthFilter implements ContainerRequestFilter {
       }
 
       // set proxied user as the "request user" (may be empty)
-      req.setProperty(Globals.REQUEST_USER, proxiedUser);
+      proxiedUser.ifPresent(user -> req.setProperty(Globals.REQUEST_USER, user));
     }
   }
 
