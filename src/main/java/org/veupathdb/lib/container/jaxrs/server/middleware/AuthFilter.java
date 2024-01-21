@@ -259,7 +259,7 @@ public class AuthFilter implements ContainerRequestFilter {
   private Optional<User> findProxiedUser(ContainerRequestContext req) {
 
     // find submitted value
-    final var proxiedIdOpt = findSubmittedValue(req, RequestKeys.PROXIED_USER_ID);
+    final var proxiedIdOpt = findSubmittedValue(req, RequestKeys.PROXIED_USER_ID_HEADER);
 
     // value must be non-null and non-empty
     if (proxiedIdOpt.isEmpty()) {
