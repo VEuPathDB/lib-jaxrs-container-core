@@ -12,25 +12,26 @@ import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 public class UserProvider {
 
   public static Optional<User> lookupUser(ContainerRequest req) {
-    return Optional.ofNullable(req)
-      .map(r -> r.getProperty(Globals.REQUEST_USER))
-      .map(User.class::cast);
+    return findRequestProp(req, User.class, Globals.REQUEST_USER);
   }
 
   public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
-    String auth = Optional.ofNullable(Objects
-      // caller must pass a non-null request
-      .requireNonNull(req)
-      // try to get auth as request property (put there if auth is enabled)
-      .getProperty(RequestKeys.AUTH_HEADER)
-    )
-    // apply cast to String
-    .map(String.class::cast)
-    // auth may not be enabled; look for auth value independently
-    .orElse(AuthFilter.findAuthValue(req).orElse(null));
-
-    // convert value to Entry if present
-    return Optional.ofNullable(auth)
+    return
+      // look for property on request
+      findRequestProp(req, String.class, RequestKeys.AUTH_HEADER)
+      // auth may not be enabled; look for auth value independently
+      .or(() -> AuthFilter.findSubmittedValue(req, RequestKeys.AUTH_HEADER))
+      // convert value to Entry if present
       .map(s -> new TwoTuple<>(RequestKeys.AUTH_HEADER, s));
+  }
+
+  private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
+    return Optional.ofNullable(
+            // caller must pass a non-null request
+            Objects.requireNonNull(req))
+        // try to get specified request property
+        .map(r -> r.getProperty(key))
+        // cast to the requested type
+        .map(clazz::cast);
   }
 }
