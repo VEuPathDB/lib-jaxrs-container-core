@@ -2,15 +2,18 @@ package org.veupathdb.lib.container.jaxrs.model;
 
 public class User
 {
+  // immutable fields supplied by bearer token
   private long    userID;
+  private boolean isGuest;
+  private String  signature;
+  private String  stableID;
+
+  // mutable fields that may need to be fetched
   private String  firstName;
   private String  middleName;
   private String  lastName;
   private String  organization;
-  private String  signature;
   private String  email;
-  private String  stableID;
-  private boolean isGuest;
 
   public long getUserID() {
     return userID;
@@ -21,39 +24,12 @@ public class User
     return this;
   }
 
-  public String getFirstName() {
-    return firstName;
+  public boolean isGuest() {
+    return isGuest;
   }
 
-  public User setFirstName(String firstName) {
-    this.firstName = firstName;
-    return this;
-  }
-
-  public String getMiddleName() {
-    return middleName;
-  }
-
-  public User setMiddleName(String middleName) {
-    this.middleName = middleName;
-    return this;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public User setLastName(String lastName) {
-    this.lastName = lastName;
-    return this;
-  }
-
-  public String getOrganization() {
-    return organization;
-  }
-
-  public User setOrganization(String organization) {
-    this.organization = organization;
+  public User setGuest(boolean guest) {
+    isGuest = guest;
     return this;
   }
 
@@ -66,15 +42,6 @@ public class User
     return this;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public User setEmail(String email) {
-    this.email = email;
-    return this;
-  }
-
   public String getStableID() {
     return stableID;
   }
@@ -84,12 +51,57 @@ public class User
     return this;
   }
 
-  public boolean isGuest() {
-    return isGuest;
+  protected void fetchUserInfo() {
+    // nothing to do in this base class; all info must be explicitly set
   }
 
-  public User setGuest(boolean guest) {
-    isGuest = guest;
+  public String getFirstName() {
+    fetchUserInfo();
+    return firstName;
+  }
+
+  public User setFirstName(String firstName) {
+    this.firstName = firstName;
+    return this;
+  }
+
+  public String getMiddleName() {
+    fetchUserInfo();
+    return middleName;
+  }
+
+  public User setMiddleName(String middleName) {
+    this.middleName = middleName;
+    return this;
+  }
+
+  public String getLastName() {
+    fetchUserInfo();
+    return lastName;
+  }
+
+  public User setLastName(String lastName) {
+    this.lastName = lastName;
+    return this;
+  }
+
+  public String getOrganization() {
+    fetchUserInfo();
+    return organization;
+  }
+
+  public User setOrganization(String organization) {
+    this.organization = organization;
+    return this;
+  }
+
+  public String getEmail() {
+    fetchUserInfo();
+    return email;
+  }
+
+  public User setEmail(String email) {
+    this.email = email;
     return this;
   }
 }

@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.accountdb.UserProfile;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.veupathdb.lib.container.jaxrs.Globals;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
@@ -71,19 +72,15 @@ public class DummyAuthFilter implements ContainerRequestFilter {
 
     final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
 
-    final var profile = new UserProfile();
-    profile.setEmail(auth.getUsername());
-    profile.setGuest(false);
-    profile.setLastLoginTime(new Date());
-    profile.setProperties(new HashMap <>(){{
-      put("firstName", "demo");
-      put("lastName", "user");
-    }});
-    profile.setUserId(123456L);
-    profile.setStableId("USER123456");
-
     log.debug("Request authenticated");
-    req.setProperty(Globals.REQUEST_USER, profile);
+    req.setProperty(Globals.REQUEST_USER, new User()
+        .setEmail(auth.getUsername())
+        .setStableID("USER123456")
+        .setUserID(123456L)
+        .setGuest(false)
+        .setFirstName("demo")
+        .setLastName("user")
+    );
   }
 
   /**
