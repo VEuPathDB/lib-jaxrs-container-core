@@ -1,6 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import jakarta.annotation.Priority;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.ServerErrorException;
@@ -51,6 +52,9 @@ public class AuthFilter implements ContainerRequestFilter {
   private static final NotAuthorizedException NOT_AUTHORIZED =
       new NotAuthorizedException("Valid credentials must be submitted to this resource.");
 
+  private static final BadRequestException BAD_REQUEST =
+      new BadRequestException("An incorrect combination of credential types was sent.");
+
   private static ServerErrorException SERVER_ERROR(String activity, Exception e) {
     LOG.error("Failed during authentication, " + activity, e);
     throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR, e);
@@ -92,7 +96,6 @@ public class AuthFilter implements ContainerRequestFilter {
     if (requirements.adminRequired && !hasValidAdmin)
       throw new ForbiddenException();
 
-
     // return now if no need to look up user information
     if (!requirements.userDiscoveryRequired)
       return;
@@ -121,9 +124,9 @@ public class AuthFilter implements ContainerRequestFilter {
       // find proxied user
       Optional<User> proxiedUser = findProxiedUser(req);
 
-      // if override is only allowed with proxied user but user not present, return 401
+      // if override is only allowed with proxied user but user not present, return 400
       if (requirements.overrideOption == AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty()) {
-        throw NOT_AUTHORIZED;
+        throw BAD_REQUEST;
       }
 
       // set proxied user as the "request user" (may be empty)
