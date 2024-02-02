@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.21.0"
+version = "6.21.1"
 
 plugins {
   `java-library`
@@ -55,7 +55,7 @@ dependencies {
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
-  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.1")
+  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.4")
 
   // Jackson
   api("com.fasterxml.jackson.core:jackson-core:2.15.3")
