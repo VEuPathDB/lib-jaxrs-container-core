@@ -58,7 +58,7 @@ dependencies {
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
-  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.1")
+  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.6")
 
   // Jackson
   api("com.fasterxml.jackson.core:jackson-core:2.15.3")
