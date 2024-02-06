@@ -23,6 +23,7 @@ public class BearerTokenUser extends User {
     setStableID(_token.getTokenContents().get(IdTokenFields.preferred_username.name(), String.class));
   }
 
+  @Override
   protected void fetchUserInfo() {
     // return if already fetched
     if (_userInfoFetched) return;

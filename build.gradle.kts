@@ -46,7 +46,7 @@ dependencies {
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // OAuth Client
-  implementation("org.gusdb:oauth2-client:0.5.0")
+  implementation("org.gusdb:oauth2-client:0.7.1")
 
   // Oracle
   runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
