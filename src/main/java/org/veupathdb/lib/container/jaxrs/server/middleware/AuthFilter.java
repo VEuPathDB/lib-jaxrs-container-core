@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.client.veupathdb.BasicUser;
 import org.gusdb.oauth2.client.veupathdb.BearerTokenUser;
 import org.gusdb.oauth2.client.veupathdb.User;
 import org.veupathdb.lib.container.jaxrs.Globals;
@@ -247,7 +248,7 @@ public class AuthFilter implements ContainerRequestFilter {
       // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
       LOG.debug("Request authenticated as guest");
       req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
-      return Optional.of(new User(userID,true,null,null).setFirstName("Guest"));
+      return Optional.of(new BasicUser(userID,true,null,null).setFirstName("Guest"));
     }
     catch (NumberFormatException e) {
       // fall through to try to find registered user matching this auth value

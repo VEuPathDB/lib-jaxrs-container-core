@@ -5,6 +5,7 @@ import io.vulpine.lib.query.util.basic.BasicPreparedReadQuery;
 import java.sql.ResultSet;
 import java.util.Optional;
 
+import org.gusdb.oauth2.client.veupathdb.BasicUser;
 import org.gusdb.oauth2.client.veupathdb.User;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
@@ -44,13 +45,13 @@ public class UserRepo
 
     private static Optional<User> userDB2User(ResultSet rs) throws Exception {
       return !rs.next() ? Optional.empty() :
-        Optional.of(new User(rs.getLong(Columns.UserDB.UserSchema.Users.UserID),
+        Optional.of(new BasicUser(rs.getLong(Columns.UserDB.UserSchema.Users.UserID),
             true,null,null).setFirstName("Guest"));
     }
 
     private static Optional<User> acctDB2User(ResultSet rs) throws Exception {
       return !rs.next() ? Optional.empty() :
-        Optional.of(new User(
+        Optional.of(new BasicUser(
           rs.getLong(Columns.AccountDB.UserAccounts.Accounts.UserID),
           false,
           rs.getString(Columns.AccountDB.UserAccounts.Accounts.Signature),

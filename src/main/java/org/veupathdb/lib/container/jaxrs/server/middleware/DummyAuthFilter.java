@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
-import org.gusdb.oauth2.client.veupathdb.User;
+import org.gusdb.oauth2.client.veupathdb.BasicUser;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
@@ -71,7 +71,7 @@ public class DummyAuthFilter implements ContainerRequestFilter {
     final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
 
     log.debug("Request authenticated");
-    req.setProperty(Globals.REQUEST_USER, new User(123456L, false, null, "USER123456")
+    req.setProperty(Globals.REQUEST_USER, new BasicUser(123456L, false, null, "USER123456")
         .setEmail(auth.getUsername())
         .setFirstName("demo")
         .setLastName("user")

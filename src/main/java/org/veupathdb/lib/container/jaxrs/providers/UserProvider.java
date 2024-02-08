@@ -5,6 +5,7 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.OAuthConfig;
+import org.gusdb.oauth2.client.veupathdb.BasicUser;
 import org.gusdb.oauth2.client.veupathdb.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,7 +46,7 @@ public class UserProvider {
     Map<Long,User> users = new LinkedHashMap<>();
     for (int i = 0; i < json.length(); i++) {
       JSONObject userJson = json.getJSONObject(i);
-      User user = new User(userJson);
+      User user = new BasicUser(userJson);
       users.put(user.getUserId(), user);
     }
     return users;
