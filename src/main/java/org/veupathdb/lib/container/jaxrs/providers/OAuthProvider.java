@@ -7,6 +7,7 @@ import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 
 import javax.net.ssl.TrustManager;
+import java.nio.file.Paths;
 
 public class OAuthProvider {
 
@@ -17,8 +18,13 @@ public class OAuthProvider {
   }
 
   public static OAuthClient getOAuthClient() {
-    // TODO: may need to read key store environment vars via OptionsProvider.getOptions() to read mounted key store file
-    TrustManager tm = new KeyStoreTrustManager();
+
+    // if key store config is passed (probably mount of /etc/pki/java/cacerts), use it and optional pass phrase
+    // otherwise use trust manager that trusts everyone
+    Options options = OptionsProvider.getOptions();
+    TrustManager tm = options.getKeyStoreFile()
+        .map(file -> new KeyStoreTrustManager(Paths.get(file), options.getKeyStorePassPhrase().orElse("")))
+        .orElse(new KeyStoreTrustManager());
 
     return new OAuthClient(tm);
   }

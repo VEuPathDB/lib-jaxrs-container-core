@@ -88,7 +88,6 @@ public class Options {
       arity = "1")
   private String oauthClientSecret;
 
-  // Do we need a mount to /etc/pki/java/cacerts ???
   @Option(
       names = "--key-store-file",
       defaultValue = "${env:KEY_STORE_FILE}",
