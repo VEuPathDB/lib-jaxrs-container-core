@@ -14,15 +14,15 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
-import org.gusdb.oauth2.client.KeyStoreTrustManager;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.client.veupathdb.BearerTokenUser;
+import org.gusdb.oauth2.client.veupathdb.User;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
-import org.veupathdb.lib.container.jaxrs.model.BearerTokenUser;
-import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
 import org.veupathdb.lib.container.jaxrs.server.annotations.AdminRequired;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
@@ -30,7 +30,6 @@ import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated.AdminO
 import org.veupathdb.lib.container.jaxrs.utils.AnnotationUtil;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
-import javax.net.ssl.TrustManager;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -209,26 +208,14 @@ public class AuthFilter implements ContainerRequestFilter {
     // convert bearerToken to User
     return bearerToken.map(rawToken -> {
 
-      // TODO: if necessary, read key store environment vars to read mounted key store file
-      TrustManager tm = new KeyStoreTrustManager();
-
-      // TODO: make configurable or at least point at live (once live has new stuff)
-      String oauthBaseUrl = "https://integrate.eupathdb.org/oauth";
+      OAuthClient client = OAuthProvider.getOAuthClient();
+      String oauthUrl = OAuthProvider.getOAuthUrl();
 
       // parse and validate the token and its signature
-      OAuthClient client = new OAuthClient(tm);
-      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthBaseUrl, rawToken);
+      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, rawToken);
       req.setProperty(HttpHeaders.AUTHORIZATION, token.getTokenValue());
 
-      if (token.isGuest()) {
-        return new User()
-            .setUserID(Long.parseLong(token.getUserId()))
-            .setFirstName("Guest")
-            .setGuest(true);
-      }
-
-      // non-guest user; provide User object with a way to look up info if needed.
-      return new BearerTokenUser(client, oauthBaseUrl, token);
+      return new BearerTokenUser(client, oauthUrl, token);
     });
   }
 
@@ -260,10 +247,7 @@ public class AuthFilter implements ContainerRequestFilter {
       // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
       LOG.debug("Request authenticated as guest");
       req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
-      return Optional.of(new User()
-          .setUserID(userID)
-          .setFirstName("Guest")
-          .setGuest(true));
+      return Optional.of(new User(userID,true,null,null).setFirstName("Guest"));
     }
     catch (NumberFormatException e) {
       // fall through to try to find registered user matching this auth value

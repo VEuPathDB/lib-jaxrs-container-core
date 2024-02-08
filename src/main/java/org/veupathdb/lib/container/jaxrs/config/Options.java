@@ -22,13 +22,6 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
-    names = "--auth-secret",
-    defaultValue = "${env:AUTH_SECRET_KEY}",
-    description = "env: AUTH_SECRET_KEY",
-    arity = "1")
-  private String authSecretKey;
-
-  @Option(
     names = "--admin-auth-token",
     defaultValue = "${env:ADMIN_AUTH_TOKEN}",
     description = "env: ADMIN_AUTH_TOKEN",
@@ -68,11 +61,32 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
+      names = "--auth-secret",
+      defaultValue = "${env:AUTH_SECRET_KEY}",
+      description = "env: AUTH_SECRET_KEY",
+      arity = "1")
+  private String authSecretKey;
+
+  @Option(
       names = "--oauth-url",
       defaultValue = "${env:OAUTH_URL}",
       description = "env: OAUTH_URL",
       arity = "1")
   private String oauthUrl;
+
+  @Option(
+      names = "--oauth-client-id",
+      defaultValue = "${env:OAUTH_CLIENT_ID}",
+      description = "env: OAUTH_CLIENT_ID",
+      arity = "1")
+  private String oauthClientId;
+
+  @Option(
+      names = "--oauth-client-secret",
+      defaultValue = "${env:OAUTH_CLIENT_SECRET}",
+      description = "env: OAUTH_CLIENT_SECRET",
+      arity = "1")
+  private String oauthClientSecret;
 
   // Do we need a mount to /etc/pki/java/cacerts ???
   @Option(
@@ -279,10 +293,6 @@ public class Options {
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  public Optional<String> getAuthSecretKey() {
-    return Optional.ofNullable(authSecretKey);
-  }
-
   public Optional<String> getAdminAuthToken() {
     return Optional.ofNullable(adminAuthToken);
   }
@@ -295,8 +305,20 @@ public class Options {
     return enableCors != null && enableCors;
   }
 
+  public Optional<String> getAuthSecretKey() {
+    return Optional.ofNullable(authSecretKey);
+  }
+
   public Optional<String> getOAuthUrl() {
     return Optional.ofNullable(oauthUrl);
+  }
+
+  public Optional<String> getOAuthClientId() {
+    return Optional.ofNullable(oauthClientId);
+  }
+
+  public Optional<String> getOAuthClientSecret() {
+    return Optional.ofNullable(oauthClientSecret);
   }
 
   public Optional<String> getKeyStoreFile() {

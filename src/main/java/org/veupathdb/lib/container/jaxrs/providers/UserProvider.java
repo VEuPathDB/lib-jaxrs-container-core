@@ -3,12 +3,16 @@ package org.veupathdb.lib.container.jaxrs.providers;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
+import org.gusdb.oauth2.client.OAuthClient;
+import org.gusdb.oauth2.client.OAuthConfig;
+import org.gusdb.oauth2.client.veupathdb.User;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.veupathdb.lib.container.jaxrs.Globals;
-import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserProvider {
 
@@ -32,4 +36,19 @@ public class UserProvider {
   private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
     return Optional.ofNullable(Objects.requireNonNull(req).getProperty(key)).map(clazz::cast);
   }
+
+  public static Map<Long,User> getUserData(List<Long> userIds) {
+    OAuthClient client = OAuthProvider.getOAuthClient();
+    OAuthConfig config = OAuthProvider.getOAuthConfig();
+    List<String> idStrings = userIds.stream().map(String::valueOf).collect(Collectors.toList());
+    JSONArray json = client.getUserData(config, idStrings);
+    Map<Long,User> users = new LinkedHashMap<>();
+    for (int i = 0; i < json.length(); i++) {
+      JSONObject userJson = json.getJSONObject(i);
+      User user = new User(userJson);
+      users.put(user.getUserId(), user);
+    }
+    return users;
+  }
+
 }
