@@ -8,6 +8,7 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 
 import javax.net.ssl.TrustManager;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class OAuthProvider {
 
@@ -22,6 +23,7 @@ public class OAuthProvider {
     // if key store config is passed (probably mount of /etc/pki/java/cacerts), use it and optional pass phrase
     // otherwise use trust manager that trusts everyone
     Options options = OptionsProvider.getOptions();
+    Optional<String> keyStoreFile = options.getKeyStoreFile().flatMap(f -> f.isBlank() ? Optional.empty() : Optional.of(f));
     TrustManager tm = options.getKeyStoreFile()
         .map(file -> new KeyStoreTrustManager(Paths.get(file), options.getKeyStorePassPhrase().orElse("")))
         .orElse(new KeyStoreTrustManager());
