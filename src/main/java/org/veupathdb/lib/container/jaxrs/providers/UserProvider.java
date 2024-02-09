@@ -5,11 +5,10 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.OAuthConfig;
-import org.gusdb.oauth2.client.veupathdb.BasicUser;
-import org.gusdb.oauth2.client.veupathdb.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.veupathdb.lib.container.jaxrs.Globals;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
 import java.util.*;
@@ -46,7 +45,7 @@ public class UserProvider {
     Map<Long,User> users = new LinkedHashMap<>();
     for (int i = 0; i < json.length(); i++) {
       JSONObject userJson = json.getJSONObject(i);
-      User user = new BasicUser(userJson);
+      User user = new User.BasicUser(userJson);
       users.put(user.getUserId(), user);
     }
     return users;

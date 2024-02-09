@@ -16,12 +16,10 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
-import org.gusdb.oauth2.client.veupathdb.BasicUser;
-import org.gusdb.oauth2.client.veupathdb.BearerTokenUser;
-import org.gusdb.oauth2.client.veupathdb.User;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
@@ -216,7 +214,7 @@ public class AuthFilter implements ContainerRequestFilter {
       ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, rawToken);
       req.setProperty(HttpHeaders.AUTHORIZATION, token.getTokenValue());
 
-      return new BearerTokenUser(client, oauthUrl, token);
+      return new User.BearerTokenUser(client, oauthUrl, token);
     });
   }
 
@@ -248,7 +246,7 @@ public class AuthFilter implements ContainerRequestFilter {
       // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
       LOG.debug("Request authenticated as guest");
       req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
-      return Optional.of(new BasicUser(userID,true,null,null).setFirstName("Guest"));
+      return Optional.of((User)new User.BasicUser(userID,true,null,null).setFirstName("Guest"));
     }
     catch (NumberFormatException e) {
       // fall through to try to find registered user matching this auth value
