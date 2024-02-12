@@ -1,5 +1,7 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.gusdb.oauth2.client.KeyStoreTrustManager;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.OAuthConfig;
@@ -11,6 +13,8 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 public class OAuthProvider {
+
+  private static final Logger LOG = LogManager.getLogger(OAuthProvider.class);
 
   public static final String DEFAULT_OAUTH_URL = "https://integrate.eupathdb.org/oauth";
 
@@ -24,7 +28,8 @@ public class OAuthProvider {
     // otherwise use trust manager that trusts everyone
     Options options = OptionsProvider.getOptions();
     Optional<String> keyStoreFile = options.getKeyStoreFile().flatMap(f -> f.isBlank() ? Optional.empty() : Optional.of(f));
-    TrustManager tm = options.getKeyStoreFile()
+    LOG.info("Is keyStoreFile present? " + keyStoreFile.orElse("nope!"));
+    TrustManager tm = keyStoreFile
         .map(file -> new KeyStoreTrustManager(Paths.get(file), options.getKeyStorePassPhrase().orElse("")))
         .orElse(new KeyStoreTrustManager());
 
