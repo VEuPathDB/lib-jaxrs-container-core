@@ -16,7 +16,7 @@ public class OAuthProvider {
 
   private static final Logger LOG = LogManager.getLogger(OAuthProvider.class);
 
-  public static final String DEFAULT_OAUTH_URL = "https://integrate.eupathdb.org/oauth";
+  public static final String DEFAULT_OAUTH_URL = "https://eupathdb.org/oauth";
 
   public static String getOAuthUrl() {
     return OptionsProvider.getOptions().getOAuthUrl().orElse(OAuthProvider.DEFAULT_OAUTH_URL);
