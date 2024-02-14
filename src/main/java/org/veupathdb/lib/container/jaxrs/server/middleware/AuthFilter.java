@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.exception.InvalidTokenException;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
@@ -197,7 +198,6 @@ public class AuthFilter implements ContainerRequestFilter {
   }
 
   private Optional<User> findUserFromBearerToken(ContainerRequestContext req) {
-
     // user can choose to submit authorization value as header or query param
     final var authHeader = req.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
@@ -205,17 +205,26 @@ public class AuthFilter implements ContainerRequestFilter {
     final var bearerToken = resolveSingleValue(headerToken, paramToken);
 
     // convert bearerToken to User
-    return bearerToken.map(rawToken -> {
+    if (bearerToken.isEmpty()) return Optional.empty();
 
-      OAuthClient client = OAuthProvider.getOAuthClient();
-      String oauthUrl = OAuthProvider.getOAuthUrl();
+    OAuthClient client = OAuthProvider.getOAuthClient();
+    String oauthUrl = OAuthProvider.getOAuthUrl();
 
+    try {
       // parse and validate the token and its signature
-      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, rawToken);
+      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, bearerToken.get());
+
+      // set token on the request in case application logic needs it
       req.setProperty(HttpHeaders.AUTHORIZATION, token.getTokenValue());
 
-      return new User.BearerTokenUser(client, oauthUrl, token);
-    });
+      // create new user from this token
+      return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
+    }
+    catch (InvalidTokenException e) {
+      LOG.warn("User submitted invalid bearer token: " + bearerToken);
+      throw NOT_AUTHORIZED;
+    }
+
   }
 
   private Optional<User> findUserFromLegacyAuth(ContainerRequestContext req) {
