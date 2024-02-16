@@ -221,7 +221,7 @@ public class AuthFilter implements ContainerRequestFilter {
       return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
     }
     catch (InvalidTokenException e) {
-      LOG.warn("User submitted invalid bearer token: " + bearerToken);
+      LOG.warn("User submitted invalid bearer token: " + bearerToken.get());
       throw NOT_AUTHORIZED;
     }
 
