@@ -28,7 +28,6 @@ public class OAuthProvider {
     // otherwise use trust manager that trusts everyone
     Options options = OptionsProvider.getOptions();
     Optional<String> keyStoreFile = options.getKeyStoreFile().flatMap(f -> f.isBlank() ? Optional.empty() : Optional.of(f));
-    LOG.info("Is keyStoreFile present? " + keyStoreFile.orElse("nope!"));
     TrustManager tm = keyStoreFile
         .map(file -> new KeyStoreTrustManager(Paths.get(file), options.getKeyStorePassPhrase().orElse("")))
         .orElse(new KeyStoreTrustManager());
@@ -46,10 +45,6 @@ public class OAuthProvider {
     String clientSecret = options.getOAuthClientSecret().orElseThrow(() ->
         new InvalidConfigException("Client secret is required for this service"));
 
-    return new OAuthConfig() {
-      @Override public String getOauthUrl() { return oauthUrl; }
-      @Override public String getOauthClientId() { return clientId; }
-      @Override public String getOauthClientSecret() { return clientSecret; }
-    };
+    return OAuthConfig.build(oauthUrl, clientId, clientSecret);
   }
 }

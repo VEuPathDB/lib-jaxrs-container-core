@@ -9,7 +9,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
@@ -199,9 +198,9 @@ public class AuthFilter implements ContainerRequestFilter {
 
   private Optional<User> findUserFromBearerToken(ContainerRequestContext req) {
     // user can choose to submit authorization value as header or query param
-    final var authHeader = req.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+    final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
-    final var paramToken = req.getUriInfo().getQueryParameters().getFirst(HttpHeaders.AUTHORIZATION);
+    final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
     final var bearerToken = resolveSingleValue(headerToken, paramToken);
 
     // convert bearerToken to User
@@ -215,7 +214,7 @@ public class AuthFilter implements ContainerRequestFilter {
       ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, bearerToken.get());
 
       // set token on the request in case application logic needs it
-      req.setProperty(HttpHeaders.AUTHORIZATION, token.getTokenValue());
+      req.setProperty(RequestKeys.BEARER_TOKEN_HEADER, token.getTokenValue());
 
       // create new user from this token
       return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
