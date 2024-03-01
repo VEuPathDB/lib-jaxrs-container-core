@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.exception.ExpiredTokenException;
 import org.gusdb.oauth2.exception.InvalidTokenException;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
@@ -219,7 +220,7 @@ public class AuthFilter implements ContainerRequestFilter {
       // create new user from this token
       return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
     }
-    catch (InvalidTokenException e) {
+    catch (InvalidTokenException | ExpiredTokenException e) {
       LOG.warn("User submitted invalid bearer token: " + bearerToken.get());
       throw NOT_AUTHORIZED;
     }
