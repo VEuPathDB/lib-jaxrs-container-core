@@ -1,10 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -13,16 +8,19 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
-
 import org.apache.logging.log4j.Logger;
-import org.gusdb.fgputil.accountdb.UserProfile;
 import org.gusdb.fgputil.web.LoginCookieFactory;
+import org.gusdb.oauth2.client.veupathdb.BasicUser;
 import org.veupathdb.lib.container.jaxrs.Globals;
-import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.UnauthorizedError;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
@@ -62,7 +60,7 @@ public class DummyAuthFilter implements ContainerRequestFilter {
 
     log.debug("Authenticating request");
 
-    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER);
+    final var rawAuth = req.getHeaders().getFirst(RequestKeys.AUTH_HEADER_LEGACY);
 
     if (isNull(rawAuth) || rawAuth.isEmpty()) {
       log.debug("Authentication failed: no auth header.");
@@ -73,11 +71,8 @@ public class DummyAuthFilter implements ContainerRequestFilter {
     final var auth = LoginCookieFactory.parseCookieValue(rawAuth);
 
     log.debug("Request authenticated");
-    req.setProperty(Globals.REQUEST_USER, new User()
+    req.setProperty(Globals.REQUEST_USER, new BasicUser(123456L, false, null, "USER123456")
         .setEmail(auth.getUsername())
-        .setStableID("USER123456")
-        .setUserID(123456L)
-        .setGuest(false)
         .setFirstName("demo")
         .setLastName("user")
     );

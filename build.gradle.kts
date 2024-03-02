@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.21.4"
+version = "7.0.0"
 
 plugins {
   `java-library`
@@ -39,11 +39,14 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.11-jakarta"
+  val fgputil = "2.13.1-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
+
+  // OAuth Client
+  api("org.gusdb:oauth2-client:1.1.4-jakarta")
 
   // Oracle
   runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")

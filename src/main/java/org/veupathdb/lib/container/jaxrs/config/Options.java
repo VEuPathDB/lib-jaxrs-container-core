@@ -22,13 +22,6 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
-    names = "--auth-secret",
-    defaultValue = "${env:AUTH_SECRET_KEY}",
-    description = "env: AUTH_SECRET_KEY",
-    arity = "1")
-  private String authSecretKey;
-
-  @Option(
     names = "--admin-auth-token",
     defaultValue = "${env:ADMIN_AUTH_TOKEN}",
     description = "env: ADMIN_AUTH_TOKEN",
@@ -62,6 +55,52 @@ public class Options {
     description = "env: ORACLE_BASE_DN",
     arity = "1")
   private String oracleBaseDn;
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃    Authentication/OAuth Config                     ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+      names = "--auth-secret",
+      defaultValue = "${env:AUTH_SECRET_KEY}",
+      description = "env: AUTH_SECRET_KEY",
+      arity = "1")
+  private String authSecretKey;
+
+  @Option(
+      names = "--oauth-url",
+      defaultValue = "${env:OAUTH_URL}",
+      description = "env: OAUTH_URL",
+      arity = "1")
+  private String oauthUrl;
+
+  @Option(
+      names = "--oauth-client-id",
+      defaultValue = "${env:OAUTH_CLIENT_ID}",
+      description = "env: OAUTH_CLIENT_ID",
+      arity = "1")
+  private String oauthClientId;
+
+  @Option(
+      names = "--oauth-client-secret",
+      defaultValue = "${env:OAUTH_CLIENT_SECRET}",
+      description = "env: OAUTH_CLIENT_SECRET",
+      arity = "1")
+  private String oauthClientSecret;
+
+  @Option(
+      names = "--key-store-file",
+      defaultValue = "${env:KEY_STORE_FILE}",
+      description = "env: KEY_STORE_FILE",
+      arity = "1")
+  private String keyStoreFile;
+
+  @Option(
+      names = "--key-store-pass-phrase",
+      defaultValue = "${env:KEY_STORE_PASS_PHRASE}",
+      description = "env: KEY_STORE_PASS_PHRASE",
+      arity = "1")
+  private String keyStorePassPhrase;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Application DB Config                           ┃
@@ -253,10 +292,6 @@ public class Options {
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  public Optional<String> getAuthSecretKey() {
-    return Optional.ofNullable(authSecretKey);
-  }
-
   public Optional<String> getAdminAuthToken() {
     return Optional.ofNullable(adminAuthToken);
   }
@@ -267,6 +302,30 @@ public class Options {
 
   public boolean getCorsEnabled() {
     return enableCors != null && enableCors;
+  }
+
+  public Optional<String> getAuthSecretKey() {
+    return Optional.ofNullable(authSecretKey);
+  }
+
+  public Optional<String> getOAuthUrl() {
+    return Optional.ofNullable(oauthUrl);
+  }
+
+  public Optional<String> getOAuthClientId() {
+    return Optional.ofNullable(oauthClientId);
+  }
+
+  public Optional<String> getOAuthClientSecret() {
+    return Optional.ofNullable(oauthClientSecret);
+  }
+
+  public Optional<String> getKeyStoreFile() {
+    return Optional.ofNullable(keyStoreFile);
+  }
+
+  public Optional<String> getKeyStorePassPhrase() {
+    return Optional.ofNullable(keyStorePassPhrase);
   }
 
   public DbOptions getAppDbOpts() {

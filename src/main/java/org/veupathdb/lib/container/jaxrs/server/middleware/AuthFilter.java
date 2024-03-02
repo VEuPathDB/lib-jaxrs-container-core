@@ -13,11 +13,16 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.web.LoginCookieFactory;
+import org.gusdb.oauth2.client.OAuthClient;
+import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.exception.ExpiredTokenException;
+import org.gusdb.oauth2.exception.InvalidTokenException;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
+import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
 import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
 import org.veupathdb.lib.container.jaxrs.server.annotations.AdminRequired;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
@@ -140,22 +145,24 @@ public class AuthFilter implements ContainerRequestFilter {
   }
 
   public static Optional<String> findSubmittedValue(ContainerRequestContext req, String key) {
+    // user can choose to submit auth values as header or query param
+    final var headerValue = req.getHeaders().getFirst(key);
+    final var paramValue = req.getUriInfo().getQueryParameters().getFirst(key);
+    return resolveSingleValue(headerValue, paramValue);
+  }
 
-    // user can choose to submit auth key as header or query param
-    final var authHeader = req.getHeaders().getFirst(key);
-    final var authParam = req.getUriInfo().getQueryParameters().getFirst(key);
-
+  private static Optional<String> resolveSingleValue(String headerValue, String paramValue) {
     // if both are submitted, they must match (no preference for one over the other)
-    if (!isNull(authHeader) && !isNull(authParam) && !authHeader.equals(authParam)) {
+    if (!isNull(headerValue) && !isNull(paramValue) && !headerValue.equals(paramValue)) {
       LOG.debug("Authentication failed: unequal auth header and query param values.");
-      throw NOT_AUTHORIZED;
+      throw BAD_REQUEST;
     }
 
     // distill the two values to one
-    final var rawAuth = authHeader == null ? authParam : authHeader;
+    final var submittedValue = headerValue == null ? paramValue : headerValue;
 
     // treat blank values as missing
-    return isNull(rawAuth) || rawAuth.isBlank() ? Optional.empty() : Optional.of(rawAuth);
+    return isNull(submittedValue) || submittedValue.isBlank() ? Optional.empty() : Optional.of(submittedValue);
   }
 
   /**
@@ -182,9 +189,47 @@ public class AuthFilter implements ContainerRequestFilter {
   }
 
   private Optional<User> findAuthUser(ContainerRequestContext req) {
+    return
+      // first try bearer tokens
+      findUserFromBearerToken(req)
+    .or(() ->
+      // fall back to legacy auth (WDK cookie value or guest ID
+      findUserFromLegacyAuth(req));
+  }
 
+  private Optional<User> findUserFromBearerToken(ContainerRequestContext req) {
+    // user can choose to submit authorization value as header or query param
+    final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
+    final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
+    final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
+    final var bearerToken = resolveSingleValue(headerToken, paramToken);
+
+    // convert bearerToken to User
+    if (bearerToken.isEmpty()) return Optional.empty();
+
+    OAuthClient client = OAuthProvider.getOAuthClient();
+    String oauthUrl = OAuthProvider.getOAuthUrl();
+
+    try {
+      // parse and validate the token and its signature
+      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, bearerToken.get());
+
+      // set token on the request in case application logic needs it
+      req.setProperty(RequestKeys.BEARER_TOKEN_HEADER, token.getTokenValue());
+
+      // create new user from this token
+      return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
+    }
+    catch (InvalidTokenException | ExpiredTokenException e) {
+      LOG.warn("User submitted invalid bearer token: " + bearerToken.get());
+      throw NOT_AUTHORIZED;
+    }
+
+  }
+
+  private Optional<User> findUserFromLegacyAuth(ContainerRequestContext req) {
     // find submitted auth value
-    final var rawAuthOpt = findSubmittedValue(req, RequestKeys.AUTH_HEADER);
+    final var rawAuthOpt = findSubmittedValue(req, RequestKeys.AUTH_HEADER_LEGACY);
 
     // value must be non-null and non-empty
     if (rawAuthOpt.isEmpty()) {
@@ -209,11 +254,8 @@ public class AuthFilter implements ContainerRequestFilter {
 
       // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
       LOG.debug("Request authenticated as guest");
-      req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
-      return Optional.of(new User()
-          .setUserID(userID)
-          .setFirstName("Guest")
-          .setGuest(true));
+      req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
+      return Optional.of((User)new User.BasicUser(userID,true,null,null).setFirstName("Guest"));
     }
     catch (NumberFormatException e) {
       // fall through to try to find registered user matching this auth value
@@ -247,7 +289,7 @@ public class AuthFilter implements ContainerRequestFilter {
       }
 
       LOG.debug("Request authenticated as a registered user");
-      req.setProperty(RequestKeys.AUTH_HEADER, rawAuth);
+      req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
       return profile;
 
     }
@@ -311,4 +353,3 @@ class AuthRequirements {
     guestsAllowed = authAnnotationOpt.isPresent() && authAnnotationOpt.get().allowGuests();
   }
 }
-

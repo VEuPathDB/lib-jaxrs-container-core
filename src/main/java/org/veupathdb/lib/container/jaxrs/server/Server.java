@@ -10,10 +10,7 @@ import java.util.Optional;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.Dependency;
-import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
-import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
-import org.veupathdb.lib.container.jaxrs.providers.OptionsProvider;
-import org.veupathdb.lib.container.jaxrs.providers.RuntimeProvider;
+import org.veupathdb.lib.container.jaxrs.providers.*;
 import org.veupathdb.lib.container.jaxrs.utils.Cli;
 import org.veupathdb.lib.container.jaxrs.utils.logging.Log;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
@@ -35,9 +32,11 @@ abstract public class Server
 
   private ContainerResources resources;
 
-  private boolean useAcctDb;
-  private boolean useAppDb;
-  private boolean useUserDb;
+  private boolean useAcctDb = false;
+  private boolean useAppDb = false;
+  private boolean useUserDb = false;
+
+  private boolean checkUserQuerying = false;
 
   private HttpServer grizzly;
 
@@ -150,6 +149,18 @@ abstract public class Server
     return this;
   }
 
+  /**
+   * Enables querying of users' data on the OAuth server by either user IDs or
+   * by user emails.  If enabled, two additional configuration values are
+   * required: oauth-client-id and oauth-client-secret
+   *
+   * @return Updated server instance.
+   */
+  protected final Server enableUserQuerying() {
+    checkUserQuerying = true;
+    return this;
+  }
+
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
     ┃    Server Methods                                                    ┃
@@ -196,6 +207,12 @@ abstract public class Server
       logger.info("User DB Enabled");
       DbManager.initUserDatabase(options);
       postUserDb();
+    }
+
+    if (checkUserQuerying) {
+      logger.info("User Querying Enabled");
+      // this method will throw an illegal configuration exception if required env is not present
+      OAuthProvider.getOAuthConfig();
     }
 
     for (var dep : dependencies())

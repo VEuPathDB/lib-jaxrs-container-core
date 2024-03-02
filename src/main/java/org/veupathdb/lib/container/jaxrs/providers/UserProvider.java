@@ -1,13 +1,17 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import java.util.Objects;
-import java.util.Optional;
+import jakarta.ws.rs.core.HttpHeaders;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
+import org.gusdb.oauth2.client.veupathdb.OAuthQuerier;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.model.User;
-import org.veupathdb.lib.container.jaxrs.server.middleware.AuthFilter;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class UserProvider {
 
@@ -17,21 +21,26 @@ public class UserProvider {
 
   public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
     return
-      // look for property on request
-      findRequestProp(req, String.class, RequestKeys.AUTH_HEADER)
-      // auth may not be enabled; look for auth value independently
-      .or(() -> AuthFilter.findSubmittedValue(req, RequestKeys.AUTH_HEADER))
-      // convert value to Entry if present
-      .map(s -> new TwoTuple<>(RequestKeys.AUTH_HEADER, s));
+      // look for bearer token on request first
+      findRequestProp(req, String.class, HttpHeaders.AUTHORIZATION)
+        // convert to submittable pair
+        .map(token -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+    .or(() ->
+      // look for legacy auth key (i.e. WDK cookie value or guest ID)
+      findRequestProp(req, String.class, RequestKeys.AUTH_HEADER_LEGACY)
+        // convert to submittable pair
+        .map(token -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, token)));
   }
 
   private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
-    return Optional.ofNullable(
-            // caller must pass a non-null request
-            Objects.requireNonNull(req))
-        // try to get specified request property
-        .map(r -> r.getProperty(key))
-        // cast to the requested type
-        .map(clazz::cast);
+    return Optional.ofNullable(Objects.requireNonNull(req).getProperty(key)).map(clazz::cast);
+  }
+
+  public static Map<Long,User> getUsersById(List<Long> userIds) {
+    return OAuthQuerier.getUsersById(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), userIds, User.BasicUser::new);
+  }
+
+  public static Map<String,User> getUsersByEmail(List<String> emails) {
+    return OAuthQuerier.getUsersByEmail(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), emails, User.BasicUser::new);
   }
 }
