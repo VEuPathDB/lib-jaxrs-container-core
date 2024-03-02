@@ -150,8 +150,9 @@ abstract public class Server
   }
 
   /**
-   * Enables querying of user data on the OAuth server.  If enabled, two additional
-   * configuration values are required: oauth-client-id and oauth-client-secret
+   * Enables querying of users' data on the OAuth server by either user IDs or
+   * by user emails.  If enabled, two additional configuration values are
+   * required: oauth-client-id and oauth-client-secret
    *
    * @return Updated server instance.
    */
