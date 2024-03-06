@@ -29,7 +29,17 @@ public class UserProvider {
       // look for legacy auth key (i.e. WDK cookie value or guest ID)
       findRequestProp(req, String.class, RequestKeys.AUTH_HEADER_LEGACY)
         // convert to submittable pair
-        .map(token -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, token)));
+        .map(token -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, token)))
+
+     // FIXME: stop gap for EDA merge service to forward unvalidated auth header to dataset access even
+     //        when auth is disabled (AuthFilter does not run).  Cannot run AuthFilter without auth_secret_key,
+     //        which is not currently configured in docker-compose for EDA merging, and don't want to ask systems.
+     //        NOTE: no longer have access to query params here so if auth is submitted via params, this won't work.
+     // TODO: remove along with legacy auth logic once bearer tokens are ubiquitous
+     .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+         .map(tokenHeaderValue -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, tokenHeaderValue)))
+     .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(RequestKeys.AUTH_HEADER_LEGACY))
+         .map(legacyHeaderValue -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, legacyHeaderValue)));
   }
 
   private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
