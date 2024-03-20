@@ -4,6 +4,7 @@ import io.vulpine.lib.query.util.StatementPreparer;
 import io.vulpine.lib.query.util.basic.BasicPreparedReadQuery;
 import java.sql.ResultSet;
 import java.util.Optional;
+
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
 
@@ -43,24 +44,23 @@ public class UserRepo
 
     private static Optional<User> userDB2User(ResultSet rs) throws Exception {
       return !rs.next() ? Optional.empty() :
-        Optional.of(new User()
-          .setUserID(rs.getLong(Columns.UserDB.UserSchema.Users.UserID))
-          .setFirstName("Guest")
-          .setGuest(true));
+        Optional.of((User)new User.BasicUser(rs.getLong(Columns.UserDB.UserSchema.Users.UserID),
+            true,null,null).setFirstName("Guest"));
     }
 
     private static Optional<User> acctDB2User(ResultSet rs) throws Exception {
       return !rs.next() ? Optional.empty() :
-        Optional.of(new User()
-          .setUserID(rs.getLong(Columns.AccountDB.UserAccounts.Accounts.UserID))
-          .setFirstName(rs.getString("first_name"))
-          .setMiddleName(rs.getString("middle_name"))
-          .setLastName(rs.getString("last_name"))
-          .setOrganization(rs.getString("organization"))
-          .setSignature(rs.getString(Columns.AccountDB.UserAccounts.Accounts.Signature))
-          .setEmail(rs.getString(Columns.AccountDB.UserAccounts.Accounts.Email))
-          .setStableID(rs.getString(Columns.AccountDB.UserAccounts.Accounts.StableID))
-          .setGuest(false));
+        Optional.of((User)new User.BasicUser(
+          rs.getLong(Columns.AccountDB.UserAccounts.Accounts.UserID),
+          false,
+          rs.getString(Columns.AccountDB.UserAccounts.Accounts.Signature),
+          rs.getString(Columns.AccountDB.UserAccounts.Accounts.StableID)
+        )
+        .setFirstName(rs.getString("first_name"))
+        .setMiddleName(rs.getString("middle_name"))
+        .setLastName(rs.getString("last_name"))
+        .setOrganization(rs.getString("organization"))
+        .setEmail(rs.getString(Columns.AccountDB.UserAccounts.Accounts.Email)));
     }
   }
 

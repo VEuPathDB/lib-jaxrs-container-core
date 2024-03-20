@@ -1,12 +1,15 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
 import io.prometheus.client.Gauge;
-import org.gusdb.fgputil.db.pool.DatabaseInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class DBPrometheus {
+
+  private static final Logger log = LoggerFactory.getLogger(DBPrometheus.class);
 
   private static final int resolutionMillis = 5000;
 
@@ -15,15 +18,24 @@ public final class DBPrometheus {
   static {
     new Thread(() -> {
       while (true) {
+        openConnections.removeIf(g -> g.db.isClosed());
+
+        if (openConnections.isEmpty()) {
+          log.info("all tracked database connections have been closed, shutting down metric collector");
+          return;
+        }
+
         for (var p : openConnections) {
-          p.active.set(p.db.getActiveCount());
-          p.idle.set(p.db.getIdleCount());
+          if (!p.db.isClosed()) {
+            p.active.set(p.db.getActiveCount());
+            p.idle.set(p.db.getIdleCount());
+          }
         }
 
         try {
           Thread.sleep(resolutionMillis);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          log.error("interrupt", e);
         }
       }
     }).start();

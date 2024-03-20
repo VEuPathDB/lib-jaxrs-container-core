@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "6.19.2"
+version = "7.0.4"
 
 plugins {
   `java-library`
@@ -39,11 +39,14 @@ dependencies {
 
 
   // FgpUtil
-  val fgputil = "2.12.11-jakarta"
+  val fgputil = "2.13.1-jakarta"
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
   implementation("org.gusdb:fgputil-accountdb:${fgputil}")
+
+  // OAuth Client
+  api("org.gusdb:oauth2-client:1.1.4-jakarta")
 
   // Oracle
   runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
@@ -55,7 +58,7 @@ dependencies {
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
   implementation("org.glassfish.hk2:hk2-api:3.0.3")
 
-  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.1")
+  implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.7")
 
   // Jackson
   api("com.fasterxml.jackson.core:jackson-core:2.15.3")

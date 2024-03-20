@@ -2,7 +2,6 @@ package org.veupathdb.lib.container.jaxrs.utils.db;
 
 import java.util.Objects;
 
-import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.veupathdb.lib.container.jaxrs.config.DbOptions;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.FgpDatabaseDependency;
