@@ -2,15 +2,10 @@ package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import io.prometheus.client.Counter;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.ForbiddenException;
-import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.NotAllowedException;
-import jakarta.ws.rs.NotAuthorizedException;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.MediaType;
@@ -19,12 +14,6 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.jersey.server.ParamException.CookieParamException;
-import org.glassfish.jersey.server.ParamException.FormParamException;
-import org.glassfish.jersey.server.ParamException.HeaderParamException;
-import org.glassfish.jersey.server.ParamException.PathParamException;
-import org.glassfish.jersey.server.ParamException.QueryParamException;
-import org.veupathdb.lib.container.jaxrs.errors.UnprocessableEntityException;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
@@ -35,6 +24,9 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 @PreMatching
 @Priority(1)
 public class ErrorMapper implements ExceptionMapper<Throwable> {
+  public static final Counter INTERNAL_ERROR_COUNT = Counter.build()
+      .name("internal_error")
+      .register();
 
   private Logger log = LogProvider.logger(getClass());
 
@@ -58,6 +50,11 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   @Inject
   private jakarta.inject.Provider<Request> _request;
 
+  public ErrorMapper() {
+    // Emit a 0 to initialize the metric so the first increase can be detected.
+    INTERNAL_ERROR_COUNT.inc(0);
+  }
+
   @Override
   public Response toResponse(Throwable err) {
     log.trace("toResponse(err={})", () -> err);
@@ -67,19 +64,24 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       : INTERNAL_SERVER_ERROR.getStatusCode();
 
     if (code == INTERNAL_SERVER_ERROR.getStatusCode()) {
-      log.warn("Caught Exception: ", err);
+      log.error("Caught Exception: ", err);
+
+      // If final response is 5XX, emit a metric.
+      INTERNAL_ERROR_COUNT.inc();
     } else {
       log.debug("Caught Exception: ", err);
     }
 
     var mapper = mappers.get(code);
 
-    return Response.status(code)
+    Response response = Response.status(code)
       .entity((mapper != null
         ? mapper.toError(err)
         : (err instanceof WebApplicationException ? err : this.serverError(err))))
       .type(MediaType.APPLICATION_JSON_TYPE)
       .build();
+
+    return response;
   }
 
   private ErrorResponse serverError(Throwable error) {
