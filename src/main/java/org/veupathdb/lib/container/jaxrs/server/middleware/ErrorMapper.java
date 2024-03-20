@@ -74,14 +74,12 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
 
     var mapper = mappers.get(code);
 
-    Response response = Response.status(code)
+    return Response.status(code)
       .entity((mapper != null
         ? mapper.toError(err)
         : (err instanceof WebApplicationException ? err : this.serverError(err))))
       .type(MediaType.APPLICATION_JSON_TYPE)
       .build();
-
-    return response;
   }
 
   private ErrorResponse serverError(Throwable error) {
