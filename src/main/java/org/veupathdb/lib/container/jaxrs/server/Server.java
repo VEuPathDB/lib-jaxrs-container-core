@@ -45,7 +45,7 @@ abstract public class Server
       throw new IllegalStateException(ERR_MULTI_SERVER);
 
     PrometheusJVM.enable();
-    
+
     Log.initialize();
     this.logger = LogProvider.logger(Server.class);
     instance = this;
@@ -250,5 +250,6 @@ abstract public class Server
     onShutdown();
     Optional.ofNullable(grizzly).ifPresent(HttpServer::shutdownNow);
     DependencyProvider.getInstance().shutDown();
+    logger.info("Server shut down.");
   }
 }
