@@ -25,7 +25,8 @@ jobs:
       id: version_info
       run: |
         VERSION_CODE="v""$(./gradlew printVersion -q --console plain)"
-        echo "::set-output name=VERSION_CODE::$VERSION_CODE"
+        echo $VERSION_CODE
+        echo -n "::set-output name=VERSION_CODE::$VERSION_CODE"
 
     - name: Check verison is correct
       if: ${{ steps.version_info.outputs.VERSION_CODE == github.ref_name }}
