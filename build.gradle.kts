@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "7.0.3"
+version = "7.0.3-test2"
 
 plugins {
   `java-library`
@@ -106,6 +106,12 @@ tasks.jar {
   manifest {
     attributes["Implementation-Title"]   = project.name
     attributes["Implementation-Version"] = project.version
+  }
+}
+
+tasks.register("printVersion") {
+  doLast {
+    print(version)
   }
 }
 
