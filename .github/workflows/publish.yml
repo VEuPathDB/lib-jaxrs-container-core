@@ -21,7 +21,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Get published version matches tag.
+    - name: Get published version
       id: version_info
       run: |
         ./gradlew
@@ -29,7 +29,7 @@ jobs:
         echo $VERSION_CODE
         echo -n "::set-output name=VERSION_CODE::$VERSION_CODE"
 
-    - name: Check verison is correct
+    - name: Check verison matches tag
       if: ${{ steps.version_info.outputs.VERSION_CODE != github.ref_name }}
       run: exit 1
 
