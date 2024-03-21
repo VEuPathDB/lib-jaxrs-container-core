@@ -7,7 +7,8 @@ on:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build:
+
+  publish:
 
     runs-on: ubuntu-latest
 
@@ -20,18 +21,18 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Validate published version matches tag.
+    - name: Get published version matches tag.
       id: version_info
       run: |
         VERSION_CODE="v""$(./gradlew printVersion -q --console plain)"
         echo "::set-output name=VERSION_CODE::$VERSION_CODE"
 
-    - name: version is correct
+    - name: Check verison is correct
       if: ${{ steps.version_info.outputs.VERSION_CODE == github.ref_name }}
       run: echo "version tag is alined"
 
     - name: Publish with Gradle
       run: ./gradlew publish
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        GITHUB_USERNAME: ${{ secrets.USERNAME }}
+        TOKEN: ${{ secrets.TOKEN }}
+        USERNAME: ${{ secrets.USERNAME }}
