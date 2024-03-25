@@ -14,6 +14,7 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Supplier;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.uri.UriTemplate;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static java.lang.String.format;
 
