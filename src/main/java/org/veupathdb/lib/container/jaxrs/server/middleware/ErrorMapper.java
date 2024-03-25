@@ -26,6 +26,7 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 public class ErrorMapper implements ExceptionMapper<Throwable> {
   public static final Counter INTERNAL_ERROR_COUNT = Counter.build()
       .name("internal_error")
+      .help("Count of internal errors when executing service endpoints.")
       .register();
 
   private Logger log = LogProvider.logger(getClass());
