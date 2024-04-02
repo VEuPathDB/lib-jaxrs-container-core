@@ -14,8 +14,10 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
+import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
+import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
 
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -65,7 +67,10 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       : INTERNAL_SERVER_ERROR.getStatusCode();
 
     if (code == INTERNAL_SERVER_ERROR.getStatusCode()) {
-      log.error("Caught Exception: ", err);
+      // Log the trace-id, since it's being removed from the ThreadContext before this point.
+      // It's unclear why it's being removed from the context before this is invoked, but this ensures we have it.
+      String traceId = _request.get().getHeader(Globals.TRACE_ID_HEADER);
+      log.error("(trace: {}) Caught Exception: ", traceId, err);
 
       // If final response is 5XX, emit a metric.
       INTERNAL_ERROR_COUNT.inc();
