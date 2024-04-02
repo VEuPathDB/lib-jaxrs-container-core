@@ -85,6 +85,7 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
   }
 
   private void removeContext() {
+    LOG.debug("Removing logging variables from thread context.");
     ThreadContext.remove(Globals.CONTEXT_ID);
     LoggingVars.clear();
   }
