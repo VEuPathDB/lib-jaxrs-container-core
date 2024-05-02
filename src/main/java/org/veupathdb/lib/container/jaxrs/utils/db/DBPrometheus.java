@@ -15,8 +15,16 @@ public final class DBPrometheus {
 
   private static final List<GaugeSet> openConnections = new ArrayList<>(3);
 
+  private static final Thread pollingThread;
+
   static {
-    new Thread(() -> {
+    // Build the polling thread now, but don't start it yet as if it is started
+    // before anything is added to the `openConnections` list, it will shut down
+    // immediately.
+    //
+    // This thread will be started when the first connection is added to the
+    // `openConnections` list.
+    pollingThread = new Thread(() -> {
       while (true) {
         openConnections.removeIf(g -> g.db.isClosed());
 
@@ -33,12 +41,13 @@ public final class DBPrometheus {
         }
 
         try {
+          //noinspection BusyWait
           Thread.sleep(resolutionMillis);
         } catch (InterruptedException e) {
           log.error("interrupt", e);
         }
       }
-    }).start();
+    });
   }
 
   public static void register(String name, DatabaseInstance db) {
@@ -53,6 +62,11 @@ public final class DBPrometheus {
         register(),
       db
     ));
+
+    // If this was the first connection added to the registry, start up the
+    // polling thread.
+    if (openConnections.size() == 1)
+      pollingThread.start();
   }
 
   private static String safeName(String name) {

@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "7.0.7"
+version = "7.0.8"
 
 plugins {
   `java-library`
@@ -52,30 +52,30 @@ dependencies {
   runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.1")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.1")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.1")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.1")
-  implementation("org.glassfish.hk2:hk2-api:3.0.3")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.6")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.6")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.6")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.6")
+  implementation("org.glassfish.hk2:hk2-api:3.1.0")
 
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.7")
 
   // Jackson
-  api("com.fasterxml.jackson.core:jackson-core:2.15.3")
-  api("com.fasterxml.jackson.core:jackson-databind:2.15.3")
-  api("com.fasterxml.jackson.core:jackson-annotations:2.15.3")
-  api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.15.3")
-  api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3")
-  api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.15.3")
-  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.3")
+  api("com.fasterxml.jackson.core:jackson-core:2.17.0")
+  api("com.fasterxml.jackson.core:jackson-databind:2.17.0")
+  api("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
+  api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.17.0")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.0")
+  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.20.0")
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.23.1")
+  implementation("org.apache.logging.log4j:log4j-core:2.23.1")
 
   // CLI
-  implementation("info.picocli:picocli:4.7.3")
-  annotationProcessor("info.picocli:picocli-codegen:4.7.3")
+  implementation("info.picocli:picocli:4.7.5")
+  annotationProcessor("info.picocli:picocli-codegen:4.7.5")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
@@ -86,7 +86,7 @@ dependencies {
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
 
   // LDAP utils
-  implementation("com.unboundid:unboundid-ldapsdk:6.0.8")
+  implementation("com.unboundid:unboundid-ldapsdk:6.0.11")
 
   // Query stuff
   implementation("io.vulpine.lib:lib-query-util:2.1.0")
