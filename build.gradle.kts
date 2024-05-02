@@ -1,7 +1,7 @@
 
 // Project settings
 group   = "org.veupathdb.lib"
-version = "7.0.8"
+version = "7.0.9"
 
 plugins {
   `java-library`
@@ -80,7 +80,7 @@ dependencies {
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
   implementation("io.prometheus:simpleclient_common:0.16.0")
-  api("org.veupathdb.lib:lib-prometheus-stats:1.2.3")
+  api("org.veupathdb.lib:lib-prometheus-stats:1.3.0")
 
   // Unique, human readable id generation
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
