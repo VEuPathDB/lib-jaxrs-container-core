@@ -45,6 +45,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
     put(410, GoneError::new);
     put(415, BadContentTypeError::new);
     put(422, InvalidInputError::new);
+    put(424, FailedDependencyError::new);
     put(500, ErrorMapper.this::serverError);
   }};
 

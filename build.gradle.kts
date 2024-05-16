@@ -52,22 +52,24 @@ dependencies {
   runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.6")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.6")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.6")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.1.6")
+  api(platform("org.glassfish.jersey:jersey-bom:3.1.6"))
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2")
   implementation("org.glassfish.hk2:hk2-api:3.1.0")
 
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.7")
 
   // Jackson
-  api("com.fasterxml.jackson.core:jackson-core:2.17.0")
-  api("com.fasterxml.jackson.core:jackson-databind:2.17.0")
-  api("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
-  api("com.fasterxml.jackson.module:jackson-module-parameter-names:2.17.0")
-  api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
-  api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.0")
-  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
+  api(platform("com.fasterxml.jackson:jackson-bom:2.17.1"))
+  api("com.fasterxml.jackson.core:jackson-core")
+  api("com.fasterxml.jackson.core:jackson-databind")
+  api("com.fasterxml.jackson.core:jackson-annotations")
+  api("com.fasterxml.jackson.module:jackson-module-parameter-names")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+  api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:2.23.1")

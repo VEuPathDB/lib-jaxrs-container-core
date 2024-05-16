@@ -9,12 +9,12 @@ public enum ErrorStatus
   FORBIDDEN            ("forbidden"),
   NOT_FOUND            ("not-found"),
   BAD_METHOD           ("method-not-allowed"),
-
   CONFLICT             ("conflict"),
   GONE                 ("gone"),
   UNSUPPORTED_MEDIA    ("unsupported-content-type"),
   TEAPOT               ("I'm a teapot."),
   UNPROCESSABLE_ENTITY ("invalid-input"),
+  FAILED_DEPENDENCY    ("failed-dependency"),
   SERVER_ERROR         ("server-error");
 
   final String value;
