@@ -33,6 +33,7 @@ import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
 
@@ -52,12 +53,12 @@ public class AuthFilter implements ContainerRequestFilter {
 
   private static final Logger LOG = LogProvider.logger(AuthFilter.class);
 
-  private static final ForbiddenException FORBIDDEN = new ForbiddenException();
+  private static final Supplier<ForbiddenException> FORBIDDEN = ForbiddenException::new;
 
-  private static final NotAuthorizedException NOT_AUTHORIZED =
+  private static final Supplier<NotAuthorizedException> NOT_AUTHORIZED = () ->
       new NotAuthorizedException("Valid credentials must be submitted to this resource.");
 
-  private static final BadRequestException BAD_REQUEST =
+  private static final Supplier<BadRequestException> BAD_REQUEST = () ->
       new BadRequestException("An incorrect combination of credential types was sent.");
 
   private static ServerErrorException SERVER_ERROR(String activity, Exception e) {
@@ -113,7 +114,7 @@ public class AuthFilter implements ContainerRequestFilter {
 
       // user required but not present
       if (authUser.isEmpty())
-        throw NOT_AUTHORIZED;
+        throw NOT_AUTHORIZED.get();
 
       // non-guest user required but user is guest
       if (!requirements.guestsAllowed && authUser.orElseThrow().isGuest())
@@ -131,7 +132,7 @@ public class AuthFilter implements ContainerRequestFilter {
 
       // if override is only allowed with proxied user but user not present, return 400
       if (requirements.overrideOption == AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty()) {
-        throw BAD_REQUEST;
+        throw BAD_REQUEST.get();
       }
 
       // set proxied user as the "request user" (may be empty)
@@ -155,7 +156,7 @@ public class AuthFilter implements ContainerRequestFilter {
     // if both are submitted, they must match (no preference for one over the other)
     if (!isNull(headerValue) && !isNull(paramValue) && !headerValue.equals(paramValue)) {
       LOG.debug("Authentication failed: unequal auth header and query param values.");
-      throw BAD_REQUEST;
+      throw BAD_REQUEST.get();
     }
 
     // distill the two values to one
@@ -185,7 +186,7 @@ public class AuthFilter implements ContainerRequestFilter {
     if (submittedAdminToken.get().equals(configuredAdminToken))
       return true;
     // submitted but does not equal configured value
-    throw FORBIDDEN;
+    throw FORBIDDEN.get();
   }
 
   private Optional<User> findAuthUser(ContainerRequestContext req) {
@@ -222,7 +223,7 @@ public class AuthFilter implements ContainerRequestFilter {
     }
     catch (InvalidTokenException | ExpiredTokenException e) {
       LOG.warn("User submitted invalid bearer token: " + bearerToken.get());
-      throw NOT_AUTHORIZED;
+      throw NOT_AUTHORIZED.get();
     }
 
   }
@@ -249,7 +250,7 @@ public class AuthFilter implements ContainerRequestFilter {
       // if found a registered user with this ID, then disallow access as a guest; registered users must use WDK cookie
       if (optUser.isPresent()) {
         LOG.debug("Auth token is an int value but is not a guest user ID.");
-        throw NOT_AUTHORIZED;
+        throw NOT_AUTHORIZED.get();
       }
 
       // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
@@ -273,19 +274,19 @@ public class AuthFilter implements ContainerRequestFilter {
     }
     catch (IllegalArgumentException e) {
       LOG.debug("Authentication failed: bad header");
-      throw NOT_AUTHORIZED;
+      throw NOT_AUTHORIZED.get();
     }
 
     if (!new LoginCookieFactory(opts.getAuthSecretKey().orElseThrow()).isValidCookie(parts)) {
       LOG.debug("Authentication failed: bad header");
-      throw NOT_AUTHORIZED;
+      throw NOT_AUTHORIZED.get();
     }
 
     try {
       final var profile = UserRepo.Select.registeredUserByEmail(parts.getUsername());
       if (profile.isEmpty()) {
         LOG.debug("Authentication failed: no such user");
-        throw NOT_AUTHORIZED;
+        throw NOT_AUTHORIZED.get();
       }
 
       LOG.debug("Request authenticated as a registered user");
@@ -316,7 +317,7 @@ public class AuthFilter implements ContainerRequestFilter {
 
       if (user.isEmpty()) {
         LOG.warn("Denied (401) attempt made to proxy guest user with ID " + proxiedId);
-        throw NOT_AUTHORIZED;
+        throw NOT_AUTHORIZED.get();
       }
 
       // found registered user with this ID
@@ -324,7 +325,7 @@ public class AuthFilter implements ContainerRequestFilter {
     }
     catch (NumberFormatException e) {
       LOG.warn("Denied (401) attempt made to proxy guest user with ID " + proxiedIdOpt.get());
-      throw NOT_AUTHORIZED;
+      throw NOT_AUTHORIZED.get();
     }
     catch (Exception e) {
       throw SERVER_ERROR("Failed to lookup user in account db", e);
