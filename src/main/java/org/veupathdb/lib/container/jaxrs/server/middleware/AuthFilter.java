@@ -204,7 +204,12 @@ public class AuthFilter implements ContainerRequestFilter {
     final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
     final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
-    final var cookieToken = Optional.ofNullable(req.getCookies().get(RequestKeys.BEARER_TOKEN_HEADER)).map(Cookie::getValue).orElse(null);
+    final var cookie = req.getCookies().get(RequestKeys.BEARER_TOKEN_HEADER);
+    if (cookie == null)
+      LOG.info("Cookie is null!!  Here are the available cookies: " + String.join(", ", req.getCookies().keySet()));
+    else
+      LOG.info("Found cookie with value: " + cookie.getValue());
+    final var cookieToken = cookie == null ? null : cookie.getValue();
     final var bearerToken = resolveSingleValue(headerToken, paramToken, cookieToken);
 
     // convert bearerToken to User
