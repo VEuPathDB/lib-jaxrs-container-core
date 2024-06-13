@@ -9,7 +9,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
@@ -205,10 +204,6 @@ public class AuthFilter implements ContainerRequestFilter {
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
     final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
     final var cookie = req.getCookies().get(RequestKeys.BEARER_TOKEN_HEADER);
-    if (cookie == null)
-      LOG.info("Cookie is null!!  Here are the available cookies: " + String.join(", ", req.getCookies().keySet()));
-    else
-      LOG.info("Found cookie with value: " + cookie.getValue());
     final var cookieToken = cookie == null ? null : cookie.getValue();
     final var bearerToken = resolveSingleValue(headerToken, paramToken, cookieToken);
 
