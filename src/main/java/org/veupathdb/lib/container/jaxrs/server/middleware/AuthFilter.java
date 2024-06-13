@@ -9,6 +9,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
@@ -149,18 +150,18 @@ public class AuthFilter implements ContainerRequestFilter {
     // user can choose to submit auth values as header or query param
     final var headerValue = req.getHeaders().getFirst(key);
     final var paramValue = req.getUriInfo().getQueryParameters().getFirst(key);
-    return resolveSingleValue(headerValue, paramValue);
+    return resolveSingleValue(headerValue, paramValue, null);
   }
 
-  private static Optional<String> resolveSingleValue(String headerValue, String paramValue) {
+  private static Optional<String> resolveSingleValue(String headerValue, String paramValue, String cookieValue) {
     // if both are submitted, they must match (no preference for one over the other)
     if (!isNull(headerValue) && !isNull(paramValue) && !headerValue.equals(paramValue)) {
       LOG.debug("Authentication failed: unequal auth header and query param values.");
       throw BAD_REQUEST.get();
     }
 
-    // distill the two values to one
-    final var submittedValue = headerValue == null ? paramValue : headerValue;
+    // distill the three values to one (cookie last, only if other two are null)
+    final var submittedValue = headerValue != null ? headerValue : paramValue != null ? paramValue : cookieValue;
 
     // treat blank values as missing
     return isNull(submittedValue) || submittedValue.isBlank() ? Optional.empty() : Optional.of(submittedValue);
@@ -203,7 +204,8 @@ public class AuthFilter implements ContainerRequestFilter {
     final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
     final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
-    final var bearerToken = resolveSingleValue(headerToken, paramToken);
+    final var cookieToken = Optional.ofNullable(req.getCookies().get(RequestKeys.BEARER_TOKEN_HEADER)).map(Cookie::getValue).orElse(null);
+    final var bearerToken = resolveSingleValue(headerToken, paramToken, cookieToken);
 
     // convert bearerToken to User
     if (bearerToken.isEmpty()) return Optional.empty();
