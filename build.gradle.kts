@@ -49,7 +49,7 @@ dependencies {
   api("org.gusdb:oauth2-client:1.2.1-jakarta")
 
   // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:21.9.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
 
   // Jersey
   api(platform("org.glassfish.jersey:jersey-bom:3.1.6"))
