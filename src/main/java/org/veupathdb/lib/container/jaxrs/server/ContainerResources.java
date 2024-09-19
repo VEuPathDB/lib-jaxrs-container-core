@@ -63,9 +63,6 @@ abstract public class ContainerResources extends ResourceConfig {
 
   /**
    * Enable OAuth authentication checks for annotated resources.
-   * <p>
-   * Note: The authentication feature requires both the AccountDB and UserDB to
-   * be enabled.
    */
   public void enableOAuth() {
     registerInstances(new OAuthAuthFilter(opts));
