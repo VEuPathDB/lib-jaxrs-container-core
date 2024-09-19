@@ -13,6 +13,7 @@ public class UserRepo
   public static final class Select
   {
     public static Optional<User> guestUserByID(long userID) throws Exception {
+      //noinspection resource
       return new BasicPreparedReadQuery<>(
         SQL.Select.UserDB.UserSchema.Users.guestByID(),
         DbManager.userDatabase().getDataSource()::getConnection,
@@ -25,6 +26,7 @@ public class UserRepo
     }
 
     public static Optional<User> registeredUserById(long id) throws Exception {
+      //noinspection resource
       return new BasicPreparedReadQuery<>(
           SQL.Select.AccountDB.UserAccounts.Accounts.ById,
           DbManager.accountDatabase().getDataSource()::getConnection,
@@ -34,6 +36,7 @@ public class UserRepo
     }
 
     public static Optional<User> registeredUserByEmail(String email) throws Exception {
+      //noinspection resource
       return new BasicPreparedReadQuery<>(
         SQL.Select.AccountDB.UserAccounts.Accounts.ByEmail,
         DbManager.accountDatabase().getDataSource()::getConnection,

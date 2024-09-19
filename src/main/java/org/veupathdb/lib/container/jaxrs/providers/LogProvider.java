@@ -1,10 +1,10 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Mockable Wrapper for the Log4j log manager.
+ * Mockable Wrapper for SLF4J's {@link LoggerFactory}.
  */
 public class LogProvider {
   private static LogProvider instance;
@@ -12,11 +12,11 @@ public class LogProvider {
   private LogProvider() {}
 
   public Logger getLogger(Class<?> type) {
-    return LogManager.getLogger(type);
+    return LoggerFactory.getLogger(type);
   }
 
   public Logger getLogger(String name) {
-    return LogManager.getLogger(name);
+    return LoggerFactory.getLogger(name);
   }
 
   public static Logger logger(Class<?> type) {

@@ -73,21 +73,5 @@ public final class DBPrometheus {
     return name.replace('-', '_');
   }
 
-  private static class GaugeSet {
-    final Gauge active;
-
-    final Gauge idle;
-
-    final DatabaseInstance db;
-
-    public GaugeSet(
-      Gauge active,
-      Gauge idle,
-      DatabaseInstance db
-    ) {
-      this.active = active;
-      this.idle   = idle;
-      this.db     = db;
-    }
-  }
+  private record GaugeSet(Gauge active, Gauge idle, DatabaseInstance db) {}
 }

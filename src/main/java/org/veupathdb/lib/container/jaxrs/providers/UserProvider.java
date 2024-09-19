@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 public class UserProvider {
 
   public static Optional<User> lookupUser(ContainerRequest req) {

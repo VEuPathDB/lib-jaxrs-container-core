@@ -1,10 +1,9 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.gusdb.oauth2.client.KeyStoreTrustManager;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.OAuthConfig;
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 
@@ -14,12 +13,12 @@ import java.util.Optional;
 
 public class OAuthProvider {
 
-  private static final Logger LOG = LogManager.getLogger(OAuthProvider.class);
-
-  public static final String DEFAULT_OAUTH_URL = "https://eupathdb.org/oauth";
+  private static final Logger LOG = LogProvider.logger(OAuthProvider.class);
 
   public static String getOAuthUrl() {
-    return OptionsProvider.getOptions().getOAuthUrl().orElse(OAuthProvider.DEFAULT_OAUTH_URL);
+    return OptionsProvider.getOptions()
+      .getOAuthUrl()
+      .orElseThrow(() -> new InvalidConfigException("OAuth URL is required for this service"));
   }
 
   public static OAuthClient getOAuthClient() {

@@ -1,13 +1,14 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 /**
  * Service Dependency
- *
+ * <p>
  * A dependency wrapper for an external HTTP service.
- *
+ * <p>
  * Implementations of this wrapper provide the specifics of how to check the
  * health status of the external service.
  */
@@ -22,7 +23,7 @@ abstract public class ServiceDependency extends ExternalDependency {
     super(name);
     this.url = url;
     this.port = port;
-    this.log = LogManager.getLogger(getClass());
+    this.log = LogProvider.logger(getClass());
   }
 
   public String getUrl() {

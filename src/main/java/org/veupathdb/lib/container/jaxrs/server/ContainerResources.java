@@ -68,8 +68,13 @@ abstract public class ContainerResources extends ResourceConfig {
    * be enabled.
    * </p>
    */
-  public void enableAuth() {
-    registerInstances(new AuthFilter(opts));
+  public void enableOAuth() {
+    registerInstances(new OAuthAuthFilter(opts));
+  }
+
+  @Deprecated
+  public void enableOAuthWithLegacySupport() {
+    registerInstances(new LegacyEnabledAuthFilter(opts));
   }
 
   /**

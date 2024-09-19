@@ -10,7 +10,7 @@ public class Threads {
 
   /**
    * Get the total current active thread count.
-   *
+   * <p>
    * Note: This method cannot be tested due to the Thread and ThreadGroup
    * methods being marked as final.
    */

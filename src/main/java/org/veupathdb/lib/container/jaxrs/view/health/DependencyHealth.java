@@ -18,7 +18,7 @@ public class DependencyHealth {
 
   @JsonGetter
   public boolean isReachable() {
-    return result.isReachable();
+    return result.reachable();
   }
 
   @JsonGetter

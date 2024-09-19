@@ -12,8 +12,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.Request;
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.view.error.*;
@@ -29,7 +29,7 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       .help("Count of internal errors when executing service endpoints.")
       .register();
 
-  private Logger log = LogProvider.logger(getClass());
+  private final Logger log = LogProvider.logger(getClass());
 
   private interface Mapper {
     ErrorResponse toError(Throwable t);
@@ -59,8 +59,6 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
 
   @Override
   public Response toResponse(Throwable err) {
-    log.trace("toResponse(err={})", () -> err);
-
     var code = err instanceof WebApplicationException
       ? ((WebApplicationException) err).getResponse().getStatus()
       : INTERNAL_SERVER_ERROR.getStatusCode();
@@ -85,8 +83,6 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
   }
 
   private ErrorResponse serverError(Throwable error) {
-    log.trace("serverError(error={})", () -> error);
-
     return new ServerError(
       (String) _request.get().getAttribute(RequestKeys.REQUEST_ID),
       error

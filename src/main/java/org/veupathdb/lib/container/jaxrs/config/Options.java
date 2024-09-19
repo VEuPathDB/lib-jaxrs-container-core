@@ -22,13 +22,6 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
-    names = "--admin-auth-token",
-    defaultValue = "${env:ADMIN_AUTH_TOKEN}",
-    description = "env: ADMIN_AUTH_TOKEN",
-    arity = "1")
-  private String adminAuthToken;
-
-  @Option(
     names = "--server-port",
     defaultValue = "${env:SERVER_PORT}",
     description = "env: SERVER_PORT",
@@ -59,6 +52,13 @@ public class Options {
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Authentication/OAuth Config                     ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--admin-auth-token",
+    defaultValue = "${env:ADMIN_AUTH_TOKEN}",
+    description = "env: ADMIN_AUTH_TOKEN",
+    arity = "1")
+  private String adminAuthToken;
 
   @Option(
       names = "--auth-secret",
