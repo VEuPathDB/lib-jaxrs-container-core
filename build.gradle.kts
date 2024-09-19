@@ -93,10 +93,6 @@ dependencies {
   // LDAP utils
   implementation("com.unboundid:unboundid-ldapsdk:6.0.11")
 
-  // Query stuff
-  implementation("io.vulpine.lib:lib-query-util:2.1.0")
-  implementation("io.vulpine.lib:sql-import:0.2.1")
-
   //
   // Testing Stuff
   //
