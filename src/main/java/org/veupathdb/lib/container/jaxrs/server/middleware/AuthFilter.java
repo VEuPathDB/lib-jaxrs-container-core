@@ -6,23 +6,29 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import org.gusdb.oauth2.client.OAuthClient;
+import org.gusdb.oauth2.client.ValidatedToken;
+import org.gusdb.oauth2.exception.ExpiredTokenException;
+import org.gusdb.oauth2.exception.InvalidTokenException;
 import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
-import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
+import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
+import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.isNull;
 
-abstract class AbstractAuthFilter implements ContainerRequestFilter {
+public class AuthFilter implements ContainerRequestFilter {
   protected final Logger logger = LogProvider.logger(this.getClass());
 
   /**
@@ -36,8 +42,11 @@ abstract class AbstractAuthFilter implements ContainerRequestFilter {
   @Context
   protected ResourceInfo resource;
 
-  AbstractAuthFilter(Options options) {
+  public AuthFilter(Options options) {
     serviceOptions = options;
+
+    if (anyIsEmpty(options.getOAuthUrl(), options.getOAuthClientId(), options.getOAuthClientSecret()))
+      throw new InvalidConfigException("missing required OAuth configuration values");
   }
 
   @Override
@@ -90,7 +99,35 @@ abstract class AbstractAuthFilter implements ContainerRequestFilter {
     }
   }
 
-  protected abstract Optional<User> findAuthUser(ContainerRequestContext req);
+  private Optional<User> findAuthUser(ContainerRequestContext req) {
+    // user can choose to submit authorization value as header or query param
+    final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
+    final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
+    final var paramToken = req.getUriInfo().getQueryParameters().getFirst(RequestKeys.BEARER_TOKEN_QUERY_PARAM);
+    final var cookie = req.getCookies().get(RequestKeys.BEARER_TOKEN_HEADER);
+    final var cookieToken = cookie == null ? null : cookie.getValue();
+    final var bearerToken = resolveSingleValue(headerToken, paramToken, cookieToken);
+
+    // convert bearerToken to User
+    if (bearerToken.isEmpty()) return Optional.empty();
+
+    OAuthClient client = OAuthProvider.getOAuthClient();
+    String oauthUrl = OAuthProvider.getOAuthUrl();
+
+    try {
+      // parse and validate the token and its signature
+      ValidatedToken token = client.getValidatedEcdsaSignedToken(oauthUrl, bearerToken.get());
+
+      // set token on the request in case application logic needs it
+      req.setProperty(RequestKeys.BEARER_TOKEN_HEADER, token.getTokenValue());
+
+      // create new user from this token
+      return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
+    } catch (InvalidTokenException | ExpiredTokenException e) {
+      logger.warn("User submitted invalid bearer token: {}", bearerToken.get());
+      throw err401Unauthorized(null);
+    }
+  }
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Exception Type Constructors                     ┃
@@ -188,7 +225,7 @@ abstract class AbstractAuthFilter implements ContainerRequestFilter {
     // try to find registered user for this ID; guests can not be proxied
     Optional<User> user;
     try {
-      user = UserRepo.Select.registeredUserById(proxiedId);
+      user = Optional.ofNullable(UserProvider.getUsersById(List.of(proxiedId)).get(proxiedId));
     } catch (Exception e) {
       throw err500Internal("Failed to lookup user in account db", e);
     }

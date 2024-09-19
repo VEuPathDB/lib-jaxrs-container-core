@@ -65,7 +65,7 @@ abstract public class ContainerResources extends ResourceConfig {
    * Enable OAuth authentication checks for annotated resources.
    */
   public void enableAuth() {
-    registerInstances(new OAuthAuthFilter(opts));
+    registerInstances(new AuthFilter(opts));
   }
 
   /**
@@ -77,19 +77,8 @@ abstract public class ContainerResources extends ResourceConfig {
   }
 
   /**
-   * Enable dummy authentication.
-   *
-   * WARNING:
-   *  * Do not use this with the regular auth filter
-   *  * this is for test/dev purposes only
-   */
-  public void enableDummyAuth() {
-    register(DummyAuthFilter.class);
-  }
-
-  /**
    * Returns an array of JaxRS endpoints, providers, and contexts.
-   *
+   * <p>
    * Entries in the array can be either classes or instances.
    */
   abstract protected Object[] resources();

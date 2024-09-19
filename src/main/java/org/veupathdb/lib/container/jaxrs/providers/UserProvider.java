@@ -6,7 +6,6 @@ import org.gusdb.fgputil.Tuples.TwoTuple;
 import org.gusdb.oauth2.client.veupathdb.OAuthQuerier;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.model.User;
-import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,6 @@ public class UserProvider {
       findRequestProp(req, String.class, HttpHeaders.AUTHORIZATION)
         // convert to submittable pair
         .map(token -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-    .or(() ->
-      // look for legacy auth key (i.e. WDK cookie value or guest ID)
-      findRequestProp(req, String.class, RequestKeys.AUTH_HEADER_LEGACY)
-        // convert to submittable pair
-        .map(token -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, token)))
 
      // FIXME: stop gap for EDA merge service to forward unvalidated auth header to dataset access even
      //        when auth is disabled (AuthFilter does not run).  Cannot run AuthFilter without auth_secret_key,
@@ -38,9 +32,7 @@ public class UserProvider {
      //        NOTE: no longer have access to query params here so if auth is submitted via params, this won't work.
      // TODO: remove along with legacy auth logic once bearer tokens are ubiquitous
      .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION))
-         .map(tokenHeaderValue -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, tokenHeaderValue)))
-     .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(RequestKeys.AUTH_HEADER_LEGACY))
-         .map(legacyHeaderValue -> new TwoTuple<>(RequestKeys.AUTH_HEADER_LEGACY, legacyHeaderValue)));
+         .map(tokenHeaderValue -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, tokenHeaderValue)));
   }
 
   private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
