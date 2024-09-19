@@ -61,13 +61,6 @@ public class Options {
   private String adminAuthToken;
 
   @Option(
-      names = "--auth-secret",
-      defaultValue = "${env:AUTH_SECRET_KEY}",
-      description = "env: AUTH_SECRET_KEY",
-      arity = "1")
-  private String authSecretKey;
-
-  @Option(
       names = "--oauth-url",
       defaultValue = "${env:OAUTH_URL}",
       description = "env: OAUTH_URL",
@@ -302,10 +295,6 @@ public class Options {
 
   public boolean getCorsEnabled() {
     return enableCors != null && enableCors;
-  }
-
-  public Optional<String> getAuthSecretKey() {
-    return Optional.ofNullable(authSecretKey);
   }
 
   public Optional<String> getOAuthUrl() {
