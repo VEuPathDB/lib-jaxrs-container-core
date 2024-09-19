@@ -64,18 +64,8 @@ abstract public class ContainerResources extends ResourceConfig {
   /**
    * Enable OAuth authentication checks for annotated resources.
    */
-  public void enableOAuth() {
+  public void enableAuth() {
     registerInstances(new OAuthAuthFilter(opts));
-  }
-
-  /**
-   * Enable OAuth and legacy authentication checks for annotated resources.
-   * <p>
-   * Note: The legacy authentication feature requires AccountDB to be enabled.
-   */
-  @Deprecated
-  public void enableOAuthWithLegacySupport() {
-    registerInstances(new LegacyEnabledAuthFilter(opts));
   }
 
   /**

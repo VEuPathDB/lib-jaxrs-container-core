@@ -18,12 +18,8 @@ import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import java.util.Optional;
 
 /**
- * Provides client authentication checks for resource classes or methods
- * annotated with @Authenticated.
- * <p>
- * Authentication is performed by extracting the components of the
- * <code>Auth-Key</code> request header and validating those components against
- * the user database.
+ * Provides client authentication via OAuth checks for resource classes or
+ * methods annotated with {@code @Authenticated}.
  *
  * @see Authenticated
  */
@@ -40,10 +36,6 @@ public class OAuthAuthFilter extends AbstractAuthFilter implements ContainerRequ
 
   @Override
   protected Optional<User> findAuthUser(ContainerRequestContext req) {
-    return findUserFromBearerToken(req);
-  }
-
-  private Optional<User> findUserFromBearerToken(ContainerRequestContext req) {
     // user can choose to submit authorization value as header or query param
     final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
