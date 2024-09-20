@@ -20,7 +20,6 @@ public class Log {
    */
   public static void initialize() {
     try {
-
       //noinspection resource
       Configurator.initialize(
         new YamlConfiguration((LoggerContext) LogManager.getContext(),

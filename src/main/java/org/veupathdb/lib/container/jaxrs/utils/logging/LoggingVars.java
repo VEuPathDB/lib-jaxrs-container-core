@@ -1,6 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.utils.logging;
 
-import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.MDC;
 
 /**
  * Centralizes the assigning of log line vars (referenced in log4j2.yml patterns)
@@ -20,15 +20,17 @@ public class LoggingVars {
     setRequestThreadVars(threadId, threadId, "<no_ip_address>", threadId);
   }
 
-  public static void setRequestThreadVars(String requestId,
-                                          String sessionId,
-                                          String ipAddress,
-                                          String traceId) {
-    ThreadContext.put(SHORT_REQUEST_ID, shorten(requestId));
-    ThreadContext.put(SHORT_SESSION_ID, shorten(sessionId));
-    ThreadContext.put(IP_ADDRESS, ipAddress);
-    ThreadContext.put(TRACE_ID, traceId);
-    ThreadContext.put(REQUEST_START, String.valueOf(System.currentTimeMillis()));
+  public static void setRequestThreadVars(
+    String requestId,
+    String sessionId,
+    String ipAddress,
+    String traceId
+  ) {
+    MDC.put(SHORT_REQUEST_ID, shorten(requestId));
+    MDC.put(SHORT_SESSION_ID, shorten(sessionId));
+    MDC.put(IP_ADDRESS, ipAddress);
+    MDC.put(TRACE_ID, traceId);
+    MDC.put(REQUEST_START, String.valueOf(System.currentTimeMillis()));
   }
 
   private static String shorten(String id) {
@@ -36,10 +38,10 @@ public class LoggingVars {
   }
 
   public static void clear() {
-    ThreadContext.remove(SHORT_REQUEST_ID);
-    ThreadContext.remove(SHORT_SESSION_ID);
-    ThreadContext.remove(IP_ADDRESS);
-    ThreadContext.remove(TRACE_ID);
-    ThreadContext.remove(REQUEST_START);
+    MDC.remove(SHORT_REQUEST_ID);
+    MDC.remove(SHORT_SESSION_ID);
+    MDC.remove(IP_ADDRESS);
+    MDC.remove(TRACE_ID);
+    MDC.remove(REQUEST_START);
   }
 }
