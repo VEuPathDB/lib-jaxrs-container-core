@@ -1,11 +1,13 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
 import org.gusdb.oauth2.exception.ExpiredTokenException;
@@ -28,6 +30,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.isNull;
 
+/**
+ * Provides client authentication checks for resource classes or methods
+ * annotated with @Authenticated.
+ * <p>
+ * Authentication is performed by extracting the components of the
+ * <code>Auth-Key</code> request header and validating those components against
+ * the user database.
+ *
+ * @see Authenticated
+ */
+@Provider
+@Priority(4)
 public class AuthFilter implements ContainerRequestFilter {
   protected final Logger logger = LogProvider.logger(this.getClass());
 
