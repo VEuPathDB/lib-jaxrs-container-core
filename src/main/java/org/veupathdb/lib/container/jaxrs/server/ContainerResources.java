@@ -63,6 +63,9 @@ abstract public class ContainerResources extends ResourceConfig {
 
   /**
    * Enable OAuth authentication checks for annotated resources.
+   * <p>
+   * Enabling this feature requires that the OAuth config options are set.  If
+   * those options are not provided the service will fail to start up.
    */
   public void enableAuth() {
     registerInstances(new AuthFilter(opts));
