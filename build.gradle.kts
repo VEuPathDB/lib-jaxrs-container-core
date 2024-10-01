@@ -1,7 +1,5 @@
-
-// Project settings
 group   = "org.veupathdb.lib"
-version = "7.1.5"
+version = "8.0.0"
 
 plugins {
   `java-library`
@@ -11,8 +9,11 @@ plugins {
 apply(from = "${projectDir.absolutePath}/test-summary.gradle")
 
 java {
-  targetCompatibility = JavaVersion.VERSION_15
-  sourceCompatibility = JavaVersion.VERSION_15
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+    vendor = JvmVendorSpec.AMAZON
+  }
+
   withSourcesJar()
   withJavadocJar()
 }
@@ -36,7 +37,6 @@ dependencies {
   // Project Dependencies
   //
   // // // // // // // // // // // // // // // // // // // // // // // // // //
-
 
   // FgpUtil
   val fgputil = "2.14.1-jakarta"
@@ -71,9 +71,12 @@ dependencies {
   api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
   api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
-  // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.23.1")
-  implementation("org.apache.logging.log4j:log4j-core:2.23.1")
+  // Logging
+  api("org.slf4j:slf4j-api:2.0.16")
+  implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.0"))
+  implementation("org.apache.logging.log4j:log4j-api")
+  implementation("org.apache.logging.log4j:log4j-core")
+  implementation("org.apache.logging.log4j:log4j-slf4j2-impl")
 
   // CLI
   implementation("info.picocli:picocli:4.7.5")
@@ -90,18 +93,15 @@ dependencies {
   // LDAP utils
   implementation("com.unboundid:unboundid-ldapsdk:6.0.11")
 
-  // Query stuff
-  implementation("io.vulpine.lib:lib-query-util:2.1.0")
-  implementation("io.vulpine.lib:sql-import:0.2.1")
-
   //
   // Testing Stuff
   //
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-  testImplementation("org.mockito:mockito-core:5.2.0")
-  testImplementation("org.mockito:mockito-junit-jupiter:5.2.0")
+  testImplementation(platform("org.junit:junit-bom:5.11.0"))
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testImplementation("org.mockito:mockito-core:5.13.0")
+  testImplementation("org.mockito:mockito-junit-jupiter:5.13.0")
 }
 
 tasks.jar {

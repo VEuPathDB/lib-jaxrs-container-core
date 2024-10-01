@@ -52,7 +52,7 @@ public interface ConnectionDetails
    */
   static ConnectionDetails fromOptions(final DbOptions opts) {
     final var log = LogProvider.logger(ConnectionDetails.class);
-    log.debug("Setting up connection for db " + opts.displayName());
+    log.debug("Setting up connection for db {}", opts.displayName());
 
     if (opts.platform().isPresent()) {
       log.debug("Platform provided.");

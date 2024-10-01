@@ -12,11 +12,11 @@ import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 import org.glassfish.grizzly.http.server.Request;
+import org.slf4j.Logger;
+import org.slf4j.MDC;
 import org.veupathdb.lib.container.jaxrs.Globals;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class RequestIdFilter
 implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
 
-  private static final Logger LOG = LogManager.getLogger(RequestIdFilter.class);
+  private static final Logger LOG = LogProvider.logger(RequestIdFilter.class);
 
   @Inject
   jakarta.inject.Provider<Request> _request;
@@ -48,7 +48,7 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     requestCxt.setProperty(RequestKeys.REQUEST_ID, requestId);
     request.setAttribute(RequestKeys.REQUEST_ID, requestId);
 
-    ThreadContext.put(Globals.CONTEXT_ID, requestId);
+    MDC.put(Globals.CONTEXT_ID, requestId);
 
     final String traceId = Optional.ofNullable(request.getHeader(Globals.TRACE_ID_HEADER))
         .orElse(FriendlyId.createFriendlyId());
@@ -57,9 +57,6 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
         request.getSession().getIdInternal(),
         request.getRemoteAddr(),
         traceId);
-
-    // At the end so it has the context id
-    LOG.trace("RequestIdFilter#filter(requestCxt)");
   }
 
   @Override
@@ -68,8 +65,7 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
     try {
       // write the response
       context.proceed();
-    }
-    finally {
+    } finally {
       removeContext();
     }
   }
@@ -85,7 +81,7 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
   }
 
   private void removeContext() {
-    ThreadContext.remove(Globals.CONTEXT_ID);
+    MDC.remove(Globals.CONTEXT_ID);
     LoggingVars.clear();
   }
 }

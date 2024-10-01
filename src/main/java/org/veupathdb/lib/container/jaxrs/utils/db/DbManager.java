@@ -56,26 +56,6 @@ public class DbManager
     ┃                                                                      ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
-  public DatabaseInstance newAccountDatabase(final Options opts) {
-    if (Objects.nonNull(acctDb))
-      return acctDb;
-
-    return acctDb = newDatabase(opts.getAcctDbOpts());
-  }
-
-  public DatabaseInstance newApplicationDatabase(final Options opts) {
-    if (Objects.nonNull(appDb))
-      return appDb;
-
-    return appDb = newDatabase(opts.getAppDbOpts());
-  }
-
-  public DatabaseInstance newUserDatabase(final Options opts) {
-    if (Objects.nonNull(userDb))
-      return userDb;
-
-    return userDb = newDatabase(opts.getUserDbOpts());
-  }
 
   /**
    * Initialize a connection wrapper to the user account database.
@@ -88,26 +68,11 @@ public class DbManager
     return getInstance().newAccountDatabase(opts);
   }
 
-  /**
-   * Initialize a connection wrapper to the user account database.
-   *
-   * @param opts Configuration options
-   *
-   * @return the initialized DatabaseInstance
-   */
-  public static DatabaseInstance initApplicationDatabase(Options opts) {
-    return getInstance().newApplicationDatabase(opts);
-  }
+  public DatabaseInstance newAccountDatabase(final Options opts) {
+    if (Objects.nonNull(acctDb))
+      return acctDb;
 
-  /**
-   * Initialize a connection wrapper to the user account database.
-   *
-   * @param opts Configuration options
-   *
-   * @return the initialized DatabaseInstance
-   */
-  public static DatabaseInstance initUserDatabase(Options opts) {
-    return getInstance().newUserDatabase(opts);
+    return acctDb = newDatabase(opts.getAcctDbOpts());
   }
 
   /**
@@ -126,6 +91,36 @@ public class DbManager
    */
   public static DatabaseInstance accountDatabase() {
     return getInstance().getAccountDatabase();
+  }
+
+  public static boolean hasAccountDatabase() {
+    return getInstance().acctDb != null;
+  }
+
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃                                                                      ┃
+    ┃    Application Database                                              ┃
+    ┃                                                                      ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+
+  /**
+   * Initialize a connection wrapper to the user account database.
+   *
+   * @param opts Configuration options
+   *
+   * @return the initialized DatabaseInstance
+   */
+  public static DatabaseInstance initApplicationDatabase(Options opts) {
+    return getInstance().newApplicationDatabase(opts);
+  }
+
+  public DatabaseInstance newApplicationDatabase(final Options opts) {
+    if (Objects.nonNull(appDb))
+      return appDb;
+
+    return appDb = newDatabase(opts.getAppDbOpts());
   }
 
   /**
@@ -149,6 +144,35 @@ public class DbManager
     return getInstance().getApplicationDatabase();
   }
 
+  public static boolean hasApplicationDatabase() {
+    return getInstance().appDb != null;
+  }
+
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃                                                                      ┃
+    ┃    User Database                                                     ┃
+    ┃                                                                      ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  /**
+   * Initialize a connection wrapper to the user account database.
+   *
+   * @param opts Configuration options
+   *
+   * @return the initialized DatabaseInstance
+   */
+  public static DatabaseInstance initUserDatabase(Options opts) {
+    return getInstance().newUserDatabase(opts);
+  }
+
+  public DatabaseInstance newUserDatabase(final Options opts) {
+    if (Objects.nonNull(userDb))
+      return userDb;
+
+    return userDb = newDatabase(opts.getUserDbOpts());
+  }
+
   /**
    * Gets the current user database connection or throws an exception if the
    * connection has not yet been established.
@@ -166,6 +190,18 @@ public class DbManager
   public static DatabaseInstance userDatabase() {
     return getInstance().getUserDatabase();
   }
+
+  public static boolean hasUserDatabase() {
+    return getInstance().userDb != null;
+  }
+
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃                                                                      ┃
+    ┃    Internal API                                                      ┃
+    ┃                                                                      ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
 
   private DatabaseInstance newDatabase(final DbOptions opts) {
     var detail = ConnectionDetails.fromOptions(opts);

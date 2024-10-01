@@ -20,27 +20,5 @@ public interface Dependency extends AutoCloseable {
    */
   TestResult test();
 
-  class TestResult {
-    private Dependency dependency;
-    private final boolean reachable;
-    private final Status status;
-
-    public TestResult(Dependency dep, boolean reachable, Status status) {
-      this.dependency = dep;
-      this.reachable = reachable;
-      this.status = status;
-    }
-
-    public Dependency dependency() {
-      return dependency;
-    }
-
-    public boolean isReachable() {
-      return reachable;
-    }
-
-    public Status status() {
-      return status;
-    }
-  }
+  record TestResult(Dependency dependency, boolean reachable, Status status) {}
 }

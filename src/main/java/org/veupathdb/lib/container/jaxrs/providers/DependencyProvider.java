@@ -1,13 +1,12 @@
 package org.veupathdb.lib.container.jaxrs.providers;
 
-import org.apache.logging.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.errors.DuplicateDependencyException;
 import org.veupathdb.lib.container.jaxrs.health.Dependency;
 import org.veupathdb.lib.container.jaxrs.health.Dependency.TestResult;

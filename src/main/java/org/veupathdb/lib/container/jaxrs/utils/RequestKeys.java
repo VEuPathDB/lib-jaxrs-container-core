@@ -7,7 +7,6 @@ public final class RequestKeys {
 
   public static final String
     REQUEST_ID  = "request-id",
-    AUTH_HEADER_LEGACY = "Auth-Key",
     ADMIN_TOKEN_HEADER = "admin-token",
     PROXIED_USER_ID_HEADER = "proxied-user-id",
     BEARER_TOKEN_HEADER = HttpHeaders.AUTHORIZATION,

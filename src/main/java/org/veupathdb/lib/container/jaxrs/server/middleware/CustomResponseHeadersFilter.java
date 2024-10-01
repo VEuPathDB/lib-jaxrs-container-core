@@ -5,8 +5,8 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 /**
  * Provides a mechanism for services classes that implement generated service
@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 @Provider
 public class CustomResponseHeadersFilter implements ContainerResponseFilter {
 
-  private static Logger LOG = LogManager.getLogger(CustomResponseHeadersFilter.class);
+  private static Logger LOG = LogProvider.logger(CustomResponseHeadersFilter.class);
 
   /**
    * Attribute service classes should fill on the ContainerRequestContext
@@ -49,6 +49,7 @@ public class CustomResponseHeadersFilter implements ContainerResponseFilter {
   private RuntimeException makeTypeException(String name, Object obj, Class<?> requiredClass) {
     RuntimeException e = new RuntimeException("Invalid type sent for '" + CUSTOM_HEADERS_KEY + "' " + name +
         "; must be " + requiredClass.getName() + ", but was " + (obj == null ? "null" : obj.getClass().getName()));
+    //noinspection StringConcatenationArgumentToLogCall
     LOG.error("Bad property sent to " + CustomResponseHeadersFilter.class.getSimpleName(), e);
     return e;
   }

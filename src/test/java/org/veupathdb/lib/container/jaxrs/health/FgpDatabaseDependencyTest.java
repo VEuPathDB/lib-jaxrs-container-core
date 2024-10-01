@@ -54,7 +54,7 @@ class FgpDatabaseDependencyTest
 
       var res  = test.test();
 
-      assertTrue(res.isReachable());
+      assertTrue(res.reachable());
       assertEquals(Status.ONLINE, res.status());
     }
 
@@ -69,7 +69,7 @@ class FgpDatabaseDependencyTest
 
       var res  = test.test();
 
-      assertTrue(res.isReachable());
+      assertTrue(res.reachable());
       assertEquals(Status.UNKNOWN, res.status());
     }
 
@@ -85,7 +85,7 @@ class FgpDatabaseDependencyTest
 
       var res  = test.test();
 
-      assertTrue(res.isReachable());
+      assertTrue(res.reachable());
       assertEquals(Status.UNKNOWN, res.status());
     }
 
@@ -100,7 +100,7 @@ class FgpDatabaseDependencyTest
 
       var res  = test.test();
 
-      assertFalse(res.isReachable());
+      assertFalse(res.reachable());
       assertEquals(Status.UNKNOWN, res.status());
     }
   }

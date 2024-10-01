@@ -13,16 +13,14 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Supplier;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.uri.UriTemplate;
+import org.slf4j.Logger;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static java.lang.String.format;
 
@@ -48,8 +46,6 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
   private static final String PATH_KEY = "path";
   private static final String STATUS_KEY = "status";
   private static final String METHOD_KEY = "method";
-
-  private static Function<String, String> PathTransform = Function.identity();
 
   private static final Counter reqCount = Counter.build()
     .name("http_total_requests")
@@ -88,9 +84,12 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
   public void filter(ContainerRequestContext req) {
     String path = req.getUriInfo().getPath();
     // use trace for metrics requests to avoid log congestion
-    Consumer<Supplier<?>> fn = path.equals("metrics") ? LOG::trace : LOG::debug;
-    fn.accept(() -> format(START_FORMAT, req.getMethod(), "/" + path));
+    (path.equals("metrics") ? LOG.atTrace() : LOG.atDebug())
+      .setMessage(() -> format(START_FORMAT, req.getMethod(), "/" + path))
+      .log();
+
     String pathTemplate = getPathTemplate(req);
+
     req.setProperty(MATCHED_URL_KEY, pathTemplate);
     req.setProperty(
       TIME_KEY,
@@ -160,50 +159,26 @@ implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
   }
 
   private void logResponse(String path, int status, String method, boolean isError) {
-    // use trace for metrics requests to avoid log congestion; warn for errors
-    Consumer<Supplier<?>> fn = isError ? LOG::warn : path.equals("metrics") ? LOG::trace : LOG::debug;
-    fn.accept(() -> format(END_FORMAT, method, "/" + path, status));
-  }
+    LoggingEventBuilder logLine;
+    if (isError) {
+      logLine = LOG.atWarn();
+    } else if (path.equals("metrics")) {
+      logLine = LOG.atTrace();
+    } else {
+      logLine = LOG.atDebug();
+    }
 
-  /**
-   * Set custom URL path transformation to apply to paths being recorded in the
-   * response timings.
-   *
-   * This can be useful in stripping out variables from the URL that may pollute
-   * the prometheus metrics.
-   *
-   * For example, it may be desired that the following paths be recorded as one
-   * metric:
-   *
-   * <pre>
-   *   /users/123/preferences
-   *   /users/234/preferences
-   *   /users/345/preferences
-   * </pre>
-   *
-   * For metrics purposes it would be best to strip out the user ID from the
-   * path before recording.  For example, the above paths could be transformed
-   * to the following to get a merged metric:
-   *
-   * <pre>
-   *   /users/{user-id}/preferences
-   * </pre>
-   *
-   * @param fn Function used to transform the path before recording it in the
-   *           request/response time metrics.
-   */
-  public static void setPathTransform(Function<String, String> fn) {
-    PathTransform = fn;
+    logLine.setMessage(() -> format(END_FORMAT, method, "/" + path, status)).log();
   }
 
   private String getPathTemplate(ContainerRequestContext request) {
     List<UriTemplate> uriTemplates = ((ContainerRequest)request).getUriInfo().getMatchedTemplates();
     if (uriTemplates != null && !uriTemplates.isEmpty()) {
-      String fullPath = "";
+      StringBuilder fullPath = new StringBuilder();
       for (UriTemplate uriTemplate : uriTemplates) {
-        fullPath = uriTemplate.getTemplate() + fullPath;
+        fullPath.insert(0, uriTemplate.getTemplate());
       }
-      return fullPath;
+      return fullPath.toString();
     }
     else {
       return "<unknown>";

@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 @Path("/api")
 public class ApiDocService {
@@ -15,7 +16,7 @@ public class ApiDocService {
   public StreamingOutput getApi() {
     return out -> {
       try (InputStream resourceStream = getClass().getResourceAsStream("/api.html")) {
-        resourceStream.transferTo(out);
+        Objects.requireNonNull(resourceStream).transferTo(out);
       }
     };
   }

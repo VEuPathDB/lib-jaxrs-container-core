@@ -1,6 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.server;
 
-import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 
@@ -8,6 +7,7 @@ import jakarta.ws.rs.core.UriBuilder;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.Dependency;
 import org.veupathdb.lib.container.jaxrs.providers.*;
@@ -69,6 +69,8 @@ abstract public class Server
   /**
    * Creates a new ContainerResources object which will be used to configure the
    * Grizzly {@link HttpServer}.
+   * <p>
+   * This method is called <i>after</i> dependency and database initialization.
    *
    * @return newly created ContainerResources subclass.
    */
@@ -231,7 +233,7 @@ abstract public class Server
       );
       grizzly.start();
     } catch (Throwable e) {
-      logger.fatal("Could not start server.", e);
+      logger.error("Could not start server.", e);
       RuntimeProvider.runtime().exit(1);
     }
 

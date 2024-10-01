@@ -1,6 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
-import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

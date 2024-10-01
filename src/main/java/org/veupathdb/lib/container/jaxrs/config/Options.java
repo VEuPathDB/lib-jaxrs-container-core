@@ -22,13 +22,6 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
-    names = "--admin-auth-token",
-    defaultValue = "${env:ADMIN_AUTH_TOKEN}",
-    description = "env: ADMIN_AUTH_TOKEN",
-    arity = "1")
-  private String adminAuthToken;
-
-  @Option(
     names = "--server-port",
     defaultValue = "${env:SERVER_PORT}",
     description = "env: SERVER_PORT",
@@ -61,11 +54,11 @@ public class Options {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
   @Option(
-      names = "--auth-secret",
-      defaultValue = "${env:AUTH_SECRET_KEY}",
-      description = "env: AUTH_SECRET_KEY",
-      arity = "1")
-  private String authSecretKey;
+    names = "--admin-auth-token",
+    defaultValue = "${env:ADMIN_AUTH_TOKEN}",
+    description = "env: ADMIN_AUTH_TOKEN",
+    arity = "1")
+  private String adminAuthToken;
 
   @Option(
       names = "--oauth-url",
@@ -302,10 +295,6 @@ public class Options {
 
   public boolean getCorsEnabled() {
     return enableCors != null && enableCors;
-  }
-
-  public Optional<String> getAuthSecretKey() {
-    return Optional.ofNullable(authSecretKey);
   }
 
   public Optional<String> getOAuthUrl() {

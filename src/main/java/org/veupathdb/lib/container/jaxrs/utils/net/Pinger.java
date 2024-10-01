@@ -1,14 +1,14 @@
 package org.veupathdb.lib.container.jaxrs.utils.net;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 import java.io.IOException;
 import java.net.Socket;
 
 public class Pinger {
 
-  private final Logger log = LogManager.getLogger(Pinger.class);
+  private final Logger log = LogProvider.logger(Pinger.class);
 
   public boolean isReachable(String addr, int port) {
     log.debug("Pinging {}:{}", addr, port);

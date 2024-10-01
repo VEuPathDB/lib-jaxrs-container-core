@@ -1,39 +1,32 @@
 package org.veupathdb.lib.container.jaxrs.server.middleware;
 
 import jakarta.annotation.Priority;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.ForbiddenException;
-import jakarta.ws.rs.NotAuthorizedException;
-import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-import org.apache.logging.log4j.Logger;
-import org.gusdb.fgputil.web.LoginCookieFactory;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.ValidatedToken;
 import org.gusdb.oauth2.exception.ExpiredTokenException;
 import org.gusdb.oauth2.exception.InvalidTokenException;
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
-import org.veupathdb.lib.container.jaxrs.repo.UserRepo;
-import org.veupathdb.lib.container.jaxrs.server.annotations.AdminRequired;
+import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
-import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated.AdminOverrideOption;
-import org.veupathdb.lib.container.jaxrs.utils.AnnotationUtil;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
 
@@ -50,48 +43,28 @@ import static java.util.Objects.isNull;
 @Provider
 @Priority(4)
 public class AuthFilter implements ContainerRequestFilter {
-
-  private static final Logger LOG = LogProvider.logger(AuthFilter.class);
-
-  private static final Supplier<ForbiddenException> FORBIDDEN = ForbiddenException::new;
-
-  private static final Supplier<NotAuthorizedException> NOT_AUTHORIZED = () ->
-      new NotAuthorizedException("Valid credentials must be submitted to this resource.");
-
-  private static final Supplier<BadRequestException> BAD_REQUEST = () ->
-      new BadRequestException("An incorrect combination of credential types was sent.");
-
-  private static ServerErrorException SERVER_ERROR(String activity, Exception e) {
-    LOG.error("Failed during authentication, " + activity, e);
-    throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR, e);
-  }
+  protected final Logger logger = LogProvider.logger(this.getClass());
 
   /**
    * Cache of resource references to AuthInfo details describing the auth
    * requirements and allowances of specific resources.
    */
-  private final Map<String, AuthRequirements> CACHE = new ConcurrentHashMap<>();
+  protected final Map<String, AuthRequirements> authRequirementsCache = new ConcurrentHashMap<>(32);
 
-  private final Options opts;
+  protected final Options serviceOptions;
 
   @Context
-  private ResourceInfo resource;
+  protected ResourceInfo resource;
 
-  public AuthFilter(Options opts) {
-    this.opts = opts;
+  public AuthFilter(Options options) {
+    serviceOptions = options;
 
-    // Only validate that the secret key is present if we actually need it.
-    if (opts.getAuthSecretKey()
-        .filter(secretKey -> !secretKey.isBlank())
-        .isEmpty())
-      throw new InvalidConfigException("Auth secret key is required for this service");
+    if (anyIsEmpty(options.getOAuthUrl(), options.getOAuthClientId(), options.getOAuthClientSecret()))
+      throw new InvalidConfigException("missing required OAuth configuration values");
   }
 
   @Override
   public void filter(ContainerRequestContext req) {
-
-    LOG.trace("AuthFilter#filter");
-
     // Determine what the auth requirements and/or allowances are for the target resource
     var requirements = fetchAuthRequirements();
 
@@ -110,11 +83,11 @@ public class AuthFilter implements ContainerRequestFilter {
     Optional<User> authUser = findAuthUser(req);
 
     // check if admin override need not be considered
-    if (!hasValidAdmin || requirements.overrideOption == AdminOverrideOption.DISALLOW) {
+    if (!hasValidAdmin || requirements.overrideOption == Authenticated.AdminOverrideOption.DISALLOW) {
 
       // user required but not present
       if (authUser.isEmpty())
-        throw NOT_AUTHORIZED.get();
+        throw err401Unauthorized(null);
 
       // non-guest user required but user is guest
       if (!requirements.guestsAllowed && authUser.orElseThrow().isGuest())
@@ -131,8 +104,8 @@ public class AuthFilter implements ContainerRequestFilter {
       Optional<User> proxiedUser = findProxiedUser(req);
 
       // if override is only allowed with proxied user but user not present, return 400
-      if (requirements.overrideOption == AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty()) {
-        throw BAD_REQUEST.get();
+      if (requirements.overrideOption == Authenticated.AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty()) {
+        throw err400BadRequest(null);
       }
 
       // set proxied user as the "request user" (may be empty)
@@ -140,65 +113,7 @@ public class AuthFilter implements ContainerRequestFilter {
     }
   }
 
-  private AuthRequirements fetchAuthRequirements() {
-    var ref = resource.getResourceClass().getCanonicalName() + "#" + resource.getResourceMethod().getName();
-    return CACHE.computeIfAbsent(ref, key -> new AuthRequirements(resource));
-  }
-
-  public static Optional<String> findSubmittedValue(ContainerRequestContext req, String key) {
-    // user can choose to submit auth values as header or query param
-    final var headerValue = req.getHeaders().getFirst(key);
-    final var paramValue = req.getUriInfo().getQueryParameters().getFirst(key);
-    return resolveSingleValue(headerValue, paramValue, null);
-  }
-
-  private static Optional<String> resolveSingleValue(String headerValue, String paramValue, String cookieValue) {
-    // if both are submitted, they must match (no preference for one over the other)
-    if (!isNull(headerValue) && !isNull(paramValue) && !headerValue.equals(paramValue)) {
-      LOG.debug("Authentication failed: unequal auth header and query param values.");
-      throw BAD_REQUEST.get();
-    }
-
-    // distill the three values to one (cookie last, only if other two are null)
-    final var submittedValue = headerValue != null ? headerValue : paramValue != null ? paramValue : cookieValue;
-
-    // treat blank values as missing
-    return isNull(submittedValue) || submittedValue.isBlank() ? Optional.empty() : Optional.of(submittedValue);
-  }
-
-  /**
-   * Tests whether the given request has an admin auth header with a value that
-   * matches the service's configured admin auth token value.  Returns false if
-   * no admin token is on the request.  Will abort with 403 if an admin token was
-   * submitted but does not match the configured value.  Will abort with 500 if
-   * admin token was not configured.
-   *
-   * @param req Request to test for a valid admin auth token
-   * @return Whether the given request has a valid admin auth token header
-   */
-  private boolean hasValidAdminAuth(ContainerRequestContext req) {
-    String configuredAdminToken = opts.getAdminAuthToken().orElseThrow(
-        () -> SERVER_ERROR("admin token misconfiguration", new InvalidConfigException(
-            "Service enabled auth and has admin-enabled endpoints but no admin auth token is configured.")));
-    Optional<String> submittedAdminToken = findSubmittedValue(req, RequestKeys.ADMIN_TOKEN_HEADER);
-    if (submittedAdminToken.isEmpty())
-      return false;
-    if (submittedAdminToken.get().equals(configuredAdminToken))
-      return true;
-    // submitted but does not equal configured value
-    throw FORBIDDEN.get();
-  }
-
   private Optional<User> findAuthUser(ContainerRequestContext req) {
-    return
-      // first try bearer tokens
-      findUserFromBearerToken(req)
-    .or(() ->
-      // fall back to legacy auth (WDK cookie value or guest ID
-      findUserFromLegacyAuth(req));
-  }
-
-  private Optional<User> findUserFromBearerToken(ContainerRequestContext req) {
     // user can choose to submit authorization value as header or query param
     final var authHeader = req.getHeaders().getFirst(RequestKeys.BEARER_TOKEN_HEADER);
     final var headerToken = authHeader == null ? null : OAuthClient.getTokenFromAuthHeader(authHeader);
@@ -222,87 +137,89 @@ public class AuthFilter implements ContainerRequestFilter {
 
       // create new user from this token
       return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
-    }
-    catch (InvalidTokenException | ExpiredTokenException e) {
-      LOG.warn("User submitted invalid bearer token: " + bearerToken.get());
-      throw NOT_AUTHORIZED.get();
-    }
-
-  }
-
-  private Optional<User> findUserFromLegacyAuth(ContainerRequestContext req) {
-    // find submitted auth value
-    final var rawAuthOpt = findSubmittedValue(req, RequestKeys.AUTH_HEADER_LEGACY);
-
-    // value must be non-null and non-empty
-    if (rawAuthOpt.isEmpty()) {
-      return Optional.empty();
-    }
-
-    final var rawAuth = rawAuthOpt.get();
-
-    // Check if this is a guest login (Auth-Key will be just a guest user ID).
-    try {
-      var userID = Long.parseLong(rawAuth);
-      LOG.debug("Auth token is an int value.");
-
-      // try to find registered user for this ID; if found then this is not a guest ID
-      final var optUser = UserRepo.Select.registeredUserById(userID);
-
-      // if found a registered user with this ID, then disallow access as a guest; registered users must use WDK cookie
-      if (optUser.isPresent()) {
-        LOG.debug("Auth token is an int value but is not a guest user ID.");
-        throw NOT_AUTHORIZED.get();
-      }
-
-      // guest token is not a registered user; assume valid for now (slight security hole but low-risk)
-      LOG.debug("Request authenticated as guest");
-      req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
-      return Optional.of((User)new User.BasicUser(userID,true,null,null).setFirstName("Guest"));
-    }
-    catch (NumberFormatException e) {
-      // fall through to try to find registered user matching this auth value
-      LOG.debug("Auth token is not a user id.");
-    }
-    catch (Exception e) {
-      throw SERVER_ERROR("failed to lookup user in user db", e);
-    }
-
-    // Auth-Key is not a guest user ID.
-
-    LoginCookieFactory.LoginCookieParts parts;
-    try {
-      parts = LoginCookieFactory.parseCookieValue(rawAuth);
-    }
-    catch (IllegalArgumentException e) {
-      LOG.debug("Authentication failed: bad header");
-      throw NOT_AUTHORIZED.get();
-    }
-
-    if (!new LoginCookieFactory(opts.getAuthSecretKey().orElseThrow()).isValidCookie(parts)) {
-      LOG.debug("Authentication failed: bad header");
-      throw NOT_AUTHORIZED.get();
-    }
-
-    try {
-      final var profile = UserRepo.Select.registeredUserByEmail(parts.getUsername());
-      if (profile.isEmpty()) {
-        LOG.debug("Authentication failed: no such user");
-        throw NOT_AUTHORIZED.get();
-      }
-
-      LOG.debug("Request authenticated as a registered user");
-      req.setProperty(RequestKeys.AUTH_HEADER_LEGACY, rawAuth);
-      return profile;
-
-    }
-    catch (Exception e) {
-      throw SERVER_ERROR("Failed to lookup user in account db", e);
+    } catch (InvalidTokenException | ExpiredTokenException e) {
+      logger.warn("User submitted invalid bearer token: {}", bearerToken.get());
+      throw err401Unauthorized(null);
     }
   }
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃    Exception Type Constructors                     ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  protected WebApplicationException err400BadRequest(String message) {
+    if (message == null || message.isBlank())
+      return new BadRequestException("Valid credentials must be submitted to this resource.");
+    else
+      return new BadRequestException(message);
+  }
+
+  protected WebApplicationException err401Unauthorized(String message) {
+    if (message == null || message.isBlank())
+      return new NotAuthorizedException("Valid credentials must be submitted to this resource.");
+    else
+      return new NotAuthorizedException(message);
+  }
+
+  protected WebApplicationException err403Forbidden(String message) {
+    if (message == null || message.isBlank())
+      return new ForbiddenException();
+    else
+      return new ForbiddenException(message);
+  }
+
+  protected WebApplicationException err500Internal(String activity, Exception cause) {
+    //noinspection StringConcatenationArgumentToLogCall
+    logger.error("failed during authentication: " + activity, cause);
+    return new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR, cause);
+  }
+
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃    Shared Internal API                             ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+
+  protected Optional<String> findSubmittedValue(ContainerRequestContext req, String key) {
+    // user can choose to submit auth values as header or query param
+    return resolveSingleValue(req.getHeaders().getFirst(key), req.getUriInfo().getQueryParameters().getFirst(key), null);
+  }
+
+  protected Optional<String> resolveSingleValue(
+    String headerValue,
+    String paramValue,
+    String cookieValue
+  ) {
+    // if both are submitted, they must match (no preference for one over the other)
+    if (!isNull(headerValue) && !isNull(paramValue) && !headerValue.equals(paramValue)) {
+      logger.debug("Authentication failed: unequal auth header and query param values.");
+      throw err400BadRequest(null);
+    }
+
+    // distill the three values to one (cookie last, only if other two are null)
+    final var submittedValue = (headerValue != null) ? headerValue : ((paramValue != null) ? paramValue : cookieValue);
+
+    // treat blank values as missing
+    return isNull(submittedValue) || submittedValue.isBlank() ? Optional.empty() : Optional.of(submittedValue);
+  }
+
+  @SafeVarargs
+  protected static boolean anyIsEmpty(Optional<String>... opts) {
+    for (var opt : opts) {
+      if (opt.isEmpty() || opt.get().isBlank())
+        return true;
+    }
+
+    return false;
+  }
+
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃    Private Internal API                            ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
 
   private Optional<User> findProxiedUser(ContainerRequestContext req) {
-
     // find submitted value
     final var proxiedIdOpt = findSubmittedValue(req, RequestKeys.PROXIED_USER_ID_HEADER);
 
@@ -311,48 +228,62 @@ public class AuthFilter implements ContainerRequestFilter {
       return Optional.empty();
     }
 
+    long proxiedId;
     try {
-      var proxiedId = Long.parseLong(proxiedIdOpt.get());
-
-      // try to find registered user for this ID; guests can not be proxied
-      Optional<User> user = UserRepo.Select.registeredUserById(proxiedId);
-
-      if (user.isEmpty()) {
-        LOG.warn("Denied (401) attempt made to proxy guest user with ID " + proxiedId);
-        throw NOT_AUTHORIZED.get();
-      }
-
-      // found registered user with this ID
-      return user;
+      proxiedId = Long.parseLong(proxiedIdOpt.get());
+    } catch (NumberFormatException e) {
+      logger.warn("Denied (401) attempt made to proxy guest user with invalid or non-numeric ID");
+      throw err401Unauthorized(null);
     }
-    catch (NumberFormatException e) {
-      LOG.warn("Denied (401) attempt made to proxy guest user with ID " + proxiedIdOpt.get());
-      throw NOT_AUTHORIZED.get();
+
+    // try to find registered user for this ID; guests can not be proxied
+    Optional<User> user;
+    try {
+      user = Optional.ofNullable(UserProvider.getUsersById(List.of(proxiedId)).get(proxiedId));
+    } catch (Exception e) {
+      throw err500Internal("Failed to lookup user in account db", e);
     }
-    catch (Exception e) {
-      throw SERVER_ERROR("Failed to lookup user in account db", e);
+
+    if (user.isEmpty()) {
+      logger.warn("Denied (401) attempt made to proxy guest user with ID {}", proxiedId);
+      throw err401Unauthorized(null);
     }
+
+    return user;
   }
-}
 
-class AuthRequirements {
+  private AuthRequirements fetchAuthRequirements() {
+    var ref = resource.getResourceClass().getCanonicalName() + "#" + resource.getResourceMethod().getName();
+    return authRequirementsCache.computeIfAbsent(ref, key -> new AuthRequirements(resource));
+  }
 
-  // flags indicating whether to probe submitted values
-  public final boolean adminDiscoveryRequired;
-  public final boolean userDiscoveryRequired;
+  /**
+   * Tests whether the given request has an admin auth header with a value that
+   * matches the service's configured admin auth token value.  Returns false if
+   * no admin token is on the request.  Will abort with 403 if an admin token was
+   * submitted but does not match the configured value.  Will abort with 500 if
+   * admin token was not configured.
+   *
+   * @param req Request to test for a valid admin auth token
+   *
+   * @return Whether the given request has a valid admin auth token header
+   */
+  private boolean hasValidAdminAuth(ContainerRequestContext req) {
+    String configuredAdminToken = serviceOptions.getAdminAuthToken()
+      .orElseThrow(() -> err500Internal(
+        "admin token misconfiguration",
+        new InvalidConfigException("Service enabled auth and has admin-enabled endpoints but no admin auth token is configured.")
+      ));
 
-  // flags indicating how to handle submitted values
-  public final boolean adminRequired;
-  public final boolean guestsAllowed;
-  public final AdminOverrideOption overrideOption;
+    Optional<String> submittedAdminToken = findSubmittedValue(req, RequestKeys.ADMIN_TOKEN_HEADER);
 
-  AuthRequirements(ResourceInfo resource) {
-    Optional<Authenticated> authAnnotationOpt = AnnotationUtil.findResourceAnnotation(resource, Authenticated.class);
-    Optional<AdminRequired> adminAnnotationOpt = AnnotationUtil.findResourceAnnotation(resource, AdminRequired.class);
-    adminRequired = adminAnnotationOpt.isPresent();
-    userDiscoveryRequired = authAnnotationOpt.isPresent();
-    overrideOption = authAnnotationOpt.map(Authenticated::adminOverride).orElse(AdminOverrideOption.DISALLOW);
-    adminDiscoveryRequired = adminRequired || overrideOption != AdminOverrideOption.DISALLOW;
-    guestsAllowed = authAnnotationOpt.isPresent() && authAnnotationOpt.get().allowGuests();
+    if (submittedAdminToken.isEmpty())
+      return false;
+
+    if (submittedAdminToken.get().equals(configuredAdminToken))
+      return true;
+
+    // submitted but does not equal configured value
+    throw err403Forbidden(null);
   }
 }

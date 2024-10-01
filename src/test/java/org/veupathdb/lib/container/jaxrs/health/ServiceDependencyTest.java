@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("resource")
 class ServiceDependencyTest {
 
   Pinger pinger;
@@ -61,7 +62,7 @@ class ServiceDependencyTest {
 
       var res = test.test();
 
-      assertFalse(res.isReachable());
+      assertFalse(res.reachable());
       assertEquals(Status.UNKNOWN, res.status());
     }
 
@@ -77,7 +78,7 @@ class ServiceDependencyTest {
 
       test.setPinger(pinger);
 
-      System.out.println(test.test().isReachable());
+      System.out.println(test.test().reachable());
       System.out.println(test.test().status());
 
       assertSame(value, test.test());

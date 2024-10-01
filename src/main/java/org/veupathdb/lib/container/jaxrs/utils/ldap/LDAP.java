@@ -3,7 +3,7 @@ package org.veupathdb.lib.container.jaxrs.utils.ldap;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPSearchException;
 import com.unboundid.ldap.sdk.SearchScope;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 public class LDAP
@@ -45,7 +45,7 @@ public class LDAP
       if (res.getEntryCount() > 1)
         throw new RuntimeException(String.format(ERR_LOOKUP_MULTI, tsName));
 
-      final var attr = res.getSearchEntries().get(0).getAttribute(ORA_ATTR);
+      final var attr = res.getSearchEntries().getFirst().getAttribute(ORA_ATTR);
 
       if (attr == null)
         throw new RuntimeException(ERR_NO_ATTRIBUTE);
@@ -62,15 +62,15 @@ public class LDAP
       final var conf = OracleLDAPConfig.getInstance();
 
       for (int i = 0; i < conf.hosts().length; i++) {
-        log.debug("Attempting to connect to LDAP host #" + (i + 1));
+        log.debug("Attempting to connect to LDAP host #{}", i + 1);
         var split = conf.hosts()[i].split(":");
 
         try {
           connection = new LDAPConnection(split[0], Integer.parseInt(split[1]));
-          log.debug("Connected to LDAP host #" + (i + 1));
+          log.debug("Connected to LDAP host #{}", i + 1);
           break;
         } catch (Exception e) {
-          log.debug("Try " + (i + 1) + " failed with: ", e);
+          log.debug("Try {} failed with: ", i + 1, e);
         }
       }
     }
