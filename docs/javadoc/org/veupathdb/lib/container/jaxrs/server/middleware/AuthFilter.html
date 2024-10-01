@@ -93,9 +93,25 @@ loadScripts(document, 'script');</script>
 <dd><code>jakarta.ws.rs.container.ContainerRequestFilter</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AuthFilter</span>
+<div class="type-signature"><span class="annotations">@Provider
+@Priority(4)
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">AuthFilter</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements jakarta.ws.rs.container.ContainerRequestFilter</span></div>
+<div class="block">Provides client authentication checks for resource classes or methods
+ annotated with @Authenticated.
+ <p>
+ Authentication is performed by extracting the components of the
+ <code>Auth-Key</code> request header and validating those components against
+ the user database.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../annotations/Authenticated.html" title="annotation interface in org.veupathdb.lib.container.jaxrs.server.annotations"><code>Authenticated</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
