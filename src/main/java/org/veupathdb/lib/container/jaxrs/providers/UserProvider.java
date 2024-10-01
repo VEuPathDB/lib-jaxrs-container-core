@@ -20,19 +20,19 @@ public class UserProvider {
   }
 
   public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
-    return
-      // look for bearer token on request first
-      findRequestProp(req, String.class, HttpHeaders.AUTHORIZATION)
-        // convert to submittable pair
-        .map(token -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+    // look for bearer token on request first
+    return findRequestProp(req, String.class, HttpHeaders.AUTHORIZATION)
+      // convert to submittable pair
+      .map(token -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, "Bearer " + token))
 
-     // FIXME: stop gap for EDA merge service to forward unvalidated auth header to dataset access even
-     //        when auth is disabled (AuthFilter does not run).  Cannot run AuthFilter without auth_secret_key,
-     //        which is not currently configured in docker-compose for EDA merging, and don't want to ask systems.
-     //        NOTE: no longer have access to query params here so if auth is submitted via params, this won't work.
-     // TODO: remove along with legacy auth logic once bearer tokens are ubiquitous
-     .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION))
-         .map(tokenHeaderValue -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, tokenHeaderValue)));
+      // Allow for services that don't use auth themselves to fetch auth headers
+      // to forward with requests made by the consuming service to other services
+      // which may perform auth checks themselves.
+      //
+      // FIXME: this only checks for an auth header, but auth may also be
+      //        provided via other means!
+      .or(() -> Optional.ofNullable(req.getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+        .map(tokenHeaderValue -> new TwoTuple<>(HttpHeaders.AUTHORIZATION, tokenHeaderValue)));
   }
 
   private static <T> Optional<T> findRequestProp(ContainerRequest req, Class<T> clazz, String key) {
