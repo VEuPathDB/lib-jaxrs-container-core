@@ -5,7 +5,7 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.gusdb.fgputil.Tuples.TwoTuple;
 import org.gusdb.oauth2.client.veupathdb.OAuthQuerier;
 import org.veupathdb.lib.container.jaxrs.Globals;
-import org.veupathdb.lib.container.jaxrs.model.User;
+import org.veupathdb.lib.container.jaxrs.model.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,8 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class UserProvider {
 
-  public static Optional<User> lookupUser(ContainerRequest req) {
-    return findRequestProp(req, User.class, Globals.REQUEST_USER);
+  public static Optional<UserInfo> lookupUser(ContainerRequest req) {
+    return findRequestProp(req, UserInfo.class, Globals.REQUEST_USER);
   }
 
   public static Optional<TwoTuple<String, String>> getSubmittedAuth(ContainerRequest req) {
@@ -39,11 +39,11 @@ public class UserProvider {
     return Optional.ofNullable(Objects.requireNonNull(req).getProperty(key)).map(clazz::cast);
   }
 
-  public static Map<Long,User> getUsersById(List<Long> userIds) {
-    return OAuthQuerier.getUsersById(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), userIds, User.BasicUser::new);
+  public static Map<Long, UserInfo> getUsersById(List<Long> userIds) {
+    return OAuthQuerier.getUsersById(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), userIds, UserInfo.UserInfoImpl::new);
   }
 
-  public static Map<String,User> getUsersByEmail(List<String> emails) {
-    return OAuthQuerier.getUsersByEmail(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), emails, User.BasicUser::new);
+  public static Map<String, UserInfo> getUsersByEmail(List<String> emails) {
+    return OAuthQuerier.getUsersByEmail(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), emails, UserInfo.UserInfoImpl::new);
   }
 }
