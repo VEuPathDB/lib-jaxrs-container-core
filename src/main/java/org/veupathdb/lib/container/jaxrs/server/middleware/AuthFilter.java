@@ -17,6 +17,7 @@ import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.model.User;
+import org.veupathdb.lib.container.jaxrs.model.UserInfo;
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 import org.veupathdb.lib.container.jaxrs.providers.OAuthProvider;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
@@ -101,7 +102,7 @@ public class AuthFilter implements ContainerRequestFilter {
     else { // i.e. hasValidAdmin && override != disallow
 
       // find proxied user
-      Optional<User> proxiedUser = findProxiedUser(req);
+      Optional<UserInfo> proxiedUser = findProxiedUser(req);
 
       // if override is only allowed with proxied user but user not present, return 400
       if (requirements.overrideOption == Authenticated.AdminOverrideOption.ALLOW_WITH_USER && proxiedUser.isEmpty()) {
@@ -136,8 +137,9 @@ public class AuthFilter implements ContainerRequestFilter {
       req.setProperty(RequestKeys.BEARER_TOKEN_HEADER, token.getTokenValue());
 
       // create new user from this token
-      return Optional.of(new User.BearerTokenUser(client, oauthUrl, token));
-    } catch (InvalidTokenException | ExpiredTokenException e) {
+      return Optional.of(new User.UserImpl(client, oauthUrl, token));
+    }
+    catch (InvalidTokenException | ExpiredTokenException e) {
       logger.warn("User submitted invalid bearer token: {}", bearerToken.get());
       throw err401Unauthorized(null);
     }
@@ -219,7 +221,7 @@ public class AuthFilter implements ContainerRequestFilter {
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
 
-  private Optional<User> findProxiedUser(ContainerRequestContext req) {
+  private Optional<UserInfo> findProxiedUser(ContainerRequestContext req) {
     // find submitted value
     final var proxiedIdOpt = findSubmittedValue(req, RequestKeys.PROXIED_USER_ID_HEADER);
 
@@ -237,7 +239,7 @@ public class AuthFilter implements ContainerRequestFilter {
     }
 
     // try to find registered user for this ID; guests can not be proxied
-    Optional<User> user;
+    Optional<UserInfo> user;
     try {
       user = Optional.ofNullable(UserProvider.getUsersById(List.of(proxiedId)).get(proxiedId));
     } catch (Exception e) {
