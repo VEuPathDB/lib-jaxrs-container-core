@@ -43,7 +43,6 @@ dependencies {
   implementation("org.gusdb:fgputil-core:${fgputil}")
   implementation("org.gusdb:fgputil-db:${fgputil}")
   implementation("org.gusdb:fgputil-web:${fgputil}")
-  implementation("org.gusdb:fgputil-accountdb:${fgputil}")
 
   // OAuth Client
   api("org.gusdb:oauth2-client:3.1.2-jakarta")
