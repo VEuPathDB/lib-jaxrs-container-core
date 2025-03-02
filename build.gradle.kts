@@ -39,10 +39,7 @@ dependencies {
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // FgpUtil
-  val fgputil = "2.15.2-jakarta"
-  implementation("org.gusdb:fgputil-core:${fgputil}")
-  implementation("org.gusdb:fgputil-db:${fgputil}")
-  implementation("org.gusdb:fgputil-web:${fgputil}")
+  implementation("org.gusdb:fgputil-db:2.15.2-jakarta")
 
   // OAuth Client
   api("org.gusdb:oauth2-client:3.1.2-jakarta")
