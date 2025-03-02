@@ -7,7 +7,7 @@ import org.gusdb.oauth2.client.veupathdb.OAuthQuerier;
 import org.veupathdb.lib.container.jaxrs.Globals;
 import org.veupathdb.lib.container.jaxrs.model.UserInfo;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,11 +39,11 @@ public class UserProvider {
     return Optional.ofNullable(Objects.requireNonNull(req).getProperty(key)).map(clazz::cast);
   }
 
-  public static Map<Long, UserInfo> getUsersById(List<Long> userIds) {
+  public static Map<Long, UserInfo> getUsersById(Collection<Long> userIds) {
     return OAuthQuerier.getUsersById(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), userIds, UserInfo.UserInfoImpl::new);
   }
 
-  public static Map<String, UserInfo> getUsersByEmail(List<String> emails) {
+  public static Map<String, UserInfo> getUsersByEmail(Collection<String> emails) {
     return OAuthQuerier.getUsersByEmail(OAuthProvider.getOAuthClient(), OAuthProvider.getOAuthConfig(), emails, UserInfo.UserInfoImpl::new);
   }
 }
