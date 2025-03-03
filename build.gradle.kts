@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.0.1"
+version = "9.1.0"
 
 plugins {
   `java-library`
@@ -39,16 +39,16 @@ dependencies {
   // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-db:2.15.2-jakarta")
+  implementation("org.gusdb:fgputil-db:2.16.0-jakarta")
 
   // OAuth Client
-  api("org.gusdb:oauth2-client:3.1.2-jakarta")
+  api("org.gusdb:oauth2-client:3.2.1-jakarta")
 
   // Oracle
   runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
 
   // Jersey
-  api(platform("org.glassfish.jersey:jersey-bom:3.1.6"))
+  api(platform("org.glassfish.jersey:jersey-bom:3.1.10"))
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http")
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet")
   implementation("org.glassfish.jersey.media:jersey-media-json-jackson")
@@ -58,7 +58,7 @@ dependencies {
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.7")
 
   // Jackson
-  api(platform("com.fasterxml.jackson:jackson-bom:2.17.1"))
+  api(platform("com.fasterxml.jackson:jackson-bom:2.18.2"))
   api("com.fasterxml.jackson.core:jackson-core")
   api("com.fasterxml.jackson.core:jackson-databind")
   api("com.fasterxml.jackson.core:jackson-annotations")
@@ -69,14 +69,14 @@ dependencies {
 
   // Logging
   api("org.slf4j:slf4j-api:2.0.16")
-  implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.0"))
+  implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.3"))
   implementation("org.apache.logging.log4j:log4j-api")
   implementation("org.apache.logging.log4j:log4j-core")
   implementation("org.apache.logging.log4j:log4j-slf4j2-impl")
 
   // CLI
-  implementation("info.picocli:picocli:4.7.5")
-  annotationProcessor("info.picocli:picocli-codegen:4.7.5")
+  implementation("info.picocli:picocli:4.7.6")
+  annotationProcessor("info.picocli:picocli-codegen:4.7.6")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
@@ -94,10 +94,10 @@ dependencies {
   //
 
   // Unit Testing
-  testImplementation(platform("org.junit:junit-bom:5.11.0"))
+  testImplementation(platform("org.junit:junit-bom:5.12.0"))
   testImplementation("org.junit.jupiter:junit-jupiter")
-  testImplementation("org.mockito:mockito-core:5.13.0")
-  testImplementation("org.mockito:mockito-junit-jupiter:5.13.0")
+  testImplementation("org.mockito:mockito-core:5.15.2")
+  testImplementation("org.mockito:mockito-junit-jupiter:5.15.2")
 }
 
 tasks.jar {
