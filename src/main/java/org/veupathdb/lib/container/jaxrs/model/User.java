@@ -8,7 +8,7 @@ import org.gusdb.oauth2.client.ValidatedToken;
  * 1. Allows services using this library to not directly depend on oauth2 client code
  * 2. Allows future container-core-specific fields to be added
  */
-public interface User extends org.gusdb.oauth2.client.veupathdb.User {
+public interface User extends org.gusdb.oauth2.client.veupathdb.User, UserInfo {
 
   // provides ability to access raw token value without directly depending on OAuth library
   default String getAuthenticationTokenValue() {
