@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.1.1"
+version = "9.1.2"
 
 plugins {
   `java-library`
@@ -58,7 +58,7 @@ dependencies {
   implementation("org.veupathdb.lib:multipart-jackson-pojo:1.1.7")
 
   // Jackson
-  api(platform("com.fasterxml.jackson:jackson-bom:2.18.2"))
+  api(platform("com.fasterxml.jackson:jackson-bom:2.18.3"))
   api("com.fasterxml.jackson.core:jackson-core")
   api("com.fasterxml.jackson.core:jackson-databind")
   api("com.fasterxml.jackson.core:jackson-annotations")
