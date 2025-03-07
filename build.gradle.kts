@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.1.2"
+version = "9.1.3"
 
 plugins {
   `java-library`
@@ -51,7 +51,6 @@ dependencies {
   api(platform("org.glassfish.jersey:jersey-bom:3.1.10"))
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http")
   implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson")
   runtimeOnly("org.glassfish.jersey.inject:jersey-hk2")
   implementation("org.glassfish.hk2:hk2-api:3.1.0")
 
