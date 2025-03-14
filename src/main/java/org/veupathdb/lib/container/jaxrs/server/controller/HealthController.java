@@ -29,7 +29,7 @@ public class HealthController {
     var results = DependencyProvider.getInstance().testDependencies();
 
     results.stream()
-      .filter(t -> t.status() != Status.ONLINE)
+      .filter(t -> t.status != Status.ONLINE)
       .findAny()
       .ifPresent(__ -> out.setStatus(ServerStatus.UNHEALTHY));
 

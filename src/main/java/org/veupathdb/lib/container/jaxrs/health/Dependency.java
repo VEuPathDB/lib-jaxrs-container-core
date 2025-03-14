@@ -1,5 +1,10 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Service Dependency
  * <p>
@@ -20,5 +25,24 @@ public interface Dependency extends AutoCloseable {
    */
   TestResult test();
 
-  record TestResult(Dependency dependency, boolean reachable, Status status) {}
+  class TestResult {
+    public final Dependency dependency;
+
+    public final boolean reachable;
+
+    public final Status status;
+
+    public final Map<String, Object> additionalInfo;
+
+    public TestResult(Dependency dependency, boolean reachable, Status status) {
+      this(dependency, reachable, status, Collections.emptyMap());
+    }
+
+    public TestResult(Dependency dependency, boolean reachable, Status status, Map<String, Object> addtlInfo) {
+      this.dependency = dependency;
+      this.reachable = reachable;
+      this.status = status;
+      this.additionalInfo = addtlInfo;
+    }
+  }
 }

@@ -62,8 +62,8 @@ class ServiceDependencyTest {
 
       var res = test.test();
 
-      assertFalse(res.reachable());
-      assertEquals(Status.UNKNOWN, res.status());
+      assertFalse(res.reachable);
+      assertEquals(Status.UNKNOWN, res.status);
     }
 
     @Test
@@ -78,8 +78,8 @@ class ServiceDependencyTest {
 
       test.setPinger(pinger);
 
-      System.out.println(test.test().reachable());
-      System.out.println(test.test().status());
+      System.out.println(test.test().reachable);
+      System.out.println(test.test().status);
 
       assertSame(value, test.test());
     }
