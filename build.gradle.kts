@@ -29,6 +29,8 @@ repositories {
 }
 
 tasks.create<Javadoc>("updateJavadocs") {
+  source = sourceSets["main"].allJava
+  classpath = sourceSets["main"].runtimeClasspath
   setDestinationDir(file("docs/javadoc"))
 }
 
