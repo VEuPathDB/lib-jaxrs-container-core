@@ -1,9 +1,8 @@
 = Java Containerized Webservice Core
 :toc: preamble
 
-image:https://img.shields.io/badge/jdk-15-blueviolet[JDK Version]
+image:https://img.shields.io/badge/jdk-21-blueviolet[JDK Version]
 image:https://img.shields.io/github/v/tag/VEuPathDB/lib-jaxrs-container-core?label=%20[GitHub tag (latest SemVer)]
-image:https://img.shields.io/github/workflow/status/veupathdb/lib-jaxrs-container-core/Build[GitHub Workflow Status]
 
 Core functionality for containerized web services based on RAML & JaxRS.
 
