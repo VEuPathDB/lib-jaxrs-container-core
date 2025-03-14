@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.3.0"
+version = "9.4.0"
 
 plugins {
   `java-library`
@@ -26,6 +26,10 @@ repositories {
       password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
     }
   }
+}
+
+tasks.javadoc {
+  setDestinationDir(file("docs/javadoc"))
 }
 
 dependencies {
