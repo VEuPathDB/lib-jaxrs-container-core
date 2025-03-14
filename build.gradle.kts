@@ -28,7 +28,7 @@ repositories {
   }
 }
 
-tasks.javadoc {
+tasks.create<Javadoc>("updateJavadocs") {
   setDestinationDir(file("docs/javadoc"))
 }
 
