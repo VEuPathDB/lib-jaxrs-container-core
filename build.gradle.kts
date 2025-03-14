@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.1.3"
+version = "9.2.0"
 
 plugins {
   `java-library`
@@ -9,10 +9,8 @@ plugins {
 apply(from = "${projectDir.absolutePath}/test-summary.gradle")
 
 java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
-    vendor = JvmVendorSpec.AMAZON
-  }
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
 
   withSourcesJar()
   withJavadocJar()
