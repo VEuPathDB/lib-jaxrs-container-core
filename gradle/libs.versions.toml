@@ -1,0 +1,85 @@
+[versions]
+jersey = "3.1.10"
+jackson = "2.18.3"
+junit = "5.12.0"
+log4j = "2.24.3"
+mockito = "5.15.2"
+pico = "4.7.6"
+prometheus = "0.16.0"
+
+[libraries]
+
+# Internal
+vpdb-fgputil = { module = "org.gusdb:fgputil-db", version = "2.16.0-jakarta" }
+vpdb-oauth   = { module = "org.gusdb:oauth2-client", version = "3.2.1-jakarta" }
+
+vpdb-jackson-pojo = { module = "org.veupathdb.lib:multipart-jackson-pojo", version = "1.1.7" }
+vpdb-prometheus = { module = "org.veupathdb.lib:lib-prometheus-stats", version = "1.3.0" }
+
+# Jackson
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-parameterNames = { module = "com.fasterxml.jackson.module:jackson-module-parameter-names", version.ref = "jackson" }
+jackson-dateTime = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
+jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+
+# Database Drivers
+db-oracle   = { module = "com.oracle.database.jdbc:ojdbc11", version = "23.4.0.24.05" }
+db-postgres = { module = "org.postgresql:postgresql", version = "42.7.5" }
+
+# Jersey
+jersey-grizzly-http    = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-http", version.ref = "jersey" }
+jersey-grizzly-servlet = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet", version.ref = "jersey" }
+jersey-extras-hk2      = { module = "org.glassfish.jersey.inject:jersey-hk2", version.ref = "jersey" }
+
+hk2-api = { module = "org.glassfish.hk2:hk2-api", version = "3.1.0" }
+
+# Logging
+log-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.16" }
+log-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+log-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+
+# CLI
+cli-code = { module = "info.picocli:picocli", version.ref = "pico" }
+cli-processor = { module = "info.picocli:picocli-codegen", version.ref = "pico" }
+
+# Metrics
+metrics-prometheus-client = { module = "io.prometheus:simpleclient", version.ref = "prometheus" }
+metrics-prometheus-common = { module = "io.prometheus:simpleclient_common", version.ref = "prometheus" }
+
+# UID Generation
+uid = { module = "com.devskiller.friendly-id:friendly-id", version = "1.1.0" }
+
+# LDAP
+ldap = { module = "com.unboundid:unboundid-ldapsdk", version = "6.0.11" }
+
+# Mockito
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+
+[bundles]
+jackson = [
+  "jackson-core",
+  "jackson-databind",
+  "jackson-annotations",
+  "jackson-parameterNames",
+  "jackson-dateTime",
+  "jackson-jdk8",
+  "jackson-yaml",
+]
+
+jersey = [
+  "jersey-grizzly-http",
+  "jersey-grizzly-servlet",
+  "jersey-extras-hk2",
+  "hk2-api",
+]
+
+log4j = [
+  "log-log4j-api",
+  "log-log4j-core",
+  "log-log4j-slf4j",
+]
