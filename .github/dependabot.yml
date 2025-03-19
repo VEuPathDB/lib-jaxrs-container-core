@@ -6,12 +6,7 @@ updates:
   - github-packages
   schedule:
     interval: weekly
-  commit-message:
   open-pull-request-limit: 20
-- package-ecosystem: docker
-  directory: "/"
-  schedule:
-    interval: monthly
 registries:
   github-packages:
     type: maven-repository
