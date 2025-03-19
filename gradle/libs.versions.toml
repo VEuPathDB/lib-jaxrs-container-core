@@ -34,7 +34,7 @@ jersey-grizzly-http    = { module = "org.glassfish.jersey.containers:jersey-cont
 jersey-grizzly-servlet = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet", version.ref = "jersey" }
 jersey-extras-hk2      = { module = "org.glassfish.jersey.inject:jersey-hk2", version.ref = "jersey" }
 
-hk2-api = { module = "org.glassfish.hk2:hk2-api", version = "3.1.0" }
+hk2-api = { module = "org.glassfish.hk2:hk2-api", version = "3.1.1" }
 
 # Logging
 log-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.16" }
