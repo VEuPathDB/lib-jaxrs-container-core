@@ -6,7 +6,7 @@ updates:
   - github-packages
   schedule:
     interval: weekly
-  open-pull-request-limit: 20
+  open-pull-requests-limit: 20
 registries:
   github-packages:
     type: maven-repository
