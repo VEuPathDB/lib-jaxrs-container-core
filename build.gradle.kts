@@ -28,7 +28,7 @@ repositories {
   }
 }
 
-tasks.create<Javadoc>("updateJavadocs") {
+tasks.register<Javadoc>("updateJavadocs") {
   source = sourceSets["main"].allJava
   classpath = sourceSets["main"].runtimeClasspath
   setDestinationDir(file("docs/javadoc"))
@@ -92,17 +92,6 @@ dependencies {
 
   // LDAP utils
   implementation("com.unboundid:unboundid-ldapsdk:6.0.11")
-
-  //
-  // Testing Stuff
-  //
-
-  // Unit Testing
-  testImplementation(platform("org.junit:junit-bom:5.12.0"))
-  testImplementation("org.junit.jupiter:junit-jupiter:5.12.0")
-  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.0")
-  testImplementation("org.mockito:mockito-core:5.15.2")
-  testImplementation("org.mockito:mockito-junit-jupiter:5.15.2")
 }
 
 tasks.jar {
@@ -118,9 +107,16 @@ tasks.register("printVersion") {
   }
 }
 
-val test by tasks.getting(Test::class) {
-  // Use junit platform for unit tests
-  useJUnitPlatform()
+testing {
+  suites {
+    withType<JvmTestSuite> {
+      useJUnitJupiter("5.12.0")
+      dependencies {
+        implementation("org.mockito:mockito-core:5.15.2")
+        implementation("org.mockito:mockito-junit-jupiter:5.15.2")
+      }
+    }
+  }
 }
 
 publishing {
