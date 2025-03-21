@@ -37,7 +37,7 @@ jersey-extras-hk2      = { module = "org.glassfish.jersey.inject:jersey-hk2", ve
 hk2-api = { module = "org.glassfish.hk2:hk2-api", version = "3.1.1" }
 
 # Logging
-log-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.16" }
+log-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.17" }
 log-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
