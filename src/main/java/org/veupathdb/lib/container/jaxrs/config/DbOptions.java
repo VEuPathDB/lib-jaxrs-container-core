@@ -7,9 +7,9 @@ import org.gusdb.fgputil.db.platform.SupportedPlatform;
 public interface DbOptions
 {
   /**
-   * Returns an option of a TNS Name for an Oracle database.
+   * Returns an option of a lookup CN for determining DB connection details via LDAP
    */
-  Optional < String > tnsName();
+  Optional < String > lookupCn();
 
   /**
    * Returns an option of a host name for a database server.

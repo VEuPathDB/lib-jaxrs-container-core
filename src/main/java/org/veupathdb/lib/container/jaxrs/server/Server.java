@@ -14,7 +14,7 @@ import org.veupathdb.lib.container.jaxrs.providers.*;
 import org.veupathdb.lib.container.jaxrs.utils.Cli;
 import org.veupathdb.lib.container.jaxrs.utils.logging.Log;
 import org.veupathdb.lib.container.jaxrs.utils.db.DbManager;
-import org.veupathdb.lib.container.jaxrs.utils.ldap.OracleLDAPConfig;
+import org.veupathdb.lib.container.jaxrs.utils.ldap.LDAPConfig;
 import org.veupathdb.lib.container.jaxrs.utils.logging.LoggingVars;
 import org.veupathdb.lib.prom.PrometheusJVM;
 
@@ -191,7 +191,7 @@ abstract public class Server
     //
     // This must come before the DB initializations as they may depend on this
     // config.
-    OracleLDAPConfig.initialize(options);
+    LDAPConfig.initialize(options);
 
     if (useAcctDb) {
       logger.info("Account DB Enabled");

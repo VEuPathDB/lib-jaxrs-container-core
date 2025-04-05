@@ -42,12 +42,20 @@ public class Options {
     arity = "1..*")
   private String ldapServers;
 
+  @Deprecated
   @Option(
     names = "--oracle-base-dn",
     defaultValue = "${env:ORACLE_BASE_DN}",
     description = "env: ORACLE_BASE_DN",
     arity = "1")
   private String oracleBaseDn;
+
+  @Option(
+      names = "--db-lookup-base-dn",
+      defaultValue = "${env:DB_LOOKUP_BASE_DN}",
+      description = "env: DB_LOOKUP_BASE_DN",
+      arity = "1")
+  private String dbLookupBaseDn;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Authentication/OAuth Config                     ┃
@@ -99,12 +107,20 @@ public class Options {
     ┃    Application DB Config                           ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
+  @Deprecated
   @Option(
     names = "--app-db-ora",
     defaultValue = "${env:APP_DB_TNS_NAME}",
     description = "env: APP_DB_TNS_NAME",
     arity = "1")
   private String appDbTsName;
+
+  @Option(
+      names = "--app-db-lookup-cn",
+      defaultValue = "${env:APP_DB_LOOKUP_CN}",
+      description = "env: APP_DB_LOOKUP_CN",
+      arity = "1")
+  private String appDbLookupCn;
 
   @Option(
     names = "--app-db-host",
@@ -158,12 +174,20 @@ public class Options {
     ┃    Account DB Config                               ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
+  @Deprecated
   @Option(
     names = "--acct-db-ora",
     defaultValue = "${env:ACCT_DB_TNS_NAME}",
     description = "env: ACCT_DB_TNS_NAME",
     arity = "1")
   private String acctDbTsName;
+
+  @Option(
+      names = "--acct-db-lookup-cn",
+      defaultValue = "${env:ACCT_DB_LOOKUP_CN}",
+      description = "env: ACCT_DB_LOOKUP_CN",
+      arity = "1")
+  private String acctDbLookupCn;
 
   @Option(
     names = "--acct-db-host",
@@ -217,12 +241,20 @@ public class Options {
     ┃    User DB Config                                  ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
 
+  @Deprecated
   @Option(
     names = "--user-db-ora",
     defaultValue = "${env:USER_DB_TNS_NAME}",
     description = "env: USER_DB_TNS_NAME",
     arity = "1")
   private String userDbTsName;
+
+  @Option(
+      names = "--user-db-lookup-cn",
+      defaultValue = "${env:USER_DB_LOOKUP_CN}",
+      description = "env: USER_DB_LOOKUP_CN",
+      arity = "1")
+  private String userDbLookupCn;
 
   @Option(
     names = "--user-db-host",
@@ -318,19 +350,25 @@ public class Options {
   }
 
   public DbOptions getAppDbOpts() {
-    return new DbOptionsImpl(appDbTsName, appDbHost, appDbPort, appDbName,
+    // choose lookup cn or fallback to deprecated tns value
+    if (appDbLookupCn == null) appDbLookupCn = appDbTsName;
+    return new DbOptionsImpl(appDbLookupCn, appDbHost, appDbPort, appDbName,
       appDbUser, appDbPass, appDbPlatform, appDbPoolSize, "app-db"
     );
   }
 
   public DbOptions getAcctDbOpts() {
-    return new DbOptionsImpl(acctDbTsName, acctDbHost, acctDbPort, acctDbName,
+    // choose lookup cn or fallback to deprecated tns value
+    if (acctDbLookupCn == null) acctDbLookupCn = acctDbTsName;
+    return new DbOptionsImpl(acctDbLookupCn, acctDbHost, acctDbPort, acctDbName,
       acctDbUser, acctDbPass, acctDbPlatform, acctDbPoolSize, "acct-db"
     );
   }
 
   public DbOptions getUserDbOpts() {
-    return new DbOptionsImpl(userDbTsName, userDbHost, userDbPort, userDbName,
+    // choose lookup cn or fallback to deprecated tns value
+    if (userDbLookupCn == null) userDbLookupCn = userDbTsName;
+    return new DbOptionsImpl(userDbLookupCn, userDbHost, userDbPort, userDbName,
       userDbUser, userDbPass, userDbPlatform, userDbPoolSize, "user-db"
     );
   }
@@ -351,7 +389,8 @@ public class Options {
     return Optional.ofNullable(ldapServers);
   }
 
-  public Optional<String> getOracleBaseDn() {
-    return Optional.ofNullable(oracleBaseDn);
+  public Optional<String> getDbLookupBaseDn() {
+    if (dbLookupBaseDn == null) dbLookupBaseDn = oracleBaseDn;
+    return Optional.ofNullable(dbLookupBaseDn);
   }
 }

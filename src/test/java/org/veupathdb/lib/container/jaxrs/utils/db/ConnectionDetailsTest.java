@@ -11,13 +11,13 @@ public class ConnectionDetailsTest
   @Test
   public void fromOptionsPostgres() {
     var foo = new DbOptionsImpl(
-      "tnsName", "host", 123, "name", "user", "pass",
+      null, "host", 123, "name", "user", "pass",
       SupportedPlatform.POSTGRESQL, 1, "displayName");
 
-    var bar = ConnectionDetails.fromOptions(foo);
+    var bar = new ConnectionDetailsImpl(foo);
 
     assertNotNull(bar);
-    assertTrue(bar instanceof PostgresConnectionDetails);
+    assertEquals("jdbc:postgresql://host:123/name", bar.toJdbcString());
   }
 
   @Test
@@ -26,9 +26,9 @@ public class ConnectionDetailsTest
       null, "host", 123, "name", "user", "pass", SupportedPlatform.ORACLE, 1,
       "displayName");
 
-    var bar = ConnectionDetails.fromOptions(foo);
+    var bar = new ConnectionDetailsImpl(foo);
 
     assertNotNull(bar);
-    assertTrue(bar instanceof OracleConnectionDetails);
+    assertEquals("jdbc:oracle:thin:@//host:123/name", bar.toJdbcString());
   }
 }

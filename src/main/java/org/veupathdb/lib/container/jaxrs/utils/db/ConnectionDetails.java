@@ -47,29 +47,4 @@ public interface ConnectionDetails
    */
   ConnectionPoolConfig toFgpUtilConfig();
 
-  /**
-   * Returns a {@link ConnectionDetails} instance from the input options.
-   */
-  static ConnectionDetails fromOptions(final DbOptions opts) {
-    final var log = LogProvider.logger(ConnectionDetails.class);
-    log.debug("Setting up connection for db {}", opts.displayName());
-
-    if (opts.platform().isPresent()) {
-      log.debug("Platform provided.");
-      return switch (opts.platform().get()) {
-        case ORACLE -> {
-          log.debug("Using Oracle.");
-          yield OracleConnectionDetails.fromOptions(opts);
-        }
-        case POSTGRESQL -> {
-          log.debug("Using PostgreSQL.");
-          yield PostgresConnectionDetails.fromOptions(opts);
-        }
-      };
-    }
-
-    log.debug("Platform not provided, defaulting to Oracle.");
-    // If no platform is specified, default to Oracle
-    return OracleConnectionDetails.fromOptions(opts);
-  }
 }
