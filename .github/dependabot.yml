@@ -7,6 +7,17 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 20
+  groups:
+    test-dependencies:
+      patterns:
+      - org.junit.*
+      - org.mockito.*
+    log4j:
+      patterns:
+      - org.apache.logging.*
+    jackson:
+      patterns:
+      - com.fasterxml.*
 registries:
   github-packages:
     type: maven-repository
