@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.4.5"
+version = "9.5.0"
 
 plugins {
   `java-library`
@@ -47,6 +47,7 @@ dependencies {
   api(libs.bundles.jackson)
 
   implementation(libs.vpdb.fgputil)
+  implementation(libs.vpdb.ldap)
   implementation(libs.vpdb.jackson.pojo)
 
   implementation(libs.bundles.log4j)
@@ -54,7 +55,6 @@ dependencies {
   implementation(libs.metrics.prometheus.client)
   implementation(libs.metrics.prometheus.common)
   implementation(libs.uid)
-  implementation(libs.ldap)
 
   runtimeOnly(libs.db.oracle)
   runtimeOnly(libs.db.postgres)

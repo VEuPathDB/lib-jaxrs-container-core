@@ -14,24 +14,24 @@ public class PostgresConnectionDetailsTest
       null, "host", 123, "name", "user", "pass", SupportedPlatform.POSTGRESQL, 1,
       "displayName");
 
-    var bar = PostgresConnectionDetails.fromOptions(opts);
+    var bar = new ConnectionDetailsImpl(opts);
 
-    assertEquals(bar.dbName(), "name");
-    assertEquals(bar.host(), "host");
-    assertEquals(bar.password(), "pass");
-    assertEquals(bar.poolSize(), 1);
-    assertEquals(bar.port(), 123);
-    assertEquals(bar.user(), "user");
+    assertEquals("name", bar.dbName());
+    assertEquals("host", bar.host());
+    assertEquals("pass", bar.password());
+    assertEquals(1, bar.poolSize());
+    assertEquals(123, bar.port());
+    assertEquals("user", bar.user());
 
     assertNotNull(bar.toJdbcString());
     assertFalse(bar.toJdbcString().isBlank());
 
     var conf = bar.toFgpUtilConfig();
 
-    assertEquals(conf.getConnectionUrl(), bar.toJdbcString());
-    assertEquals(conf.getLogin(), bar.user());
-    assertEquals(conf.getPassword(), bar.password());
-    assertEquals(conf.getPlatformEnum(), SupportedPlatform.POSTGRESQL);
+    assertEquals(bar.toJdbcString(), conf.getConnectionUrl());
+    assertEquals(bar.user(), conf.getLogin());
+    assertEquals(bar.password(), conf.getPassword());
+    assertEquals(SupportedPlatform.POSTGRESQL, conf.getPlatformEnum());
   }
 
 
