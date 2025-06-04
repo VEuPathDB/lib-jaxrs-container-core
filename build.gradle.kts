@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "9.5.0"
+version = "9.6.0"
 
 plugins {
   `java-library`
