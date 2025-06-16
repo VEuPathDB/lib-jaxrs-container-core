@@ -28,7 +28,7 @@ jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-y
 
 # Database Drivers
 db-oracle   = { module = "com.oracle.database.jdbc:ojdbc11", version = "23.8.0.25.04" }
-db-postgres = { module = "org.postgresql:postgresql", version = "42.7.6" }
+db-postgres = { module = "org.postgresql:postgresql", version = "42.7.7" }
 
 # Jersey
 jersey-grizzly-http    = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-http", version.ref = "jersey" }
