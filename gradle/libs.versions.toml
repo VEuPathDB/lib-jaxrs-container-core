@@ -9,7 +9,7 @@ prometheus = "0.16.0"
 [libraries]
 
 # Internal
-vpdb-fgputil = { module = "org.gusdb:fgputil-db", version = "2.18.1-jakarta" }
+vpdb-fgputil = { module = "org.gusdb:fgputil-db", version = "2.18.2-jakarta" }
 vpdb-oauth   = { module = "org.gusdb:oauth2-client", version = "4.1.0-jakarta" }
 vpdb-ldap    = { module = "org.veupathdb.lib:ldap-utils", version = "2.0.1" }
 
