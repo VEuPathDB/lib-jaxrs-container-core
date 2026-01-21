@@ -15,19 +15,20 @@ public class FgpDatabaseDependency extends ExternalDependency
   private final String url;
   private final int port;
   private final DatabaseInstance ds;
-
-  private String testQuery = "SELECT 1 FROM dual";
+  private final String testQuery;
 
   public FgpDatabaseDependency(
     String name,
     String url,
     int port,
-    DatabaseInstance ds
+    DatabaseInstance ds,
+    String testQuery
   ) {
     super(name);
     this.ds = ds;
     this.url = url;
     this.port = port;
+    this.testQuery = testQuery;
   }
 
   @Override
@@ -56,9 +57,5 @@ public class FgpDatabaseDependency extends ExternalDependency
   @Override
   public void close() throws Exception {
     ds.close();
-  }
-
-  public void setTestQuery(String testQuery) {
-    this.testQuery = testQuery;
   }
 }

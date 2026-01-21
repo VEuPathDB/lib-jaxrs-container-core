@@ -208,10 +208,7 @@ public class DbManager
     var db = new DatabaseInstance(detail.toFgpUtilConfig(), opts.displayName());
 
     var dependency = new FgpDatabaseDependency(opts.displayName(), detail.host(),
-      detail.port(), db);
-
-    // Use platform-specific validation query for health checks
-    dependency.setTestQuery(db.getPlatform().getValidationQuery());
+      detail.port(), db, db.getPlatform().getValidationQuery());
 
     DependencyProvider.getInstance()
       .register(dependency);

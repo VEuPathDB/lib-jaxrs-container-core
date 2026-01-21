@@ -1,5 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
+import org.gusdb.fgputil.db.platform.DBPlatform;
 import org.gusdb.fgputil.db.pool.DatabaseInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -25,19 +26,23 @@ class FgpDatabaseDependencyTest
 
     Pinger pinger;
     DatabaseInstance db;
+    DBPlatform platform;
     DataSource ds;
     Connection con;
     Statement stmt;
 
     @BeforeEach
     void setUp() {
-      pinger = mock(Pinger.class);
-      db     = mock(DatabaseInstance.class);
-      ds     = mock(DataSource.class);
-      con    = mock(Connection.class);
-      stmt   = mock(Statement.class);
+      pinger   = mock(Pinger.class);
+      db       = mock(DatabaseInstance.class);
+      platform = mock(DBPlatform.class);
+      ds       = mock(DataSource.class);
+      con      = mock(Connection.class);
+      stmt     = mock(Statement.class);
 
       when(db.getDataSource()).thenReturn(ds);
+      when(db.getPlatform()).thenReturn(platform);
+      when(platform.getValidationQuery()).thenReturn("SELECT 1");
     }
 
     @Test
@@ -46,9 +51,9 @@ class FgpDatabaseDependencyTest
       when(ds.getConnection()).thenReturn(con);
       when(con.createStatement()).thenReturn(stmt);
       //noinspection SqlNoDataSourceInspection
-      when(stmt.execute("SELECT 1 FROM DUAL")).thenReturn(true);
+      when(stmt.execute("SELECT 1")).thenReturn(true);
 
-      var test = new FgpDatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db, db.getPlatform().getValidationQuery());
 
       test.setPinger(pinger);
 
@@ -63,7 +68,7 @@ class FgpDatabaseDependencyTest
       when(pinger.isReachable("foo", 123)).thenReturn(true);
       when(ds.getConnection()).thenThrow(new SQLException());
 
-      var test = new FgpDatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db, db.getPlatform().getValidationQuery());
 
       test.setPinger(pinger);
 
@@ -79,7 +84,7 @@ class FgpDatabaseDependencyTest
       when(ds.getConnection()).thenReturn(con);
       when(con.createStatement()).thenThrow(new SQLException());
 
-      var test = new FgpDatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db, db.getPlatform().getValidationQuery());
 
       test.setPinger(pinger);
 
@@ -94,7 +99,7 @@ class FgpDatabaseDependencyTest
     void noPing() {
       when(pinger.isReachable("foo", 123)).thenReturn(false);
 
-      var test = new FgpDatabaseDependency("", "foo", 123, db);
+      var test = new FgpDatabaseDependency("", "foo", 123, db, db.getPlatform().getValidationQuery());
 
       test.setPinger(pinger);
 
@@ -108,23 +113,11 @@ class FgpDatabaseDependencyTest
   @Test
   void close() throws Exception {
     var db   = mock(DatabaseInstance.class);
-    var test = new FgpDatabaseDependency("", "", 0, db);
+    var test = new FgpDatabaseDependency("", "", 0, db, "SELECT 1");
     test.close();
     verify(db).close();
 
     doThrow(new AbstractMethodError()).when(db).close();
     assertThrows(AbstractMethodError.class, test::close);
-  }
-
-  @Test
-  void setTestQuery() throws Exception {
-    var test = new FgpDatabaseDependency("", "", 0, null);
-    var val  = "some query";
-    test.setTestQuery(val);
-
-    var field = FgpDatabaseDependency.class.getDeclaredField("testQuery");
-    field.setAccessible(true);
-
-    assertEquals(val, field.get(test));
   }
 }
