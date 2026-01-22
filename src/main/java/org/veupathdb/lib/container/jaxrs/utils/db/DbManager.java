@@ -207,9 +207,11 @@ public class DbManager
     var detail = new ConnectionDetailsImpl(opts);
     var db = new DatabaseInstance(detail.toFgpUtilConfig(), opts.displayName());
 
+    var dependency = new FgpDatabaseDependency(opts.displayName(), detail.host(),
+      detail.port(), db, db.getPlatform().getValidationQuery());
+
     DependencyProvider.getInstance()
-      .register(new FgpDatabaseDependency(opts.displayName(), detail.host(),
-        detail.port(), db));
+      .register(dependency);
 
     DBPrometheus.register(opts.displayName(), db);
 

@@ -6,6 +6,16 @@ import javax.sql.DataSource;
 
 import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
+/**
+ * @deprecated This class is no longer used within the library nor
+ * from current project repos (GitHub search, Bob, 2025-01-21) and is
+ * not recommended for external use. It has a hardcoded default test
+ * query that may not be appropriate for all database platforms. Use
+ * {@link FgpDatabaseDependency} with a platform-specific validation
+ * query instead, or manage database health checks directly.  This
+ * class may be removed in a future version.
+ */
+@Deprecated
 public class DatabaseDependency extends ExternalDependency
 {
   private final String     url;

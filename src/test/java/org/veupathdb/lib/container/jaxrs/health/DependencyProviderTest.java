@@ -27,8 +27,8 @@ class DependencyProviderTest {
   @Test
   @SuppressWarnings("unchecked")
   void register() throws Exception {
-    var dep1 = new FgpDatabaseDependency("foo", "", 123, null);
-    var dep2 = new FgpDatabaseDependency("foo", "", 123, null);
+    var dep1 = new FgpDatabaseDependency("foo", "", 123, null, "SELECT 1");
+    var dep2 = new FgpDatabaseDependency("foo", "", 123, null, "SELECT 1");
 
     test.register(dep1);
 
