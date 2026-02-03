@@ -6,7 +6,6 @@ import jakarta.ws.rs.ApplicationPath;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.health.OAuthServiceDependency;
-import org.veupathdb.lib.container.jaxrs.health.ServiceDependency;
 import org.veupathdb.lib.container.jaxrs.providers.DependencyProvider;
 import org.veupathdb.lib.container.jaxrs.server.middleware.CorsFilter;
 import org.veupathdb.lib.container.jaxrs.server.controller.ApiDocService;

@@ -1,7 +1,5 @@
 package org.veupathdb.lib.container.jaxrs.health;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Collections;
 import java.util.Map;
 

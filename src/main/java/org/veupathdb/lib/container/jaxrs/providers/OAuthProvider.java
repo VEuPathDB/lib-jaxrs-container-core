@@ -3,7 +3,6 @@ package org.veupathdb.lib.container.jaxrs.providers;
 import org.gusdb.oauth2.client.KeyStoreTrustManager;
 import org.gusdb.oauth2.client.OAuthClient;
 import org.gusdb.oauth2.client.OAuthConfig;
-import org.slf4j.Logger;
 import org.veupathdb.lib.container.jaxrs.config.InvalidConfigException;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 
@@ -12,9 +11,6 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 public class OAuthProvider {
-
-  private static final Logger LOG = LogProvider.logger(OAuthProvider.class);
-
   public static String getOAuthUrl() {
     return OptionsProvider.getOptions()
       .getOAuthUrl()
