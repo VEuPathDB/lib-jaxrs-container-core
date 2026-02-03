@@ -13,7 +13,7 @@ vpdb-fgputil = { module = "org.gusdb:fgputil-db", version = "3.0.1-jakarta" }
 vpdb-oauth   = { module = "org.gusdb:oauth2-client", version = "4.1.0-jakarta" }
 vpdb-ldap    = { module = "org.veupathdb.lib:ldap-utils", version = "2.0.1" }
 
-vpdb-jackson-pojo = { module = "org.veupathdb.lib:multipart-jackson-pojo", version = "1.3.2" }
+vpdb-jackson-pojo = { module = "org.veupathdb.lib:multipart-jackson-pojo", version = "2.0.0" }
 vpdb-prometheus = { module = "org.veupathdb.lib:lib-prometheus-stats", version = "1.3.0" }
 
 # Jackson
