@@ -27,7 +27,7 @@ jackson-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
 jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
 
 # Database Drivers
-db-oracle   = { module = "com.oracle.database.jdbc:ojdbc11", version = "23.26.0.0.0" }
+db-oracle   = { module = "com.oracle.database.jdbc:ojdbc11", version = "23.26.1.0.0" }
 db-postgres = { module = "org.postgresql:postgresql", version = "42.7.9" }
 
 # Jersey
