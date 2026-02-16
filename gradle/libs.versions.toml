@@ -60,7 +60,6 @@ mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "m
 
 [bundles]
 jackson = [
-  "jackson-bom",
   "jackson-core",
   "jackson-databind",
   "jackson-annotations",

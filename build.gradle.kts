@@ -1,5 +1,5 @@
 group   = "org.veupathdb.lib"
-version = "10.0.1"
+version = "10.0.2"
 
 plugins {
   `java-library`
@@ -44,6 +44,7 @@ dependencies {
   api(libs.log.slf4j)
 
   api(libs.bundles.jersey)
+  api(platform(libs.jackson.bom))
   api(libs.bundles.jackson)
 
   implementation(libs.vpdb.fgputil)
