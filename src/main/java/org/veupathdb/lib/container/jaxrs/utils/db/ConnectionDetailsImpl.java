@@ -27,6 +27,7 @@ public class ConnectionDetailsImpl implements ConnectionDetails
   private final String user;
   private final String pass;
   private final int poolSize;
+  private final int defaultFetchSize;
 
   /**
    * Creates a {@link ConnectionDetails} instance from the input options.
@@ -57,6 +58,7 @@ public class ConnectionDetailsImpl implements ConnectionDetails
     user = opts.user().orElseThrow(missingPropErr(opts));
     pass = opts.pass().orElseThrow(missingPropErr(opts));
     poolSize = opts.poolSize().orElse(DbManager.DEFAULT_POOL_SIZE);
+    defaultFetchSize = opts.defaultFetchSize().orElse(DbManager.DEFAULT_FETCH_SIZE);
   }
 
   private static Supplier<RuntimeException> missingLdapInfo(DbOptions opts, String field) {
@@ -68,7 +70,8 @@ public class ConnectionDetailsImpl implements ConnectionDetails
     NetDesc connectionInfo,
     String user,
     String pass,
-    int poolSize
+    int poolSize,
+    int defaultFetchSize
   ) {
     this.connectionInfo = connectionInfo;
     this.platform = SupportedPlatform.fromLdapPlatform(connectionInfo.getPlatform());
@@ -77,6 +80,7 @@ public class ConnectionDetailsImpl implements ConnectionDetails
     this.user = user;
     this.pass = pass;
     this.poolSize = poolSize;
+    this.defaultFetchSize = defaultFetchSize;
   }
 
   @Override
@@ -121,7 +125,8 @@ public class ConnectionDetailsImpl implements ConnectionDetails
         connectionUrl,
         user,
         pass,
-        poolSize
+        poolSize,
+      defaultFetchSize
     );
   }
 

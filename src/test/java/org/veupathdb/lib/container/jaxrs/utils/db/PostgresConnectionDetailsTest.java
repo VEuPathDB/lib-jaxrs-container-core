@@ -12,7 +12,7 @@ public class PostgresConnectionDetailsTest
   public void fromOptionsRaw() {
     var opts =  new DbOptionsImpl(
       null, "host", 123, "name", "user", "pass", SupportedPlatform.POSTGRESQL, 1,
-      "displayName");
+      "displayName", null);
 
     var bar = new ConnectionDetailsImpl(opts);
 

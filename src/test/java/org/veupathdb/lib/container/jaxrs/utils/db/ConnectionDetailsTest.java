@@ -12,7 +12,7 @@ public class ConnectionDetailsTest
   public void fromOptionsPostgres() {
     var foo = new DbOptionsImpl(
       null, "host", 123, "name", "user", "pass",
-      SupportedPlatform.POSTGRESQL, 1, "displayName");
+      SupportedPlatform.POSTGRESQL, 1, "displayName", 10);
 
     var bar = new ConnectionDetailsImpl(foo);
 
@@ -24,7 +24,7 @@ public class ConnectionDetailsTest
   public void fromOptionsOracleRaw() {
     var foo = new DbOptionsImpl(
       null, "host", 123, "name", "user", "pass", SupportedPlatform.ORACLE, 1,
-      "displayName");
+      "displayName", 10);
 
     var bar = new ConnectionDetailsImpl(foo);
 

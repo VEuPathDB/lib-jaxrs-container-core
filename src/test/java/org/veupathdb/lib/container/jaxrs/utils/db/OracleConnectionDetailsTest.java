@@ -12,7 +12,7 @@ public class OracleConnectionDetailsTest
   public void fromOptionsRaw() {
     var opts =  new DbOptionsImpl(
       null, "host", 123, "name", "user", "pass", SupportedPlatform.ORACLE, 1,
-      "displayName");
+      "displayName", null);
 
     var bar = new ConnectionDetailsImpl(opts);
 

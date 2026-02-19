@@ -4,47 +4,48 @@ import java.util.Optional;
 
 import org.gusdb.fgputil.db.platform.SupportedPlatform;
 
-public interface DbOptions
-{
+public interface DbOptions {
   /**
    * Returns an option of a lookup CN for determining DB connection details via LDAP
    */
-  Optional < String > lookupCn();
+  Optional<String> lookupCn();
 
   /**
    * Returns an option of a host name for a database server.
    */
-  Optional < String > host();
+  Optional<String> host();
 
   /**
    * Returns an option of a port number for a database server.
    */
-  Optional < Integer > port();
+  Optional<Integer> port();
 
   /**
    * Returns an option of a name of a database to connect to.
    */
-  Optional < String > name();
+  Optional<String> name();
 
   /**
    * Returns an option of a database credentials username.
    */
-  Optional < String > user();
+  Optional<String> user();
 
   /**
    * Returns an option of a database credentials password.
    */
-  Optional < String > pass();
+  Optional<String> pass();
 
   /**
    * Returns an option of a database platform type.
    */
-  Optional < SupportedPlatform > platform();
+  Optional<SupportedPlatform> platform();
 
   /**
    * Returns an option of a database connection pool size value.
    */
-  Optional < Integer > poolSize();
+  Optional<Integer> poolSize();
+
+  Optional<Integer> defaultFetchSize();
 
   /**
    * Returns the display name for the database connection details.
