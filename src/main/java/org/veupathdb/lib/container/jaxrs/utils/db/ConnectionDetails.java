@@ -1,8 +1,6 @@
 package org.veupathdb.lib.container.jaxrs.utils.db;
 
 import org.gusdb.fgputil.db.pool.ConnectionPoolConfig;
-import org.veupathdb.lib.container.jaxrs.config.DbOptions;
-import org.veupathdb.lib.container.jaxrs.providers.LogProvider;
 
 public interface ConnectionDetails
 {

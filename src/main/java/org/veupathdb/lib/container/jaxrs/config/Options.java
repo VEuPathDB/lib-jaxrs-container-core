@@ -170,6 +170,13 @@ public class Options {
     arity = "1")
   private SupportedPlatform appDbPlatform;
 
+  @Option(
+    names = "--app-db-fetch-size",
+    defaultValue = "${env:APP_DB_FETCH_SIZE}",
+    description = "env: APP_DB_FETCH_SIZE",
+    arity = "1")
+  private Integer appDbFetchSize;
+
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    Account DB Config                               ┃
   \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
@@ -236,6 +243,13 @@ public class Options {
     description = "env: ACCT_DB_PLATFORM\nDefaults to Oracle.",
     arity = "1")
   private SupportedPlatform acctDbPlatform;
+
+  @Option(
+    names = "--acct-db-fetch-size",
+    defaultValue = "${env:ACCT_DB_FETCH_SIZE}",
+    description = "env: ACCT_DB_FETCH_SIZE",
+    arity = "1")
+  private Integer acctDbFetchSize;
 
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃    User DB Config                                  ┃
@@ -311,6 +325,13 @@ public class Options {
     arity = "1")
   private String userDbSchema;
 
+  @Option(
+    names = "--user-db-fetch-size",
+    defaultValue = "${env:USER_DB_FETCH_SIZE}",
+    description = "env: USER_DB_FETCH_SIZE",
+    arity = "1")
+  private Integer userDbFetchSize;
+
   /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
     ┃                                                                      ┃
     ┃    Property Getters                                                  ┃
@@ -353,7 +374,8 @@ public class Options {
     // choose lookup cn or fallback to deprecated tns value
     if (appDbLookupCn == null) appDbLookupCn = appDbTsName;
     return new DbOptionsImpl(appDbLookupCn, appDbHost, appDbPort, appDbName,
-      appDbUser, appDbPass, appDbPlatform, appDbPoolSize, "app-db"
+      appDbUser, appDbPass, appDbPlatform, appDbPoolSize, "app-db",
+      appDbFetchSize
     );
   }
 
@@ -361,7 +383,8 @@ public class Options {
     // choose lookup cn or fallback to deprecated tns value
     if (acctDbLookupCn == null) acctDbLookupCn = acctDbTsName;
     return new DbOptionsImpl(acctDbLookupCn, acctDbHost, acctDbPort, acctDbName,
-      acctDbUser, acctDbPass, acctDbPlatform, acctDbPoolSize, "acct-db"
+      acctDbUser, acctDbPass, acctDbPlatform, acctDbPoolSize, "acct-db",
+      acctDbFetchSize
     );
   }
 
@@ -369,7 +392,8 @@ public class Options {
     // choose lookup cn or fallback to deprecated tns value
     if (userDbLookupCn == null) userDbLookupCn = userDbTsName;
     return new DbOptionsImpl(userDbLookupCn, userDbHost, userDbPort, userDbName,
-      userDbUser, userDbPass, userDbPlatform, userDbPoolSize, "user-db"
+      userDbUser, userDbPass, userDbPlatform, userDbPoolSize, "user-db",
+      userDbFetchSize
     );
   }
 

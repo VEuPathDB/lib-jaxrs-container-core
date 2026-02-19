@@ -14,6 +14,7 @@ public class DbOptionsImpl implements DbOptions {
   private final SupportedPlatform platform;
   private final Integer           poolSize;
   private final String            displayName;
+  private final Integer           defaultFetchSize;
 
   public DbOptionsImpl(
     String lookupCn,
@@ -24,7 +25,8 @@ public class DbOptionsImpl implements DbOptions {
     String pass,
     SupportedPlatform platform,
     Integer poolSize,
-    String displayName
+    String displayName,
+    Integer defaultFetchSize
   ) {
     this.lookupCn    = lookupCn;
     this.host        = host;
@@ -35,6 +37,7 @@ public class DbOptionsImpl implements DbOptions {
     this.platform    = platform;
     this.poolSize    = poolSize;
     this.displayName = displayName;
+    this.defaultFetchSize = defaultFetchSize;
   }
 
   @Override
@@ -75,6 +78,11 @@ public class DbOptionsImpl implements DbOptions {
   @Override
   public Optional<Integer> poolSize() {
     return Optional.ofNullable(poolSize);
+  }
+
+  @Override
+  public Optional<Integer> defaultFetchSize() {
+    return Optional.ofNullable(defaultFetchSize);
   }
 
   @Override
