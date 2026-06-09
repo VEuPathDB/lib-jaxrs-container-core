@@ -82,10 +82,10 @@ public class ErrorMapper implements ExceptionMapper<Throwable> {
       .build();
   }
 
-  private ErrorResponse serverError(Throwable error) {
+  private ErrorResponse serverError(Throwable ignored) {
     return new ServerError(
       (String) _request.get().getAttribute(RequestKeys.REQUEST_ID),
-      error
+      "unexpected server exception"
     );
   }
 }
