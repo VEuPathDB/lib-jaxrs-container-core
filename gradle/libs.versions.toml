@@ -13,18 +13,10 @@ vpdb-fgputil = { module = "org.gusdb:fgputil-db", version = "3.2.8-jakarta" }
 vpdb-oauth   = { module = "org.gusdb:oauth2-client", version = "5.0.1-jakarta" }
 vpdb-ldap    = { module = "org.veupathdb.lib:ldap-utils", version = "2.0.1" }
 
-vpdb-jackson-pojo = { module = "org.veupathdb.lib:multipart-jackson-pojo", version = "2.0.0" }
+vpdb-jackson-json = { module = "org.veupathdb.lib:jackson-singleton-json", version = "4.2.0" }
+vpdb-jackson-yaml = { module = "org.veupathdb.lib:jackson-singleton-yaml", version = "4.2.0" }
+vpdb-jackson-pojo = { module = "org.veupathdb.lib:multipart-jackson-pojo", version = "2.1.1" }
 vpdb-prometheus = { module = "org.veupathdb.lib:lib-prometheus-stats", version = "1.3.0" }
-
-# Jackson
-jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version = "2.22.3"}
-jackson-core = { module = "com.fasterxml.jackson.core:jackson-core" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
-jackson-parameterNames = { module = "com.fasterxml.jackson.module:jackson-module-parameter-names" }
-jackson-dateTime = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
-jackson-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8" }
-jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
 
 # Database Drivers
 db-oracle   = { module = "com.oracle.database.jdbc:ojdbc11", version = "23.26.3.0.0" }
@@ -59,16 +51,6 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 
 [bundles]
-jackson = [
-  "jackson-core",
-  "jackson-databind",
-  "jackson-annotations",
-  "jackson-parameterNames",
-  "jackson-dateTime",
-  "jackson-jdk8",
-  "jackson-yaml",
-]
-
 jersey = [
   "jersey-grizzly-http",
   "jersey-grizzly-servlet",

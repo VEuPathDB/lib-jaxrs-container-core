@@ -6,16 +6,11 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
+import org.veupathdb.lib.jackson.json.Json;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
@@ -32,7 +27,6 @@ import org.veupathdb.lib.container.jaxrs.server.annotations.DisableJackson;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.veupathdb.lib.container.jaxrs.view.error.ErrorResponse;
 
 /**
@@ -60,19 +54,6 @@ public class JacksonFilter
   implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
   private static final String SUBTYPE = "json";
-
-  private static final ObjectMapper JSON;
-
-  static {
-    JSON = JsonMapper.builder()
-      .addModule(new ParameterNamesModule())
-      .addModule(new Jdk8Module())
-      .addModule(new JavaTimeModule())
-      .build();
-
-    JSON.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
-    JSON.getDateFormat().setTimeZone(TimeZone.getDefault());
-  }
 
   @Context
   private ResourceInfo res;
@@ -117,7 +98,7 @@ public class JacksonFilter
     final MultivaluedMap<String, Object> httpHeaders,
     final OutputStream entityStream
   ) throws IOException, WebApplicationException {
-    JSON.writeValue(entityStream, o);
+    Json.getMapper().writeValue(entityStream, o);
   }
 
   @Override
@@ -133,15 +114,15 @@ public class JacksonFilter
       if (List.class.isAssignableFrom(type)) {
         var pType = (ParameterizedType) genericType;
         @SuppressWarnings("unchecked")
-        var typeFac = JSON.getTypeFactory()
+        var typeFac = Json.getMapper().getTypeFactory()
           .constructCollectionType(
             (Class<? extends List<?>>) ((Class<?>) type),
             (Class<?>) pType.getActualTypeArguments()[0]
           );
-        return JSON.readValue(entityStream, typeFac);
+        return Json.getMapper().readValue(entityStream, typeFac);
       }
 
-      return JSON.readValue(entityStream, type);
+      return Json.getMapper().readValue(entityStream, type);
     } catch (JsonParseException e) {
       throw new BadRequestException(e.getMessage());
     } catch (JsonMappingException e) {
@@ -156,7 +137,7 @@ public class JacksonFilter
         );
 
       throw new UnprocessableEntityException(Collections.singletonMap(
-        e.getPath().get(0).getFieldName(), Collections.singletonList(message)));
+        e.getPath().getFirst().getFieldName(), Collections.singletonList(message)));
     }
   }
 }

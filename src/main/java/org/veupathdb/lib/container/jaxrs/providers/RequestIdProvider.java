@@ -5,6 +5,7 @@ import jakarta.ws.rs.core.Request;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.veupathdb.lib.container.jaxrs.utils.RequestKeys;
 
+@SuppressWarnings("unused")
 public class RequestIdProvider
 {
   public static String getRequestId(Request req) {

@@ -35,7 +35,7 @@ repositories {
 tasks.register<Javadoc>("updateJavadocs") {
   source = sourceSets["main"].allJava
   classpath = sourceSets["main"].runtimeClasspath
-  setDestinationDir(file("docs/javadoc"))
+  destinationDir = file("docs/javadoc")
 }
 
 dependencies {
@@ -44,12 +44,12 @@ dependencies {
   api(libs.log.slf4j)
 
   api(libs.bundles.jersey)
-  api(platform(libs.jackson.bom))
-  api(libs.bundles.jackson)
+  api(libs.vpdb.jackson.json)
 
   implementation(libs.vpdb.fgputil)
   implementation(libs.vpdb.ldap)
   implementation(libs.vpdb.jackson.pojo)
+  implementation(libs.vpdb.jackson.yaml)
 
   implementation(libs.bundles.log4j)
   implementation(libs.cli.code)
