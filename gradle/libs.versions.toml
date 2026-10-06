@@ -1,5 +1,5 @@
 [versions]
-jersey = "4.0.2"
+jersey = "4.0.3"
 junit = "5.12.0"
 log4j = "2.26.1"
 mockito = "5.24.0"
